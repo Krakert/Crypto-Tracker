@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/overviewFragment">
+
+
+    <fragment
+        android:id="@+id/overviewFragment"
+        android:name="com.krakert.tracker.ui.OverviewFragment"
+        android:label="fragment_overview"
+        tools:layout="@layout/fragment_overview" >
+        <action
+            android:id="@+id/action_overviewFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_listCoinsFragment"
+            app:destination="@id/listCoinsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.krakert.tracker.ui.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" >
+        <action
+            android:id="@+id/action_detailsFragment_to_overviewFragment"
+            app:destination="@id/overviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listCoinsFragment"
+        android:name="com.krakert.tracker.ui.ListCoinsFragment"
+        android:label="fragment_list_coins"
+        tools:layout="@layout/fragment_list_coins" >
+        <action
+            android:id="@+id/action_listCoinsFragment_to_overviewFragment"
+            app:destination="@id/overviewFragment" />
+    </fragment>
+</navigation>
