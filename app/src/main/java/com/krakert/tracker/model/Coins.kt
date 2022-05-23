@@ -1,10 +1,10 @@
 package com.krakert.tracker.model
 
 data class Coins (
-    val coin: List<String>
+    val Coins: List<Coin>? = null
 )
 data class Coin (
-    val id: String,
-    val name: String,
-    val symbol: String
+    val id: String? = null,
+    val name: String? = null,
+    val symbol: String? = null
 )

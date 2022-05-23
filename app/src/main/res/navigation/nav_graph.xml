@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_overviewFragment_to_detailsFragment"
             app:destination="@id/detailsFragment" />
+        <action
+            android:id="@+id/action_overviewFragment_to_listCoinsFragment"
+            app:destination="@id/listCoinsFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
@@ -22,6 +25,15 @@
         tools:layout="@layout/fragment_details" >
         <action
             android:id="@+id/action_detailsFragment_to_overviewFragment"
+            app:destination="@id/overviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listCoinsFragment"
+        android:name="com.krakert.tracker.ui.ListCoinsFragment"
+        android:label="fragment_list_coins"
+        tools:layout="@layout/fragment_list_coins" >
+        <action
+            android:id="@+id/action_listCoinsFragment_to_overviewFragment"
             app:destination="@id/overviewFragment" />
     </fragment>
 </navigation>

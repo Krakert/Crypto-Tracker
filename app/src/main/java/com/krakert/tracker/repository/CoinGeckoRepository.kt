@@ -1,9 +1,10 @@
 package com.krakert.tracker.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
-import drewcarlson.coingecko.CoinGeckoClient
+import com.krakert.tracker.model.Coins
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 
 class CoinGeckoRepository {
@@ -11,29 +12,21 @@ class CoinGeckoRepository {
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var documentCoins = firestore.collection("Coins").document("HfdZkpPl5JbsLru2NzsF")
 
-    private val coinGecko: CoinGeckoClient = CoinGeckoClient.create()
+//    private val coinGecko: CoinGeckoClient = CoinGeckoClient.create()
 
-    private val _listCoins: MutableLiveData<List<String>> = MutableLiveData()
-
-    val listCoins: LiveData<List<String>>
-        get() = _listCoins
-
-
-    suspend fun getListCoins(){
-        println(coinGecko.ping().geckoSays)
-        try {
-            withTimeout(5_000){
-                documentCoins.get().addOnCompleteListener {
-                    if (it.isSuccessful){
-                        val result = it.result
-                        if (result.exists()){
-                            println(result.data)
-                        }
-                    }
+    suspend fun getListCoins(): Flow<Coins> {
+        return try {
+            withTimeout(10_000) {
+                val result = documentCoins.get().await()
+                flow {
+                    emit(result.toObject(Coins::class.java)!!)
                 }
             }
-        } catch (e: Exception){
-            println(e)
+        } catch (e: Exception) {
+            throw ListCoinsRetrievalError("Retrieval firebase was unsuccessful")
         }
     }
+
+    inner class ListCoinsRetrievalError(message: String) : Exception(message)
+
 }
