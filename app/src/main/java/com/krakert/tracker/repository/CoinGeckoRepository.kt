@@ -10,7 +10,8 @@ import kotlinx.coroutines.withTimeout
 class CoinGeckoRepository {
 
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var documentCoins = firestore.collection("Coins").document("HfdZkpPl5JbsLru2NzsF")
+    private var documentCoins = firestore.collection("Tracker").document("is3ksOVRTraukL5sSbgJ")
+    private var documentFavorite = firestore.collection("Tracker").document("LhLiwEToSjCp5CfuQ6BB")
 
 //    private val coinGecko: CoinGeckoClient = CoinGeckoClient.create()
 
@@ -19,7 +20,7 @@ class CoinGeckoRepository {
             withTimeout(10_000) {
                 val result = documentCoins.get().await()
                 flow {
-                    emit(result.toObject(Coins::class.java)!!)
+                    result.toObject(Coins::class.java)?.let { emit(it) }
                 }
             }
         } catch (e: Exception) {
@@ -27,6 +28,21 @@ class CoinGeckoRepository {
         }
     }
 
+    suspend fun getFavoriteCoins(): Flow<Coins> {
+        return try {
+            withTimeout(10_000) {
+                val result = documentFavorite.get().await()
+                flow {
+                    result.toObject(Coins::class.java)?.let { emit(it) }
+                }
+            }
+
+        } catch (e: Exception) {
+            throw GetFavoriteCoinsRetrievalError("Retrieval of favorite coins was unsuccessful")
+        }
+    }
+
     inner class ListCoinsRetrievalError(message: String) : Exception(message)
+    inner class GetFavoriteCoinsRetrievalError(message: String) : Exception(message)
 
 }

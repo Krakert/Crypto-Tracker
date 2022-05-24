@@ -1,17 +1,23 @@
 package com.krakert.tracker
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
 import androidx.fragment.app.FragmentActivity
-import com.krakert.tracker.databinding.ActivityMainBinding
+import com.krakert.tracker.navigation.NavGraph
 
 class MainActivity : FragmentActivity() {
-
-    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContent {
+            TrackerMain()
+        }
+    }
+
+    @Composable
+    fun TrackerMain() {
+        NavGraph()
     }
 }
