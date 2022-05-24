@@ -1,9 +1,8 @@
 package com.krakert.tracker.viewmodel
 
-import android.app.Application
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.repository.CoinGeckoRepository
 import com.krakert.tracker.state.ViewState
@@ -12,13 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ListCoinsViewModel(application: Application) : AndroidViewModel(application) {
+class AddCoinViewModel: ViewModel(){
     private var geckoRepo: CoinGeckoRepository = CoinGeckoRepository()
 
     init {
         getListCoins()
     }
-
 
     // backing property to avoid state updates from other classes
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -43,5 +41,4 @@ class ListCoinsViewModel(application: Application) : AndroidViewModel(applicatio
             println(result)
         }
     }
-
 }

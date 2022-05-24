@@ -8,3 +8,7 @@ data class Coin (
     val name: String? = null,
     val symbol: String? = null
 )
+
+data class Favorite (
+    val Favorite: List<String>
+)
