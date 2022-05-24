@@ -32,10 +32,12 @@ android {
 }
 
 dependencies {
+    // Compose Navigation
+    implementation 'androidx.wear.compose:compose-navigation:1.0.0-beta02'
     // Viewmodel for compose
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
     implementation "androidx.compose.runtime:runtime-livedata:1.1.1"
-    implementation "androidx.activity:activity-compose:$activity_compose_version"
+    implementation "androidx.activity:activity-compose:1.6.0-alpha03"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
