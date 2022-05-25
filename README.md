@@ -1,4 +1,4 @@
-# About the capstone
+# ⌚ About the capstone
 For the capstone, I'm going to create an app that can display crypto statistics. During the IoT theme semester I made a similar application, only this one was not for mobile. So now I'm going to recreate this for Android. Furthermore, the app will be a complete stand-alone app for Wear OS to challenge myself.
 
 ## Make
@@ -10,7 +10,7 @@ To realize this app I will make a simple layout where the user will see a simple
 ### Tile
 Tiles provide easy access to the information and actions users need to get things done in seconds. With a simple swipe from the watch face, a user can see how their favorite coin is doing. This tile does not offer too much information so that the user can see at a glance what it is all about.
 
-### User stories
+## User stories
 **Epic: As a user I want an app that allows me to keep track of my favorite crypto coins on my watch. Per coin I have a graph showing the price of the market. With a few swipes I want to know everything about the coin and add or remove coins from my list.**
 - Objective
     - As a user I want to be able to see the current price of a coin so that I can see whether it is rising or falling
@@ -21,7 +21,56 @@ Tiles provide easy access to the information and actions users need to get thing
     - As a user I would like to be able to quickly retrieve extra information about my favorite coin
     - As a developer I would like to make a graph of current data of the coin
 
-# Connect watch to debugger
+# 🎨 UI Design
+
+|   Overlay    | Add a coin to track    |   Details about a selected coin   | Tile 
+|---	|---	|--- |---
+|  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-1.png)    |  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-2.png)    |   ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-4.png) | ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-3.png)    
+
+# 🛠 Built With
+
+- [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android
+  development.
+- [Jetpack Compose](https://developer.android.com/jetpack/compose) - Jetpack Compose is Android’s
+  modern toolkit for building native UI.
+- [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - A coroutine is a
+  concurrency design pattern that you can use on Android to simplify code that executes
+  asynchronously.
+- [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
+  version of a Sequence, a type of collection whose values are lazily produced.
+- [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) -
+  Collection of libraries that help you design robust, testable, and maintainable apps.
+    - [Stateflow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) - StateFlow is
+      a state-holder observable flow that emits the current and new state updates to its collectors.
+    - [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
+      version of a Sequence, a type of collection whose values are lazily produced.
+    - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores
+      UI-related data that isn"t destroyed on UI changes.
+    - [Jetpack Compose Navigation](https://developer.android.com/jetpack/compose/navigation) - The
+      Navigation component provides support for Jetpack Compose applications.
+    - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) - Jetpack
+      DataStore is a data storage solution that allows you to store key-value pairs or typed objects
+      with protocol buffers. DataStore uses Kotlin coroutines and Flow to store data asynchronously,
+      consistently, and transactionally.
+- [Material Components for Android](https://github.com/material-components/material-components-android)
+    - Modular and customizable Material Design UI components for Android.
+- [Figma](https://figma.com/) - Figma is a vector graphics editor and prototyping tool which is
+  primarily web-based.
+
+
+# 📦 Package Structure
+ ```
+com.krakert.tracker
+├── model               # Model class for [Coins], [Coin] & [Favorite]
+├── navigation          # For navigation handling
+├── repository          # Used to handle all data operations
+├── state               # State class to handle state of the data
+├── theme               # Theme setup for this app
+├── ui                  # All composables screens root folder
+├── viewmodel           # ViewModels 
+└── MainActivity.kt     # MainActivity 
+```
+# 🪲 Connect watch to debugger
 
 - On the phone, open the Wear OS companion app.
 - Scroll down to **Advanced Settings** and tap to view the **Advanced Settings** options.
