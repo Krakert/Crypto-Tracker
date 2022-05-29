@@ -2,7 +2,7 @@ buildscript {
     ext {
         // Dependency versions.
         activity_compose_version = '1.5.0-rc01'
-        compose_version = '1.2.0-beta01'
+        compose_version = '1.2.0-beta02'
         lifecycle_version = '2.5.0-rc01'
         wear_compose_version = '1.0.0-beta01'
 
