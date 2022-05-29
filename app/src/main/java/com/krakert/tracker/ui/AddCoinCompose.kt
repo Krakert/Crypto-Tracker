@@ -20,7 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.model.Coin
-import com.krakert.tracker.state.ViewState
+import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
 
 @Composable
@@ -45,17 +45,17 @@ fun ListAddCoin(viewModel: AddCoinViewModel, navController: NavHostController) {
         }
     ) {
         when (val listResult = viewModel.listCoins.collectAsState().value) {
-            ViewState.Empty -> {
+            ViewStateAddCoin.Empty -> {
                 ShowIncorrectState(R.string.txt_toast_reload, viewModel)
             }
-            is ViewState.Error -> {
+            is ViewStateAddCoin.Error -> {
                 ShowIncorrectState(R.string.txt_toast_error, viewModel)
             }
-            ViewState.Loading -> {
+            ViewStateAddCoin.Loading -> {
                 Loading()
             }
-            is ViewState.Success -> {
-                listResult.coins.Coins?.let { ShowList(scrollState, it) }
+            is ViewStateAddCoin.Success -> {
+                ShowList(scrollState = scrollState, listResult = listResult.coins.Coins, viewModel = viewModel)
             }
         }
 
@@ -80,7 +80,8 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel
 }
 
 @Composable
-private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>) {
+private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?, viewModel: AddCoinViewModel) {
+    val context = LocalContext.current
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -94,32 +95,36 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>) 
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        items(listResult.size) { index ->
-            Row(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                Chip(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    onClick = { /* ... */ },
-                    label = {
-                        Text(
-                            text = listResult[index].name.toString(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Phone,
-                            contentDescription = "triggers meditation action",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .wrapContentSize(align = Alignment.Center)
-                        )
-                    },
-                )
+        listResult?.size?.let {
+            items(it) { index ->
+                Row(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Chip(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        onClick = {
+                            viewModel.addCoinToFavoriteCoins(listResult[index], context)
+                        },
+                        label = {
+                            Text(
+                                text = listResult[index].name.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Phone,
+                                contentDescription = "triggers meditation action",
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .wrapContentSize(align = Alignment.Center)
+                            )
+                        },
+                    )
+                }
             }
         }
     }
@@ -162,3 +167,24 @@ fun IconButton(modifier: Modifier, imageVector: ImageVector, onClick: () -> Unit
         )
     }
 }
+//@Preview(
+//    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
+//    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,
+//    apiLevel = WEAR_PREVIEW_API_LEVEL,
+//    uiMode = WEAR_PREVIEW_UI_MODE,
+//    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
+//    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
+//)
+//@Composable
+//fun ShowIncorrectStatePreview() {
+////        ShowIncorrectState(text = R.string.txt_toast_error, viewModel = AddCoinViewModel())
+//    CenterElement {
+//        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.Cached){}
+//        Text(
+//            text = stringResource(R.string.txt_toast_error),
+//            modifier = Modifier.padding(top = 8.dp),
+//            textAlign = TextAlign.Center,
+//            color = MaterialTheme.colors.primary,
+//        )
+//    }
+//}
