@@ -2,8 +2,7 @@ package com.krakert.tracker.ui
 
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
@@ -18,8 +17,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
+import com.krakert.tracker.model.Coin
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.state.ViewState
+import com.krakert.tracker.state.ViewStateData
+import com.krakert.tracker.state.ViewStateOverview
 import com.krakert.tracker.viewmodel.OverviewViewModel
 
 @Composable
@@ -44,18 +45,18 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
         }
     ) {
         when (val listResult = viewModel.favoriteCoins.collectAsState().value) {
-            ViewState.Empty -> {
+            is ViewStateOverview.Empty -> {
                 ShowEmptyState(R.string.txt_empty_overview, navController)
             }
-            is ViewState.Error -> {
+            is ViewStateOverview.Error -> {
                 ShowIncorrectState(R.string.txt_toast_error, viewModel)
             }
-            ViewState.Loading -> {
+            ViewStateOverview.Loading -> {
                 Loading()
             }
-            is ViewState.Success -> {
-//                ShowEmptyState(R.string.txt_empty_overview, navController)
-//                listResult.coins.Coins?.let { ShowStats(scrollState, it) }
+            is ViewStateOverview.Success -> {
+                println(listResult.favorite.Favorite)
+                ShowStatsCoins(scrollState = scrollState, listResult = listResult.favorite.Favorite, viewModel = OverviewViewModel(), navController = navController)
             }
         }
 
@@ -82,7 +83,10 @@ fun ShowEmptyState(@StringRes text: Int, navController: NavHostController) {
 fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
     val context = LocalContext.current
     CenterElement {
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize).padding(top = 8.dp), Icons.Rounded.Cached) {
+        IconButton(
+            Modifier
+                .size(ButtonDefaults.LargeButtonSize)
+                .padding(top = 8.dp), Icons.Rounded.Cached) {
             viewModel.getFavoriteCoins()
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         }
@@ -91,5 +95,79 @@ fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
             modifier = Modifier.padding(top = 8.dp),
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+@Composable
+fun ShowStatsCoins(
+    scrollState: ScalingLazyListState,
+    listResult: List<Coin>?,
+    viewModel: OverviewViewModel,
+    navController: NavHostController
+) {
+    val context = LocalContext.current
+
+    ScalingLazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            top = 32.dp,
+            start = 8.dp,
+            end = 8.dp,
+            bottom = 32.dp
+        ),
+        verticalArrangement = Arrangement.Center,
+        autoCentering = AutoCenteringParams(itemIndex = 0),
+        state = scrollState
+    ) {
+        // For each index in my favorites
+        listResult?.size?.let {
+            items(it) { index ->
+                viewModel.getHistoryCoin(listResult[index].idCoin.toString())
+                Row(modifier = Modifier.fillMaxSize()) {
+                    CenterElement {
+                        Text(
+                            text = listResult[index].id.toString(),
+                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colors.primary,
+                        )
+                        // Here I load the data needed for the graph
+                        when (val dataCoin = viewModel.dataCoin.collectAsState().value) {
+                            is ViewStateData.Error -> {
+                               Text(text = "Could not load the data")
+                            }
+                            is ViewStateData.Success -> {
+                                println(dataCoin.marketChart.prices)
+                            }
+                            is ViewStateData.Loading -> {
+                                Loading()
+                            }
+                        }
+                        // Here we can load the latest price
+                    }
+                }
+            }
+        }
+        // Last item of the row, add more coins to track
+        item {
+            Row(modifier = Modifier.fillMaxSize()) {
+                CenterElement {
+                    Text(
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                        text = stringResource(R.string.txt_add_coin_more),
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+
+                    )
+                    IconButton(
+                        Modifier.size(ButtonDefaults.LargeButtonSize),
+                        Icons.Rounded.PlusOne
+                    ) {
+                        navController.navigate(Screen.Add.route)
+                    }
+                }
+            }
+        }
     }
 }

@@ -5,39 +5,58 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.repository.CoinGeckoRepository
-import com.krakert.tracker.state.ViewState
+import com.krakert.tracker.repository.FirebaseRepository
+import com.krakert.tracker.state.ViewStateData
+import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
 class OverviewViewModel: ViewModel() {
-    private var geckoRepo: CoinGeckoRepository = CoinGeckoRepository()
+    private val fireBaseRepo: FirebaseRepository = FirebaseRepository()
+    private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository()
 
     init {
         getFavoriteCoins()
     }
 
-    // backing property to avoid state updates from other classes
-    private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
-
-    // the UI collects from this StateFlow to get it's state update
+    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
 
+
+    private val _viewStateData = MutableStateFlow<ViewStateOverview>(ViewStateData.Loading)
+    val dataCoin = _viewStateData.asStateFlow()
+
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
-        geckoRepo.getFavoriteCoins().collect { result ->
+        fireBaseRepo.getFavoriteCoins().collect { result ->
             try {
-                if (result.Coins?.size == null) {
-                    _viewState.value = ViewState.Empty
+                if (result.Favorite.isNullOrEmpty()){
+                    _viewState.value = ViewStateOverview.Empty
                 } else {
-                    _viewState.value = ViewState.Success(result)
+                    _viewState.value = ViewStateOverview.Success(result)
                 }
-            } catch (e: CoinGeckoRepository.ListCoinsRetrievalError) {
-                val errorMsg = "Something went wrong while retrieving quest"
+
+            } catch (e: FirebaseRepository.FireBaseExceptionError) {
+                val errorMsg = "Something went wrong while retrieving data"
 
                 Log.e(ContentValues.TAG, e.message ?: errorMsg)
-                _viewState.value = ViewState.Error(e)
+                _viewState.value = ViewStateOverview.Error(e)
+            }
+        }
+    }
+
+    fun getHistoryCoin(coinId: String) = viewModelScope.launch {
+        coinGeckoRepo.getHistoryCoin(coinId).collect() { result ->
+            try {
+                _viewStateData.value = ViewStateData.Success(result)
+            }   catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
+                val errorMsg = "Something went wrong while retrieving data"
+
+                Log.e(ContentValues.TAG, e.message ?: errorMsg)
+                _viewState.value = ViewStateOverview.Error(e)
             }
         }
     }
