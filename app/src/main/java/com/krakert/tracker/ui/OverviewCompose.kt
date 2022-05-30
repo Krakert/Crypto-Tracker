@@ -61,7 +61,6 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
                 Loading()
             }
             is ViewStateOverview.Success -> {
-                println(listResult.favorite.Favorite)
                 ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Favorite, viewModel = OverviewViewModel(), navController = navController)
             }
         }
@@ -135,7 +134,8 @@ fun ShowStatsCoins(
         listCoins?.size?.let {
             items(it) { index ->
                 Row(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .clickable(
                             onClick = {
                                 println(listCoins[index])
@@ -159,39 +159,39 @@ fun ShowStatsCoins(
                                 Loading()
                             }
                             is ViewStateDataCoins.Success -> {
-                                val points = arrayListOf<PointF>()
-                                val pointsCon1 = arrayListOf<PointF>()
-                                val pointsCon2 = arrayListOf<PointF>()
-                                var maxData = dataCoins.data[index].history.prices[0][1].toFloat()
-                                var minData = dataCoins.data[index].history.prices[0][1].toFloat()
-
-                                dataCoins.data[index].history.prices.forEachIndexed { _, index ->
-                                    if (maxData < index[1].toDouble()) {
-                                        maxData = index[1].toFloat()
-                                    }
-                                    if (minData > index[1].toFloat()){
-                                        minData = index[1].toFloat()
-                                    }
-                                }
-
-                                val pointsMean = arrayListOf<Float>()
-                                // Calculate mean over 5 point and add that value to the list
-                                for (i in 0 until dataCoins.data[index].history.prices.size - 5 step 5){
-                                    pointsMean.add(med(listOf(
-                                        dataCoins.data[index].history.prices[i][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 1][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 2][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 3][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 4][1].toFloat(),
-                                    )))
-                                }
-
                                 Canvas(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(105.dp)
                                         .padding(bottom = 8.dp)
                                 ) {
+                                    val points = arrayListOf<PointF>()
+                                    val pointsCon1 = arrayListOf<PointF>()
+                                    val pointsCon2 = arrayListOf<PointF>()
+                                    var maxData = dataCoins.data[index].history.prices[0][1].toFloat()
+                                    var minData = dataCoins.data[index].history.prices[0][1].toFloat()
+
+                                    dataCoins.data[index].history.prices.forEachIndexed { _, index ->
+                                        if (maxData < index[1].toDouble()) {
+                                            maxData = index[1].toFloat()
+                                        }
+                                        if (minData > index[1].toFloat()){
+                                            minData = index[1].toFloat()
+                                        }
+                                    }
+
+                                    val pointsMean = arrayListOf<Float>()
+                                    // Calculate mean over 5 point and add that value to the list
+                                    for (i in 0 until dataCoins.data[index].history.prices.size - 5 step 5){
+                                        pointsMean.add(med(listOf(
+                                            dataCoins.data[index].history.prices[i][1].toFloat(),
+                                            dataCoins.data[index].history.prices[i + 1][1].toFloat(),
+                                            dataCoins.data[index].history.prices[i + 2][1].toFloat(),
+                                            dataCoins.data[index].history.prices[i + 3][1].toFloat(),
+                                            dataCoins.data[index].history.prices[i + 4][1].toFloat(),
+                                        )))
+                                    }
+
                                     val distance = size.width / (pointsMean.size + 1)
                                     var currentX = 0F
 
@@ -259,7 +259,7 @@ fun ShowStatsCoins(
                         Modifier.size(ButtonDefaults.LargeButtonSize),
                         Icons.Rounded.Settings
                     ) {
-                        navController.navigate(Screen.Add.route)
+                        navController.navigate(Screen.Settings.route)
                     }
 //                }
             }
