@@ -4,18 +4,19 @@ import android.content.ContentValues
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.DataCoin
 import com.krakert.tracker.repository.CoinGeckoRepository
 import com.krakert.tracker.repository.FirebaseRepository
-import com.krakert.tracker.state.ViewStateData
+import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 
-class OverviewViewModel: ViewModel() {
+class OverviewViewModel : ViewModel() {
     private val fireBaseRepo: FirebaseRepository = FirebaseRepository()
     private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository()
 
@@ -27,13 +28,13 @@ class OverviewViewModel: ViewModel() {
     val favoriteCoins = _viewState.asStateFlow()
 
 
-    private val _viewStateData = MutableStateFlow<ViewStateOverview>(ViewStateData.Loading)
-    val dataCoin = _viewStateData.asStateFlow()
+    private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
+    val dataCoin = _viewStateDataCoin.asStateFlow()
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         fireBaseRepo.getFavoriteCoins().collect { result ->
             try {
-                if (result.Favorite.isNullOrEmpty()){
+                if (result.Favorite.isNullOrEmpty()) {
                     _viewState.value = ViewStateOverview.Empty
                 } else {
                     _viewState.value = ViewStateOverview.Success(result)
@@ -48,17 +49,27 @@ class OverviewViewModel: ViewModel() {
         }
     }
 
-    fun getHistoryCoin(coinId: String) = viewModelScope.launch {
-        coinGeckoRepo.getHistoryCoin(coinId).collect() { result ->
+    fun getAllData(listResult: List<Coin>) {
+        val _data = arrayListOf<DataCoin>()
+        viewModelScope.launch {
             try {
-                _viewStateData.value = ViewStateData.Success(result)
-            }   catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
+                listResult.forEach { index ->
+                    _data.add(
+                        DataCoin(
+                            history = coinGeckoRepo.getHistoryCoin(index.idCoin.toString()),
+                            currentPrice = coinGeckoRepo.getLatestPrice(index.idCoin.toString())
+                        )
+                    )
+                }
+                _viewStateDataCoin.value = ViewStateDataCoins.Success(_data)
+            } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
                 val errorMsg = "Something went wrong while retrieving data"
 
                 Log.e(ContentValues.TAG, e.message ?: errorMsg)
-                _viewState.value = ViewStateOverview.Error(e)
+                _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
             }
         }
     }
 }
+
 

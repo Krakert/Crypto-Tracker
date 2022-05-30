@@ -1,5 +1,7 @@
 package com.krakert.tracker.model
 
+import android.service.autofill.FillEventHistory
+
 data class Coins (
     val Coins: List<Coin>? = null
 )
@@ -16,4 +18,9 @@ data class Favorite (
 
 data class MarketChart(
     val prices: List<List<String>>,
+)
+
+data class DataCoin(
+    val history: MarketChart,
+    val currentPrice: Double,
 )

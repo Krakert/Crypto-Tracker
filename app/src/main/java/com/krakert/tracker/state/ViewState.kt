@@ -1,6 +1,7 @@
 package com.krakert.tracker.state
 
 import com.krakert.tracker.model.Coins
+import com.krakert.tracker.model.DataCoin
 import com.krakert.tracker.model.Favorite
 import com.krakert.tracker.model.MarketChart
 
@@ -20,8 +21,8 @@ sealed class ViewStateOverview {
     data class Error(val exception: Throwable) : ViewStateOverview()
 }
 
-sealed class ViewStateData {
-    object Loading : ViewStateOverview()
-    data class Success(val marketChart: MarketChart) : ViewStateOverview()
-    data class Error(val exception: Throwable) : ViewStateOverview()
+sealed class ViewStateDataCoins {
+    object Loading : ViewStateDataCoins()
+    data class Success(val data: List<DataCoin>) : ViewStateDataCoins()
+    data class Error(val exception: Throwable) : ViewStateDataCoins()
 }
