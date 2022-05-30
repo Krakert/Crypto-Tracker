@@ -4,14 +4,15 @@ import android.graphics.PointF
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +27,7 @@ import com.krakert.tracker.model.Coin
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
+import com.krakert.tracker.theme.themeValues
 import com.krakert.tracker.viewmodel.OverviewViewModel
 
 
@@ -40,8 +42,6 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             }
         },
         vignette = {
-            // Only show a Vignette for scrollable screens. This code lab only has one screen,
-            // which is scrollable, so we show it all the time.
             Vignette(vignettePosition = VignettePosition.TopAndBottom)
         },
         positionIndicator = {
@@ -62,7 +62,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             }
             is ViewStateOverview.Success -> {
                 println(listResult.favorite.Favorite)
-                ShowStatsCoins(scrollState = scrollState, listResult = listResult.favorite.Favorite, viewModel = OverviewViewModel(), navController = navController)
+                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Favorite, viewModel = OverviewViewModel(), navController = navController)
             }
         }
 
@@ -107,15 +107,15 @@ fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listResult: List<Coin>?,
+    listCoins: List<Coin>?,
     viewModel: OverviewViewModel,
     navController: NavHostController
 ) {
 
     val path = Path()
 
-    if (listResult != null) {
-        viewModel.getAllData(listResult)
+    if (listCoins != null) {
+        viewModel.getAllData(listCoins)
     }
 
     ScalingLazyColumn(
@@ -132,12 +132,20 @@ fun ShowStatsCoins(
         state = scrollState
     ) {
         // For each index in my favorites
-        listResult?.size?.let {
+        listCoins?.size?.let {
             items(it) { index ->
-                Row(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier.fillMaxSize()
+                        .clickable(
+                            onClick = {
+                                println(listCoins[index])
+                                navController.navigate("details_coin/${listCoins[index].idCoin}")
+                            }
+                        )
+                ) {
                     CenterElement {
                         Text(
-                            text = listResult[index].id.toString(),
+                            text = listCoins[index].id.toString(),
                             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
@@ -166,16 +174,29 @@ fun ShowStatsCoins(
                                     }
                                 }
 
+                                val pointsMean = arrayListOf<Float>()
+                                // Calculate mean over 5 point and add that value to the list
+                                for (i in 0 until dataCoins.data[index].history.prices.size - 5 step 5){
+                                    pointsMean.add(med(listOf(
+                                        dataCoins.data[index].history.prices[i][1].toFloat(),
+                                        dataCoins.data[index].history.prices[i + 1][1].toFloat(),
+                                        dataCoins.data[index].history.prices[i + 2][1].toFloat(),
+                                        dataCoins.data[index].history.prices[i + 3][1].toFloat(),
+                                        dataCoins.data[index].history.prices[i + 4][1].toFloat(),
+                                    )))
+                                }
+
                                 Canvas(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(105.dp)
                                         .padding(bottom = 8.dp)
                                 ) {
-                                    val distance = size.width / (dataCoins.data[index].history.prices.size + 1)
+                                    val distance = size.width / (pointsMean.size + 1)
                                     var currentX = 0F
-                                    dataCoins.data[index].history.prices.forEach { point ->
-                                        val y = (point[1].toFloat() - maxData) / (minData - maxData) * size.height
+
+                                    pointsMean.forEach { point ->
+                                        val y = (point - maxData) / (minData - maxData) * size.height
                                         val x = currentX + distance
                                         points.add(PointF(x, y))
                                         currentX += distance
@@ -198,8 +219,8 @@ fun ShowStatsCoins(
 
                                     drawPath(
                                         path = path,
-                                        color = Color.Red,
-                                        style = Stroke(width = 4f)
+                                        color = themeValues[3].colors.secondary,
+                                        style = Stroke(width = 6f)
                                     )
                                 }
                                 Text(text = dataCoins.data[index].currentPrice.toString() + " Euro")
@@ -214,20 +235,41 @@ fun ShowStatsCoins(
             Row(modifier = Modifier.fillMaxSize()) {
                 CenterElement {
                     Text(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        text = stringResource(R.string.txt_add_coin_more),
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 16.dp),
+                        text = stringResource(R.string.txt_add_more_change_settings),
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
 
                     )
+                }
+            }
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                     IconButton(
                         Modifier.size(ButtonDefaults.LargeButtonSize),
                         Icons.Rounded.PlusOne
                     ) {
                         navController.navigate(Screen.Add.route)
                     }
-                }
+                    IconButton(
+                        Modifier.size(ButtonDefaults.LargeButtonSize),
+                        Icons.Rounded.Settings
+                    ) {
+                        navController.navigate(Screen.Add.route)
+                    }
+//                }
             }
         }
     }
+}
+
+fun med(list: List<Float>) = list.sorted().let {
+    if (it.size % 2 == 0)
+        (it[it.size / 2] + it[(it.size - 1) / 2]) / 2
+    else
+        it[it.size / 2]
 }

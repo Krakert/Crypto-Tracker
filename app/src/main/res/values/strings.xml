@@ -7,7 +7,7 @@
     <string name="txt_toast_error">Unable to load data, please try again</string>
     <string name="txt_empty_overview">your list is empty, let\'s add a coin</string>
     <string name="txt_add_coin">Add a coin</string>
-    <string name="txt_add_coin_more">Add more coins to track</string>
+    <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
     <string name="txt_coin_added">Added %1$s to favorites</string>
 
 </resources>

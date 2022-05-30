@@ -6,7 +6,7 @@ import androidx.wear.compose.material.MaterialTheme
 
 @Composable
 fun WearAppTheme(
-    colors: Colors = initialThemeValues.colors,
+    colors: Colors = themeValues[3].colors,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
