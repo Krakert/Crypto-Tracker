@@ -23,7 +23,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
+import com.krakert.tracker.SharedPreference
+import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.Currency
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
@@ -61,7 +64,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
                 Loading()
             }
             is ViewStateOverview.Success -> {
-                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Favorite, viewModel = OverviewViewModel(), navController = navController)
+                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Favorite, viewModel = viewModel, navController = navController)
             }
         }
 
@@ -112,6 +115,9 @@ fun ShowStatsCoins(
 ) {
 
     val path = Path()
+    val context = LocalContext.current
+    val sharedPreference = SharedPreference.sharedPreference(context = context)
+    val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
 
     if (listCoins != null) {
         viewModel.getAllData(listCoins)
@@ -223,7 +229,10 @@ fun ShowStatsCoins(
                                         style = Stroke(width = 6f)
                                     )
                                 }
-                                Text(text = dataCoins.data[index].currentPrice.toString() + " Euro")
+                                Text(text = buildString {
+                                    append(dataCoins.data[index].currentPrice.toString())
+                                        .append(" ").append(currencyObject?.nameFull)
+                                })
                             }
                         }
                     }

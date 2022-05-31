@@ -1,37 +1,48 @@
 package com.krakert.tracker.repository
 
+import android.content.Context
+import com.krakert.tracker.SharedPreference
+import com.krakert.tracker.SharedPreference.AmountDaysTracking
+import com.krakert.tracker.SharedPreference.Currency
+import com.krakert.tracker.model.Currency
 import com.krakert.tracker.model.MarketChart
 import drewcarlson.coingecko.CoinGeckoClient
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
 import java.util.*
 
-const val Currency = "eur"
 
-class CoinGeckoRepository {
+class CoinGeckoRepository(context: Context) {
 
     private val coinGecko: CoinGeckoClient = CoinGeckoClient.create()
+
+    private val sharedPreference = SharedPreference.sharedPreference(context = context)
+    private val daysOfTracking = sharedPreference.AmountDaysTracking.toDouble()
+    private val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
+    private val currencyString = currencyObject.toString().lowercase(Locale.getDefault())
 
     suspend fun getHistoryCoin(coinId: String): MarketChart {
         return try {
             withTimeout(10_000) {
+                println(currencyObject?.nameFull)
                 MarketChart(
-                    prices = coinGecko.getCoinMarketChartById(coinId, Currency, 7.0).prices
+                    prices = coinGecko.getCoinMarketChartById(coinId,
+                        currencyString,
+                        daysOfTracking
+                    ).prices
                 )
             }
         } catch (e: Exception) {
-            throw CoinGeckoExceptionError("Retrieval of data of the coin was unsuccessful")
+            throw CoinGeckoExceptionError("Retrieval of history data of the coin was unsuccessful")
         }
     }
 
     suspend fun getLatestPrice(coinId: String): Double {
         return try {
             withTimeout(10_000) {
-                coinGecko.getPrice(coinId, Currency)[coinId]!!.getPrice(Currency)
+                coinGecko.getPrice(coinId, currencyString)[coinId]!!.getPrice(currencyString)
             }
         } catch (e: Exception) {
-            throw CoinGeckoExceptionError("Retrieval of data of the coin was unsuccessful")
+            throw CoinGeckoExceptionError("Retrieval of Latest price of the coin was unsuccessful")
 
         }
     }

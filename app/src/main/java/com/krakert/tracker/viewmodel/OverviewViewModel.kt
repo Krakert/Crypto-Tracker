@@ -1,6 +1,7 @@
 package com.krakert.tracker.viewmodel
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,9 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class OverviewViewModel : ViewModel() {
+class OverviewViewModel(context: Context) : ViewModel() {
     private val fireBaseRepo: FirebaseRepository = FirebaseRepository()
-    private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository()
+    private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository(context)
 
     init {
         getFavoriteCoins()
