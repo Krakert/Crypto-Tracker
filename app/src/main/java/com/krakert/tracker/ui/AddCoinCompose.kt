@@ -5,26 +5,26 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cached
-import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
-import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ListAddCoin(viewModel: AddCoinViewModel, navController: NavHostController) {
+fun ListAddCoin(viewModel: AddCoinViewModel) {
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -80,7 +80,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel
 }
 
 @Composable
-private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?, viewModel: AddCoinViewModel) {
+private fun ShowList(scrollState: ScalingLazyListState, listResult: List<FavoriteCoin>?, viewModel: AddCoinViewModel) {
     val context = LocalContext.current
     ScalingLazyColumn(
         modifier = Modifier
@@ -115,9 +115,9 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
                             )
                         },
                         icon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Phone,
-                                contentDescription = "triggers meditation action",
+                            GlideImage(
+                                imageModel = listResult[index].symbol.toString(),
+                                contentScale = ContentScale.Fit,
                                 modifier = Modifier
                                     .size(24.dp)
                                     .wrapContentSize(align = Alignment.Center)

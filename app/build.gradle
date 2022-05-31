@@ -32,6 +32,9 @@ android {
 }
 
 dependencies {
+    // Compose implementation to load images via glide/coil
+    implementation "com.github.skydoves:landscapist-glide:1.5.2"
+    // Share preference
     implementation 'androidx.preference:preference:1.2.0'
     // Compose Navigation
     implementation 'androidx.wear.compose:compose-navigation:1.0.0-beta02'
