@@ -25,7 +25,7 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.model.Currency
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
@@ -64,7 +64,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
                 Loading()
             }
             is ViewStateOverview.Success -> {
-                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Favorite, viewModel = viewModel, navController = navController)
+                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Coins, viewModel = viewModel, navController = navController)
             }
         }
 
@@ -109,7 +109,7 @@ fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listCoins: List<Coin>?,
+    listCoins: List<FavoriteCoin>?,
     viewModel: OverviewViewModel,
     navController: NavHostController
 ) {
@@ -120,7 +120,7 @@ fun ShowStatsCoins(
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
 
     if (listCoins != null) {
-        viewModel.getAllData(listCoins)
+        viewModel.getAllDataByListCoinIds(listCoins)
     }
 
     ScalingLazyColumn(

@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.repository.FirebaseRepository
 import com.krakert.tracker.state.ViewStateAddCoin
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +27,7 @@ class AddCoinViewModel: ViewModel(){
     val listCoins = _viewState.asStateFlow()
 
     fun getListCoins() = viewModelScope.launch(Dispatchers.IO) {
-        fireBaseRepo.getListCoins().collect { result ->
+        fireBaseRepo.getFavoriteCoins().collect { result ->
             try {
                 if (result.Coins?.size == null) {
                     _viewState.value = ViewStateAddCoin.Empty
@@ -43,7 +43,7 @@ class AddCoinViewModel: ViewModel(){
         }
     }
 
-    fun addCoinToFavoriteCoins(coin: Coin, context: Context) {
+    fun addCoinToFavoriteCoins(coin: FavoriteCoin, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 fireBaseRepo.addCoinToFavoriteCoins(coin, context)

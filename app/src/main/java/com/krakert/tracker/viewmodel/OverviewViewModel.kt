@@ -5,8 +5,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.DataCoin
+import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.repository.CoinGeckoRepository
 import com.krakert.tracker.repository.FirebaseRepository
 import com.krakert.tracker.state.ViewStateDataCoins
@@ -28,14 +28,13 @@ class OverviewViewModel(context: Context) : ViewModel() {
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
 
-
     private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
     val dataCoin = _viewStateDataCoin.asStateFlow()
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         fireBaseRepo.getFavoriteCoins().collect { result ->
             try {
-                if (result.Favorite.isNullOrEmpty()) {
+                if (result.Coins.isNullOrEmpty()) {
                     _viewState.value = ViewStateOverview.Empty
                 } else {
                     _viewState.value = ViewStateOverview.Success(result)
@@ -50,19 +49,19 @@ class OverviewViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun getAllData(listResult: List<Coin>) {
-        val _data = arrayListOf<DataCoin>()
+    fun getAllDataByListCoinIds(listResult: List<FavoriteCoin>) {
+        val data = arrayListOf<DataCoin>()
         viewModelScope.launch {
             try {
                 listResult.forEach { index ->
-                    _data.add(
+                    data.add(
                         DataCoin(
-                            history = coinGeckoRepo.getHistoryCoin(index.idCoin.toString()),
-                            currentPrice = coinGeckoRepo.getLatestPrice(index.idCoin.toString())
+                            history = coinGeckoRepo.getHistoryByCoinId(index.idCoin.toString()),
+                            currentPrice = coinGeckoRepo.getLatestPriceByCoinId(index.idCoin.toString())
                         )
                     )
                 }
-                _viewStateDataCoin.value = ViewStateDataCoins.Success(_data)
+                _viewStateDataCoin.value = ViewStateDataCoins.Success(data)
             } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
                 val errorMsg = "Something went wrong while retrieving data"
 
