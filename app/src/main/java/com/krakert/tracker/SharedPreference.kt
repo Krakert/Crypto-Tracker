@@ -17,7 +17,7 @@ object SharedPreference {
     }
 
     var SharedPreferences.Currency
-        get() = getString(currency, "")
+        get() = getString(currency, "EUR")
         set(value) {
             editMe {
                 it.putString(currency, value)
@@ -25,9 +25,8 @@ object SharedPreference {
         }
 
     var SharedPreferences.AmountDaysTracking
-        get() = getFloat(amountDaysTracking, 0.0F)
+        get() = getFloat(amountDaysTracking, 7.0F)
         set(value) {
-            println(value)
             editMe {
                 it.putFloat(amountDaysTracking, value)
             }

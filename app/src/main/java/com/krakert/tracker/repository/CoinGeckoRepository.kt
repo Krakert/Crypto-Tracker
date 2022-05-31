@@ -24,7 +24,6 @@ class CoinGeckoRepository(context: Context) {
     suspend fun getHistoryByCoinId(coinId: String): MarketChart {
         return try {
             withTimeout(10_000) {
-                println(currencyObject?.nameFull)
                 MarketChart(
                     prices = coinGecko.getCoinMarketChartById(coinId,
                         currencyString,
