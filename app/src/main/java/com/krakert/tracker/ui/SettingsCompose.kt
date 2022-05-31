@@ -100,10 +100,10 @@ fun ListSettings() {
                     toggleControl = {
                         Icon(
                             imageVector = ToggleChipDefaults.switchIcon(checked == index.name),
-                            contentDescription =  null //if (checked) "On" else "Off"
+                            contentDescription =  if (checked == index.name) "On" else "Off"
                         )
                     },
-                    onCheckedChange = { _ ->
+                    onCheckedChange = {
                         checked = index.name
                         println(checked)
                         sharedPreference.Currency = checked

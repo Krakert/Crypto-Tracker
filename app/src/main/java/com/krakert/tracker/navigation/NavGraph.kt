@@ -32,15 +32,13 @@ fun NavGraph() {
             }
             composable(Screen.Add.route) {
                 ListAddCoin(
-                    navController = navController,
                     viewModel = AddCoinViewModel()
                 )
             }
             composable(Screen.Details.route) { backStackEntry ->
                 ShowDetails(
                     coin = backStackEntry.arguments?.getString("coin"),
-                    viewModel = DetailsViewModel(),
-                    navController = navController)
+                    viewModel = DetailsViewModel(context))
             }
             composable(Screen.Settings.route) {
                 ListSettings()
