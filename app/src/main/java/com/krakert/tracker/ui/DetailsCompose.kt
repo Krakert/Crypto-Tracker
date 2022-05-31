@@ -5,6 +5,6 @@ import androidx.navigation.NavHostController
 import com.krakert.tracker.viewmodel.DetailsViewModel
 
 @Composable
-fun ShowDetails(coin: String?, viewModel: DetailsViewModel, navController: NavHostController){
+fun ShowDetails(coin: String?, viewModel: DetailsViewModel){
     println(coin)
 }
