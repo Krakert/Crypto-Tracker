@@ -24,7 +24,7 @@ import com.krakert.tracker.R
 import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
-import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
 
 @Composable
@@ -141,7 +141,7 @@ fun AddChipCoin(favoriteCoin: FavoriteCoin, onClick: () -> Unit) {
 
 @Composable
 fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
-    GlideImage(
+    CoilImage(
         imageModel = url,
         contentScale = ContentScale.Fit,
         modifier = Modifier
