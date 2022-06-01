@@ -5,23 +5,27 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cached
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
+import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
 import com.krakert.tracker.R
 import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.glide.GlideImage
+import com.skydoves.landscapist.palette.BitmapPalette
 
 @Composable
 fun ListAddCoin(viewModel: AddCoinViewModel) {
@@ -100,34 +104,53 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Favorit
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Chip(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        onClick = {
-                            viewModel.addCoinToFavoriteCoins(listResult[index], context)
-                        },
-                        label = {
-                            Text(
-                                text = listResult[index].name.toString(),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        icon = {
-                            GlideImage(
-                                imageModel = listResult[index].symbol.toString(),
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .wrapContentSize(align = Alignment.Center)
-                            )
-                        },
-                    )
+                    AddChipCoin(listResult[index]){
+                        viewModel.addCoinToFavoriteCoins(listResult[index], context)
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+fun AddChipCoin(favoriteCoin: FavoriteCoin, onClick: () -> Unit) {
+    var palette by remember { mutableStateOf<Palette?>(null) }
+    Chip(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        colors = gradientBackgroundChipColors(
+            startBackgroundColor = Color(palette?.lightVibrantSwatch?.rgb ?: 0).copy(alpha = 0.5f),
+            endBackgroundColor = MaterialTheme.colors.surface,
+            gradientDirection = LayoutDirection.Ltr
+        ),
+        icon = {
+            LoadImage(url = favoriteCoin.symbol.toString(), onPaletteAvailable = { palette = it })
+        },
+        onClick = { onClick() },
+        label = {
+            Text(
+                text = favoriteCoin.name.toString(),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+    )
+}
+
+@Composable
+fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
+    GlideImage(
+        imageModel = url,
+        contentScale = ContentScale.Fit,
+        modifier = Modifier
+            .size(24.dp)
+            .wrapContentSize(align = Alignment.Center),
+        bitmapPalette = BitmapPalette {
+            onPaletteAvailable(it)
+        }
+    )
 }
 
 @Composable
