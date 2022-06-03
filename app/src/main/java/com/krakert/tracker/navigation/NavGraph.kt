@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
+import com.krakert.tracker.model.Coin
 import com.krakert.tracker.theme.WearAppTheme
 import com.krakert.tracker.ui.ListAddCoin
 import com.krakert.tracker.ui.ListOverview
@@ -35,10 +36,16 @@ fun NavGraph() {
                     viewModel = AddCoinViewModel()
                 )
             }
-            composable(Screen.Details.route) { backStackEntry ->
+            composable(Screen.Details.route) {
+                val result = navController.previousBackStackEntry?.savedStateHandle?.get<Coin>("Coin")
                 ShowDetails(
-                    coin = backStackEntry.arguments?.getString("coin"),
-                    viewModel = DetailsViewModel(context))
+                    coin = result,
+                    viewModel = DetailsViewModel(
+                        context = context,
+                        coin = result
+                    ),
+                    navController = navController
+                )
             }
             composable(Screen.Settings.route) {
                 ListSettings()

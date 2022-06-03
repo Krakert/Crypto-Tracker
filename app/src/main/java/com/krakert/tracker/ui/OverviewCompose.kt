@@ -127,20 +127,24 @@ fun ShowStatsCoins(
         state = scrollState
     ) {
         // For each index in my favorites
-        listCoins.Coins?.size?.let {
+        listCoins.Favorite?.size?.let {
             items(it) { index ->
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(
                             onClick = {
-                                navController.navigate("details_coin/${listCoins.Coins[index].idCoin}")
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    key = "Coin",
+                                    value = listCoins.Favorite[index]
+                                )
+                                navController.navigate(Screen.Details.route)
                             }
                         )
                 ) {
                     CenterElement {
                         Text(
-                            text = listCoins.Coins[index].id.toString(),
+                            text = listCoins.Favorite[index].id.toString(),
                             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
@@ -219,8 +223,9 @@ fun ShowStatsCoins(
                                     )
                                 }
                                 Text(text = buildString {
-                                    append(dataCoins.data[index].currentPrice.toString())
-                                        .append(" ").append(currencyObject?.nameFull)
+                                    append(currencyObject?.nameFull?.get(1))
+                                        .append(" ")
+                                        .append(dataCoins.data[index].currentPrice.toString())
                                 })
                             }
                         }
