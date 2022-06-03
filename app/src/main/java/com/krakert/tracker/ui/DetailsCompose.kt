@@ -2,10 +2,13 @@ package com.krakert.tracker.ui
 
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.rounded.Cached
@@ -14,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -142,6 +146,21 @@ fun ShowDetailsCoins(
                 )
             }
         }
+        item { Divider() }
+        item {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                CenterElement {
+                    Text(
+                        text = stringResource(R.string.txt_latest_price),
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp,
+                        color = themeValues[0].colors.secondary
+                    )
+                }
+            }
+        }
         item {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -161,6 +180,7 @@ fun ShowDetailsCoins(
                 }
             }
         }
+        item { Divider() }
         item {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -188,6 +208,7 @@ fun ShowDetailsCoins(
                 }
             }
         }
+        item { Divider() }
         item {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -225,6 +246,7 @@ fun ShowDetailsCoins(
                 )
             }
         }
+        item { Divider() }
         item {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -278,12 +300,12 @@ fun ShowDetailsCoins(
                 }
             }
         }
+        item { Divider() }
         item {
             CenterElement {
                 IconButton(
-                    Modifier
-                        .size(ButtonDefaults.LargeButtonSize)
-                        .padding(top = 8.dp), Icons.Rounded.Delete
+                    Modifier.size(ButtonDefaults.LargeButtonSize),
+                    Icons.Rounded.Delete
                 ) {
                     if (coin != null) {
                         viewModel.removeCoinFromFavoriteCoins(coin = coin, context = context)
@@ -298,8 +320,26 @@ fun ShowDetailsCoins(
             }
         }
     }
-
 }
+
+@Composable
+fun Divider() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 8.dp)
+    ) {
+        CenterElement {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(color = Color.Gray)
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun ShowIncorrectState(
@@ -333,15 +373,15 @@ private fun addIcon(value: Double): Map<String, InlineTextContent> {
             myId,
             InlineTextContent(
                 Placeholder(
-                    width = 20.sp,
-                    height = 20.sp,
-                    placeholderVerticalAlign = PlaceholderVerticalAlign.AboveBaseline
+                    width = 24.sp,
+                    height = 24.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
                 )
             ) {
                 if (value > 0.0) {
-                    Icon(Icons.Filled.ExpandLess, "", tint = MaterialTheme.colors.primaryVariant)
+                    Icon(Icons.Filled.ArrowDropUp, "", tint = MaterialTheme.colors.primaryVariant)
                 } else {
-                    Icon(Icons.Filled.ExpandMore, "", tint = MaterialTheme.colors.secondaryVariant)
+                    Icon(Icons.Filled.ArrowDropDown, "", tint = MaterialTheme.colors.secondaryVariant)
                 }
             }
         )

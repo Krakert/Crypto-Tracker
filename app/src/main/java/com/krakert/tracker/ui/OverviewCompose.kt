@@ -145,7 +145,7 @@ fun ShowStatsCoins(
                     CenterElement {
                         Text(
                             text = listCoins.Favorite[index].id.toString(),
-                            modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
+                            modifier = Modifier.padding(bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
                         )
@@ -227,6 +227,7 @@ fun ShowStatsCoins(
                                         .append(" ")
                                         .append(dataCoins.data[index].currentPrice.toString())
                                 })
+                                Divider()
                             }
                         }
                     }
@@ -238,7 +239,7 @@ fun ShowStatsCoins(
             Row(modifier = Modifier.fillMaxSize()) {
                 CenterElement {
                     Text(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 16.dp),
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
                         text = stringResource(R.string.txt_add_more_change_settings),
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center

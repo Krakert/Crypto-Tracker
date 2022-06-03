@@ -14,5 +14,6 @@
     <string name="txt_price_change_percentage_7d">7D %</string>
     <string name="txt_details_remove_coin">Remove this coin from your favorites</string>
     <string name="txt_coin_remove">Removed %1$s from favorites</string>
+    <string name="txt_latest_price">Latest price</string>
 
 </resources>
