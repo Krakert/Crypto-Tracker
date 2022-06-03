@@ -21,7 +21,7 @@ import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
 import com.krakert.tracker.R
-import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.model.Coin
 import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage
@@ -84,7 +84,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel
 }
 
 @Composable
-private fun ShowList(scrollState: ScalingLazyListState, listResult: List<FavoriteCoin>?, viewModel: AddCoinViewModel) {
+private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?, viewModel: AddCoinViewModel) {
     val context = LocalContext.current
     ScalingLazyColumn(
         modifier = Modifier
@@ -114,7 +114,7 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Favorit
 }
 
 @Composable
-fun AddChipCoin(favoriteCoin: FavoriteCoin, onClick: () -> Unit) {
+fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
     var palette by remember { mutableStateOf<Palette?>(null) }
     Chip(
         modifier = Modifier
@@ -126,12 +126,12 @@ fun AddChipCoin(favoriteCoin: FavoriteCoin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = favoriteCoin.symbol.toString(), onPaletteAvailable = { palette = it })
+            LoadImage(url = coin.symbol.toString(), onPaletteAvailable = { palette = it })
         },
         onClick = { onClick() },
         label = {
             Text(
-                text = favoriteCoin.name.toString(),
+                text = coin.name.toString(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -156,7 +156,7 @@ fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
 @Composable
 fun Loading() {
     CenterElement {
-        CircularProgressIndicator(modifier = Modifier.size(75.dp))
+        CircularProgressIndicator(modifier = Modifier.size(55.dp))
     }
 }
 

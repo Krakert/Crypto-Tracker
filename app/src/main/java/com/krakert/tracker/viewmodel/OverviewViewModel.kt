@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.model.DataCoin
-import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.model.FavoriteCoins
 import com.krakert.tracker.repository.CoinGeckoRepository
 import com.krakert.tracker.repository.FirebaseRepository
 import com.krakert.tracker.state.ViewStateDataCoins
@@ -49,11 +49,11 @@ class OverviewViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun getAllDataByListCoinIds(listResult: List<FavoriteCoin>) {
+    fun getAllDataByListCoinIds(listResult: FavoriteCoins) {
         val data = arrayListOf<DataCoin>()
         viewModelScope.launch {
             try {
-                listResult.forEach { index ->
+                listResult.Coins?.forEach { index ->
                     data.add(
                         DataCoin(
                             history = coinGeckoRepo.getHistoryByCoinId(index.idCoin.toString()),

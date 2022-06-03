@@ -25,8 +25,8 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.model.FavoriteCoin
 import com.krakert.tracker.model.Currency
+import com.krakert.tracker.model.FavoriteCoins
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
@@ -54,18 +54,10 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
         }
     ) {
         when (val listResult = viewModel.favoriteCoins.collectAsState().value) {
-            is ViewStateOverview.Empty -> {
-                ShowEmptyState(R.string.txt_empty_overview, navController)
-            }
-            is ViewStateOverview.Error -> {
-                ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            }
-            ViewStateOverview.Loading -> {
-                Loading()
-            }
-            is ViewStateOverview.Success -> {
-                ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite.Coins, viewModel = viewModel, navController = navController)
-            }
+            ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
+            is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
+            ViewStateOverview.Loading -> Loading()
+            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite, viewModel = viewModel, navController = navController)
         }
 
     }
@@ -88,7 +80,7 @@ fun ShowEmptyState(@StringRes text: Int, navController: NavHostController) {
 }
 
 @Composable
-fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
+private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
     val context = LocalContext.current
     CenterElement {
         IconButton(
@@ -109,7 +101,7 @@ fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listCoins: List<FavoriteCoin>?,
+    listCoins: FavoriteCoins,
     viewModel: OverviewViewModel,
     navController: NavHostController
 ) {
@@ -119,9 +111,7 @@ fun ShowStatsCoins(
     val sharedPreference = SharedPreference.sharedPreference(context = context)
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
 
-    if (listCoins != null) {
-        viewModel.getAllDataByListCoinIds(listCoins)
-    }
+    viewModel.getAllDataByListCoinIds(listCoins)
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -137,21 +127,20 @@ fun ShowStatsCoins(
         state = scrollState
     ) {
         // For each index in my favorites
-        listCoins?.size?.let {
+        listCoins.Coins?.size?.let {
             items(it) { index ->
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(
                             onClick = {
-                                println(listCoins[index])
-                                navController.navigate("details_coin/${listCoins[index].idCoin}")
+                                navController.navigate("details_coin/${listCoins.Coins[index].idCoin}")
                             }
                         )
                 ) {
                     CenterElement {
                         Text(
-                            text = listCoins[index].id.toString(),
+                            text = listCoins.Coins[index].id.toString(),
                             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
@@ -258,19 +247,18 @@ fun ShowStatsCoins(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                    IconButton(
-                        Modifier.size(ButtonDefaults.LargeButtonSize),
-                        Icons.Rounded.PlusOne
-                    ) {
-                        navController.navigate(Screen.Add.route)
-                    }
-                    IconButton(
-                        Modifier.size(ButtonDefaults.LargeButtonSize),
-                        Icons.Rounded.Settings
-                    ) {
-                        navController.navigate(Screen.Settings.route)
-                    }
-//                }
+                IconButton(
+                    Modifier.size(ButtonDefaults.LargeButtonSize),
+                    Icons.Rounded.PlusOne
+                ) {
+                    navController.navigate(Screen.Add.route)
+                }
+                IconButton(
+                    Modifier.size(ButtonDefaults.LargeButtonSize),
+                    Icons.Rounded.Settings
+                ) {
+                    navController.navigate(Screen.Settings.route)
+                }
             }
         }
     }

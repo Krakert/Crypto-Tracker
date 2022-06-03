@@ -1,5 +1,6 @@
 package com.krakert.tracker.state
 
+import com.krakert.tracker.model.Coins
 import com.krakert.tracker.model.DataCoin
 import com.krakert.tracker.model.DataDetailsCoin
 import com.krakert.tracker.model.FavoriteCoins
@@ -8,7 +9,7 @@ sealed class ViewStateAddCoin {
     // Represents different states for the ListCoins screen
     object Empty : ViewStateAddCoin()
     object Loading : ViewStateAddCoin()
-    data class Success(val coins: FavoriteCoins) : ViewStateAddCoin()
+    data class Success(val coins: Coins) : ViewStateAddCoin()
     data class Error(val exception: Throwable) : ViewStateAddCoin()
 }
 
@@ -27,6 +28,7 @@ sealed class ViewStateDataCoins {
 }
 
 sealed class ViewStateDetailsCoins {
+    object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()
     data class Success(val details: DataDetailsCoin) : ViewStateDetailsCoins()
     data class Error(val exception: Throwable) : ViewStateDetailsCoins()

@@ -5,7 +5,8 @@ import android.widget.Toast
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.krakert.tracker.R
-import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.model.Coin
+import com.krakert.tracker.model.Coins
 import com.krakert.tracker.model.FavoriteCoins
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -18,10 +19,23 @@ class FirebaseRepository {
     private var documentFavorite = firestore.collection("Tracker").document("LhLiwEToSjCp5CfuQ6BB")
 
 
-    suspend fun getFavoriteCoins(): Flow<FavoriteCoins> {
+    suspend fun getListCoins(): Flow<Coins> {
         return try {
             withTimeout(10_000) {
                 val result = documentCoins.get().await()
+                flow {
+                    result.toObject(Coins::class.java)?.let { emit(it) }
+                }
+            }
+        } catch (e: Exception) {
+            throw FireBaseExceptionError("Retrieval firebase was unsuccessful")
+        }
+    }
+
+    suspend fun getFavoriteCoins(): Flow<FavoriteCoins> {
+        return try {
+            withTimeout(10_000) {
+                val result = documentFavorite.get().await()
                 flow {
                     result.toObject(FavoriteCoins::class.java)?.let { emit(it) }
                 }
@@ -31,7 +45,7 @@ class FirebaseRepository {
         }
     }
 
-    suspend fun addCoinToFavoriteCoins(coinId: FavoriteCoin, context: Context) {
+    suspend fun addCoinToFavoriteCoins(coinId: Coin, context: Context) {
         try {
             withTimeout(10_000) {
                 documentFavorite.update("Favorite", FieldValue.arrayUnion(coinId)).addOnCompleteListener {
