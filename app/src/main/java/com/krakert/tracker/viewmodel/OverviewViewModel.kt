@@ -34,7 +34,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         fireBaseRepo.getFavoriteCoins().collect { result ->
             try {
-                if (result.Coins.isNullOrEmpty()) {
+                if (result.Favorite.isNullOrEmpty()) {
                     _viewState.value = ViewStateOverview.Empty
                 } else {
                     _viewState.value = ViewStateOverview.Success(result)
@@ -53,7 +53,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
         val data = arrayListOf<DataCoin>()
         viewModelScope.launch {
             try {
-                listResult.Coins?.forEach { index ->
+                listResult.Favorite?.forEach { index ->
                     data.add(
                         DataCoin(
                             history = coinGeckoRepo.getHistoryByCoinId(index.idCoin.toString()),

@@ -7,5 +7,12 @@
     <string name="txt_add_coin">Add a coin</string>
     <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
     <string name="txt_coin_added">Added %1$s to favorites</string>
+    <string name="txt_details_circulation">Circulation</string>
+    <string name="txt_details_max_min">Max Min (24H)</string>
+    <string name="txt_details_market_cap">Market Cap</string>
+    <string name="txt_price_change_percentage_24h">24H %</string>
+    <string name="txt_price_change_percentage_7d">7D %</string>
+    <string name="txt_details_remove_coin">Remove this coin from your favorites</string>
+    <string name="txt_coin_remove">Removed %1$s from favorites</string>
 
 </resources>

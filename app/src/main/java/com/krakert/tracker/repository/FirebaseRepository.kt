@@ -59,6 +59,20 @@ class FirebaseRepository {
         }
     }
 
+    suspend fun removeCoinFromFavoriteCoins(coinId: Coin, context: Context) {
+        try {
+            withTimeout(10_000) {
+                documentFavorite.update("Favorite", FieldValue.arrayRemove(coinId)).addOnCompleteListener {
+                    if (it.isSuccessful){
+                        Toast.makeText(context, context.getString(R.string.txt_coin_remove, coinId.id), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw FireBaseExceptionError("Could not add the coin to favorites")
+        }
+    }
+
     inner class FireBaseExceptionError(message: String) : Exception(message)
 
 
