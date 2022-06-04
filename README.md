@@ -1,8 +1,86 @@
-# Final Product
+# ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/app/src/main/res/mipmap-hdpi/ic_launcher.png) Capstone project crypto Tracker
+
+# 🏁 Final Product (05-06) V1.0 "Welcome little guy"
+| feature set                                     | State | Note |
+|---                                              |---    |---   |
+Track the current price of a crypto coin          | ✔️    | With the use of the Coin Gecko API              |
+Add coins to keep track of                        | ✔️    | 
+Detailed screen with statistics of selected coin  | ✔️    |
+Option to set a coin as a favourite for the Tile  | ✔️    | Is will be the coin that should be on the Tile  |
+Show quick statistics on a Tile                   | ❌    | Making a tile is nothing like Compose           |
+Remove a coin for the tracking list               | ✔️    | 
+Show a chart of the price history                 | ✔️    | 
+Option to change the currency                     | ✔️    | Done with SharedPreferences                     |
+Optional to set the history dept in days          | ✔️    | Done with SharedPreferences                     |
+Option to change styling of the app               | ❌    | 
+Per devices a collection in FireStore             | ❌    | 
+Optimized API call                                | ❌    | In need of a new API for the project            |
+
+See the GIF below for a short overview of the final (for now) product.\
 ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone.gif)
 
+# 📲 Download APK 
 
-# ⌚ About the capstone
+## ![version V1.0 "Welcome little guy"](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/blob/main/Crypto_Tracker_V1.0.apk)
+
+see the release for more information and release notes per verion:
+### ![Releases](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
+
+# 🔜 What is next
+The app still is missing a Tile, so that is the first thing that needs work.
+
+Furthermore the CoinGecko API is oke, but the need of API that can handle a list of coin is high. Now for each coin the app makes about 2/3 calls. And when the users has a bunch of coin in their app, the amount of API calls grows very quickly.
+
+The app has been tested on a single device, but when the app is used by multble user, there is no way yet to keep track of a separate list of "favorite coins" per device, so that every device can have a unique list.
+
+Rolling the app out into the app store.
+
+# 🛠 Built With
+
+- [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android
+  development.
+- [Jetpack Compose](https://developer.android.com/jetpack/compose) - Jetpack Compose is Android’s
+  modern toolkit for building native UI.
+- [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - A coroutine is a
+  concurrency design pattern that you can use on Android to simplify code that executes
+  asynchronously.
+- [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
+  version of a Sequence, a type of collection whose values are lazily produced.
+- [Firebase](https://firebase.google.com/) - Firebase is an app development platform that helps you build and grow apps users love. Backed by Google and trusted by millions of businesses.
+- [CoinGecko Kotlin](https://github.com/DrewCarlson/CoinGecko-Kotlin) - Multiplatform Kotlin wrapper for the CoinGecko API using Ktor.
+- [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) -
+  Collection of libraries that help you design robust, testable, and maintainable apps.
+    - [Stateflow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) - StateFlow is
+      a state-holder observable flow that emits the current and new state updates to its collectors.
+    - [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
+      version of a Sequence, a type of collection whose values are lazily produced.
+    - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores
+      UI-related data that isn"t destroyed on UI changes.
+    - [Jetpack Compose Navigation](https://developer.android.com/jetpack/compose/navigation) - The
+      Navigation component provides support for Jetpack Compose applications.
+- [Material Components for Android](https://github.com/material-components/material-components-android)
+    - Modular and customizable Material Design UI components for Android.
+- [Figma](https://figma.com/) - Figma is a vector graphics editor and prototyping tool which is
+  primarily web-based.
+
+
+# 📦 Package Structure
+ ```
+com.krakert.tracker
+├── model                 # Model class for [Coins], [Coin] & [Favorite]
+├── navigation            # For navigation handling
+├── repository            # Used to handle all data operations
+├── state                 # State class to handle state of the data
+├── theme                 # Theme setup for this app
+├── tile                  # Tile and custom repository for it
+├── ui                    # All composables screens root folder
+├── viewmodel             # ViewModels 
+├── SharedPreference.kt   # SharedPreference to save user settings
+└── MainActivity.kt       # MainActivity 
+```
+
+
+# ⌚ About the capstone (idea)
 For the capstone, I'm going to create an app that can display crypto statistics. During the IoT theme semester I made a similar application, only this one was not for mobile. So now I'm going to recreate this for Android. Furthermore, the app will be a complete stand-alone app for Wear OS to challenge myself.
 
 ## Make
@@ -31,49 +109,6 @@ Tiles provide easy access to the information and actions users need to get thing
 |---	|---	|--- |---
 |  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-1.png)    |  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-2.png)    |   ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-4.png) | ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-3.png)    
 
-# 🛠 Built With
-
-- [Kotlin](https://kotlinlang.org/) - First class and official programming language for Android
-  development.
-- [Jetpack Compose](https://developer.android.com/jetpack/compose) - Jetpack Compose is Android’s
-  modern toolkit for building native UI.
-- [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html) - A coroutine is a
-  concurrency design pattern that you can use on Android to simplify code that executes
-  asynchronously.
-- [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
-  version of a Sequence, a type of collection whose values are lazily produced.
-- [Android Architecture Components](https://developer.android.com/topic/libraries/architecture) -
-  Collection of libraries that help you design robust, testable, and maintainable apps.
-    - [Stateflow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) - StateFlow is
-      a state-holder observable flow that emits the current and new state updates to its collectors.
-    - [Flow](https://kotlinlang.org/docs/reference/coroutines/flow.html) - A flow is an asynchronous
-      version of a Sequence, a type of collection whose values are lazily produced.
-    - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores
-      UI-related data that isn"t destroyed on UI changes.
-    - [Jetpack Compose Navigation](https://developer.android.com/jetpack/compose/navigation) - The
-      Navigation component provides support for Jetpack Compose applications.
-    - [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) - Jetpack
-      DataStore is a data storage solution that allows you to store key-value pairs or typed objects
-      with protocol buffers. DataStore uses Kotlin coroutines and Flow to store data asynchronously,
-      consistently, and transactionally.
-- [Material Components for Android](https://github.com/material-components/material-components-android)
-    - Modular and customizable Material Design UI components for Android.
-- [Figma](https://figma.com/) - Figma is a vector graphics editor and prototyping tool which is
-  primarily web-based.
-
-
-# 📦 Package Structure
- ```
-com.krakert.tracker
-├── model               # Model class for [Coins], [Coin] & [Favorite]
-├── navigation          # For navigation handling
-├── repository          # Used to handle all data operations
-├── state               # State class to handle state of the data
-├── theme               # Theme setup for this app
-├── ui                  # All composables screens root folder
-├── viewmodel           # ViewModels 
-└── MainActivity.kt     # MainActivity 
-```
 # 🪲 Connect watch to debugger
 
 - On the phone, open the Wear OS companion app.
