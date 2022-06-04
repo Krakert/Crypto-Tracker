@@ -1,16 +1,21 @@
 package com.krakert.tracker.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.*
+import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
+import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.sharedPreference
 import com.krakert.tracker.model.Currency
 
@@ -44,7 +49,7 @@ fun ListSettings() {
                         bottom = 8.dp,
                         top = 16.dp
                     ),
-                    text = "Chart time span in days",
+                    text = stringResource(R.string.txt_settings_chart_length),
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
                 )
@@ -74,6 +79,7 @@ fun ListSettings() {
                 )
             }
         }
+        item { Divider() }
         item {
             CenterElement {
                 Text(
@@ -82,7 +88,7 @@ fun ListSettings() {
                         end = 8.dp,
                         bottom = 8.dp
                     ),
-                    text = "Select your currency",
+                    text = stringResource(R.string.txt_settings_set_currency),
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
                 )
@@ -117,6 +123,24 @@ fun ListSettings() {
                     }
                 )
 
+            }
+        }
+        item { Divider() }
+        item {
+            CenterElement {
+                Text(
+                    text = stringResource(R.string.txt_settings_reset),
+                    modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                    textAlign = TextAlign.Center,
+                )
+                IconButton(
+                    Modifier.size(ButtonDefaults.LargeButtonSize),
+                    Icons.Rounded.RestartAlt
+                ) {
+                    sharedPreference.Currency = "EUR"
+                    sharedPreference.FavoriteCoin = ""
+                    sharedPreference.AmountDaysTracking = 7.0F
+                }
             }
         }
     }

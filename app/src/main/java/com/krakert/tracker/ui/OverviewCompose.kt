@@ -6,7 +6,12 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Settings
@@ -17,6 +22,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -25,6 +33,7 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
+import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.model.Currency
 import com.krakert.tracker.model.FavoriteCoins
 import com.krakert.tracker.navigation.Screen
@@ -110,6 +119,7 @@ fun ShowStatsCoins(
     val context = LocalContext.current
     val sharedPreference = SharedPreference.sharedPreference(context = context)
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
+    val favoriteCoin = sharedPreference.FavoriteCoin
 
     viewModel.getAllDataByListCoinIds(listCoins)
 
@@ -143,12 +153,23 @@ fun ShowStatsCoins(
                         )
                 ) {
                     CenterElement {
-                        Text(
-                            text = listCoins.Favorite[index].id.toString(),
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                        )
+                        if (favoriteCoin == listCoins.Favorite[index].idCoin.toString()) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(listCoins.Favorite[index].id.toString())
+                                    appendInlineContent("inlineContent", "[icon]")
+                                },
+                                fontSize = 20.sp,
+                                inlineContent = addIconFavorite()
+                            )
+                        } else {
+                            Text(
+                                text = listCoins.Favorite[index].id.toString(),
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                            )
+                        }
                         // Here I load the data needed for the graph
                         when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
                             is ViewStateDataCoins.Error -> {
@@ -275,4 +296,24 @@ fun med(list: List<Float>) = list.sorted().let {
         (it[it.size / 2] + it[(it.size - 1) / 2]) / 2
     else
         it[it.size / 2]
+}
+
+private fun addIconFavorite(): Map<String, InlineTextContent> {
+    val myId = "inlineContent"
+
+    val inlineContent = mapOf(
+        Pair(
+            myId,
+            InlineTextContent(
+                Placeholder(
+                    width = 16.sp,
+                    height = 16.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                )
+            ) {
+                    Icon(Icons.Filled.Star, "", tint = MaterialTheme.colors.secondaryVariant)
+            }
+        )
+    )
+    return inlineContent
 }

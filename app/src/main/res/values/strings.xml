@@ -12,8 +12,11 @@
     <string name="txt_details_market_cap">Market Cap</string>
     <string name="txt_price_change_percentage_24h">24H %</string>
     <string name="txt_price_change_percentage_7d">7D %</string>
-    <string name="txt_details_remove_coin">Remove this coin from your favorites</string>
     <string name="txt_coin_remove">Removed %1$s from favorites</string>
     <string name="txt_latest_price">Latest price</string>
+    <string name="txt_details_remove_set">Remove this coin from the list, or set it to the Tile</string>
+    <string name="txt_settings_reset">Reset the app to the default</string>
+    <string name="txt_settings_set_currency">Select your currency</string>
+    <string name="txt_settings_chart_length">Chart time span in days</string>
 
 </resources>

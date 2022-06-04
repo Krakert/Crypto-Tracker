@@ -20,8 +20,7 @@ class CoinGeckoRepository(context: Context) {
 
     private val sharedPreference = SharedPreference.sharedPreference(context = context)
     private val daysOfTracking = sharedPreference.AmountDaysTracking.toDouble()
-    private val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
-    private val currencyString = currencyObject.toString().lowercase(Locale.getDefault())
+    private val currencyString = sharedPreference.Currency?.let { Currency.valueOf(it) }.toString().lowercase(Locale.getDefault())
 
     suspend fun getHistoryByCoinId(coinId: String): MarketChart {
         return try {
@@ -75,5 +74,5 @@ class CoinGeckoRepository(context: Context) {
         }
     }
 
-    inner class CoinGeckoExceptionError(message: String) : Exception(message)
+    class CoinGeckoExceptionError(message: String) : Exception(message)
 }

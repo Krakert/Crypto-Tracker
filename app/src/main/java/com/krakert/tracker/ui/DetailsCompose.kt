@@ -9,10 +9,7 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.rounded.Cached
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -33,6 +30,7 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
+import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.Currency
 import com.krakert.tracker.navigation.Screen
@@ -124,12 +122,7 @@ fun ShowDetailsCoins(
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(
-                            String.format(
-                                "%4.2f",
-                                detailsCoins.details.priceChangePercentage24h
-                            )
-                        )
+                        append(String.format("%4.2f", detailsCoins.details.priceChangePercentage24h))
                         appendInlineContent("inlineContent", "[icon]")
                     },
                     fontSize = 20.sp,
@@ -303,6 +296,18 @@ fun ShowDetailsCoins(
         item { Divider() }
         item {
             CenterElement {
+                Text(
+                    text = stringResource(R.string.txt_details_remove_set),
+                    modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        item {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 IconButton(
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.Delete
@@ -312,11 +317,14 @@ fun ShowDetailsCoins(
                         navController.navigate(Screen.Overview.route)
                     }
                 }
-                Text(
-                    text = stringResource(R.string.txt_details_remove_coin),
-                    modifier = Modifier.padding(top = 8.dp),
-                    textAlign = TextAlign.Center,
-                )
+                IconButton(
+                    Modifier.size(ButtonDefaults.LargeButtonSize),
+                    Icons.Rounded.Star
+                ) {
+                    if (coin != null) {
+                        sharedPreference.FavoriteCoin = coin.idCoin
+                    }
+                }
             }
         }
     }
