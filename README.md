@@ -1,5 +1,5 @@
 # Final Product
-![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/blob/main/design/Capstone.gif)
+![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone.gif)
 
 
 # ⌚ About the capstone
