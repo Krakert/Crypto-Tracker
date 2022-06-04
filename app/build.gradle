@@ -33,6 +33,16 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.core:core-ktx:1.7.0'
+    // General Wear functionality
+    implementation 'androidx.wear:wear:1.2.0'
+    // Tiles functionality
+    implementation "androidx.wear.tiles:tiles:1.0.0"
+    // Preview Tiles in an Activity for testing purposes
+    debugImplementation "androidx.wear.tiles:tiles-renderer:1.0.0"
+    // Helper library for transforming coroutines to ListenableFutures
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.5.2'
+
     // Compose implementation to load images via coil
     implementation "com.github.skydoves:landscapist-coil:1.5.2"
     // Share preference
@@ -67,8 +77,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-
-
-
+    debugImplementation "androidx.wear.tiles:tiles-renderer:1.0.1"
 
 }
