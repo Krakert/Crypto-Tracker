@@ -1,3 +1,7 @@
+# Final Product
+![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone.gif)
+
+
 # ⌚ About the capstone
 For the capstone, I'm going to create an app that can display crypto statistics. During the IoT theme semester I made a similar application, only this one was not for mobile. So now I'm going to recreate this for Android. Furthermore, the app will be a complete stand-alone app for Wear OS to challenge myself.
 
