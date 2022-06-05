@@ -1,3 +1,4 @@
+[![Latest Release](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/badges/release.svg)](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
 # ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/app/src/main/res/mipmap-hdpi/ic_launcher.png) Capstone project crypto Tracker
 
 # 🏁 Final Product (05-06) V1.0 "Welcome little guy"
