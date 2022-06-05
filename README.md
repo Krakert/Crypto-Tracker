@@ -22,7 +22,7 @@ See the GIF below for a short overview of the final (for now) product.\
 
 # 📲 Download APK 
 
-## ![version V1.0 "Welcome little guy"](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/blob/main/Crypto_Tracker_V1.0.apk)
+## ![V1.1 "somebody toucha my spaghet"](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/APK/Crypto_Tracker_V1.1.apk?inline=false)
 
 see the release for more information and release notes per version:
 ### ![Releases](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
