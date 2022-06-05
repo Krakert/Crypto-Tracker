@@ -17,7 +17,7 @@ variables:
 
   # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
   # It should match buildToolsVersion.
-  ANDROID_BUILD_TOOLS: "29.0.3"
+  ANDROID_BUILD_TOOLS: "32.1.0-rc1"
 
   # It's what version of the command line tools we're going to download from the official site.
   # Official Site-> https://developer.android.com/studio/index.html
