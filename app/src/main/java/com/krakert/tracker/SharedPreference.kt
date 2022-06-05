@@ -2,13 +2,13 @@ package com.krakert.tracker
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.provider.Settings.Global.getString
 import androidx.preference.PreferenceManager
 
 object SharedPreference {
     private const val currency = "CURRENCY"
     private const val amountDaysTracking = "DAY_TRACKING"
     private const val favoriteCoin = "FAVORITE_COIN"
+    private const val favoriteCoins = "FAVORITE_COINS"
 
     fun sharedPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -37,9 +37,16 @@ object SharedPreference {
     var SharedPreferences.FavoriteCoin
         get() = getString(favoriteCoin, "")
         set(value) {
-            println(value)
             editMe {
                 it.putString(favoriteCoin, value)
+            }
+        }
+
+    var SharedPreferences.FavoriteCoins
+        get() = getString(favoriteCoins, "")
+        set(value) {
+            editMe {
+                it.putString(favoriteCoins, value)
             }
         }
 

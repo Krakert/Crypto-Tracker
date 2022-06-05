@@ -1,9 +1,6 @@
 package com.krakert.tracker.state
 
-import com.krakert.tracker.model.Coins
-import com.krakert.tracker.model.DataCoin
-import com.krakert.tracker.model.DataDetailsCoin
-import com.krakert.tracker.model.FavoriteCoins
+import com.krakert.tracker.model.*
 
 sealed class ViewStateAddCoin {
     // Represents different states for the ListCoins screen
@@ -17,7 +14,7 @@ sealed class ViewStateOverview {
     // Represents different states for the ListCoins screen
     object Empty : ViewStateOverview()
     object Loading : ViewStateOverview()
-    data class Success(val favorite: FavoriteCoins) : ViewStateOverview()
+    data class Success(val favorite: ArrayList<Coin>) : ViewStateOverview()
     data class Error(val exception: Throwable) : ViewStateOverview()
 }
 

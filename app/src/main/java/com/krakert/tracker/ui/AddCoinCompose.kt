@@ -105,7 +105,7 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     AddChipCoin(listResult[index]){
-                        viewModel.addCoinToFavoriteCoins(listResult[index], context)
+                        viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
                     }
                 }
             }

@@ -33,7 +33,9 @@ fun NavGraph() {
             }
             composable(Screen.Add.route) {
                 ListAddCoin(
-                    viewModel = AddCoinViewModel()
+                    viewModel = AddCoinViewModel(
+                        context = context
+                    )
                 )
             }
             composable(Screen.Details.route) {

@@ -23,7 +23,7 @@ See the GIF below for a short overview of the final (for now) product.\
 
 ## ![version V1.0 "Welcome little guy"](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/blob/main/Crypto_Tracker_V1.0.apk)
 
-see the release for more information and release notes per verion:
+see the release for more information and release notes per version:
 ### ![Releases](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
 
 # 🔜 What is next
@@ -31,7 +31,7 @@ The app still is missing a Tile, so that is the first thing that needs work.
 
 Furthermore the CoinGecko API is oke, but the need of API that can handle a list of coin is high. Now for each coin the app makes about 2/3 calls. And when the users has a bunch of coin in their app, the amount of API calls grows very quickly.
 
-The app has been tested on a single device, but when the app is used by multble user, there is no way yet to keep track of a separate list of "favorite coins" per device, so that every device can have a unique list.
+The app has been tested on a single device, but when the app is used by multiple user, there is no way yet to keep track of a separate list of "favorite coins" per device, so that every device can have a unique list.
 
 Rolling the app out into the app store.
 
@@ -137,7 +137,7 @@ Target: connected
 The watch is now connected to the debugger and you're ready to start debugging.
 
 
-When you debug a watch using Bluetooth, adb alway uses the IP address `127.0.0.1` plus the port that you assigned. In this example, the port is 4444. All adb commands use the following format:
+When you debug a watch using Bluetooth, adb always uses the IP address `127.0.0.1` plus the port that you assigned. In this example, the port is 4444. All adb commands use the following format:
 ```
 adb -s 127.0.0.1:4444 <command> 
 ```

@@ -1,22 +1,23 @@
 <resources>
     <string name="app_name">Crypto Tracker</string>
-    <string name="txt_empty_list">No coins where found in the database</string>
     <string name="txt_toast_reload">Reloading</string>
     <string name="txt_toast_error">Unable to load data, please try again</string>
     <string name="txt_empty_overview">your list is empty, let\'s add a coin</string>
-    <string name="txt_add_coin">Add a coin</string>
     <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
-    <string name="txt_coin_added">Added %1$s to favorites</string>
     <string name="txt_details_circulation">Circulation</string>
     <string name="txt_details_max_min">Max Min (24H)</string>
     <string name="txt_details_market_cap">Market Cap</string>
     <string name="txt_price_change_percentage_24h">24H %</string>
     <string name="txt_price_change_percentage_7d">7D %</string>
-    <string name="txt_coin_remove">Removed %1$s from favorites</string>
     <string name="txt_latest_price">Latest price</string>
     <string name="txt_details_remove_set">Remove this coin from the list, or set it to the Tile</string>
     <string name="txt_settings_reset">Reset the app to the default</string>
     <string name="txt_settings_set_currency">Select your currency</string>
     <string name="txt_settings_chart_length">Chart time span in days</string>
+    <string name="txt_toast_already_added">Coin already in list</string>
+    <string name="txt_toast_added">%1$s added to the list</string>
+    <string name="txt_toast_reset">Setting has been reset</string>
+    <string name="txt_toast_set_tile">%1$s is set to the Tile</string>
+    <string name="txt_toast_removed">%1$s has been removed</string>
 
 </resources>

@@ -313,8 +313,9 @@ fun ShowDetailsCoins(
                     Icons.Rounded.Delete
                 ) {
                     if (coin != null) {
-                        viewModel.removeCoinFromFavoriteCoins(coin = coin, context = context)
+                        viewModel.removeCoinFromFavoriteCoins(coin = coin)
                         navController.navigate(Screen.Overview.route)
+                        Toast.makeText(context, context.getString(R.string.txt_toast_removed, coin.name), Toast.LENGTH_SHORT).show()
                     }
                 }
                 IconButton(
@@ -323,6 +324,7 @@ fun ShowDetailsCoins(
                 ) {
                     if (coin != null) {
                         sharedPreference.FavoriteCoin = coin.idCoin
+                        Toast.makeText(context, context.getString(R.string.txt_toast_set_tile, coin.name), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

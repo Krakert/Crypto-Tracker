@@ -1,5 +1,6 @@
 package com.krakert.tracker.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -16,13 +17,14 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
+import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.sharedPreference
 import com.krakert.tracker.model.Currency
 
 @Composable
 fun ListSettings() {
-    val context = LocalContext
-    val sharedPreference = sharedPreference(context = context.current)
+    val context = LocalContext.current
+    val sharedPreference = sharedPreference(context = context)
     var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking.toInt()) }
     val scrollState = rememberScalingLazyListState()
     var checked by remember { mutableStateOf(sharedPreference.Currency) }
@@ -140,6 +142,8 @@ fun ListSettings() {
                     sharedPreference.Currency = "EUR"
                     sharedPreference.FavoriteCoin = ""
                     sharedPreference.AmountDaysTracking = 7.0F
+                    sharedPreference.FavoriteCoins = ""
+                    Toast.makeText(context, context.getString(R.string.txt_toast_reset), Toast.LENGTH_SHORT).show()
                 }
             }
         }
