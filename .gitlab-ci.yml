@@ -16,7 +16,7 @@ before_script:
   - unzip -d cmdline-tools cmdline-tools.zip
   - popd
   - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/tools/bin/
-   - sdkmanager --version
+  - sdkmanager --version
 
   # use yes to accept all licenses
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
