@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "578076934373",
+    "project_id": "cryptotracker-5dcc7",
+    "storage_bucket": "cryptotracker-5dcc7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578076934373:android:f13bed7666c870126ad40c",
+        "android_client_info": {
+          "package_name": "com.krakert.tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCirQXIrNN5qJSfrWK7EaOJMehwf7mfHgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
