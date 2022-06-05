@@ -28,8 +28,6 @@ variables:
 
 # Packages installation before running script
 before_script:
-  tags:
-  -  hva
   - apt-get --quiet update --yes
   - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
 
@@ -63,6 +61,8 @@ before_script:
 # Basic android and gradle stuff
 # Check linting
 lintDebug:
+  tags:
+  -  hva
   interruptible: true
   stage: build
   script:
@@ -70,6 +70,8 @@ lintDebug:
 
 # Make Project
 assembleDebug:
+  tags:
+  -  hva
   interruptible: true
   stage: build
   script:
@@ -80,6 +82,8 @@ assembleDebug:
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
 debugTests:
+  tags:
+  -  hva
   interruptible: true
   stage: test
   script:
