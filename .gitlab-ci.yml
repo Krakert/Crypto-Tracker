@@ -43,8 +43,7 @@ lintDebug:
 release_job:
   tags:
   -  hva
-  interruptible: true
-  stage: deploy
+  stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
     - if: $CI_COMMIT_TAG               
@@ -56,6 +55,6 @@ release_job:
     tag_name: '$CI_COMMIT_TAG'                                      
     ref: '$CI_COMMIT_TAG'
     assets:
-        links:
-          - name: 'WearOS APK'
-            filepath: app/build/**/outputs/**/*.apk
+      links:
+        - name: 'WearOS APK'
+          filepath: app/build/**/outputs/**/*.apk
