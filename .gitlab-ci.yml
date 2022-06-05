@@ -50,6 +50,7 @@ release_job:
     - ./gradlew assembleDebug
   release:
     name: 'Release $CI_COMMIT_TAG'
+    description: 'Created using the release-cli' 
     tag_name: '$CI_COMMIT_TAG'                                      
     ref: '$CI_COMMIT_TAG'
     assets:
