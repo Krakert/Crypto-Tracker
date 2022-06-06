@@ -18,14 +18,14 @@ Per devices a collection of coins to track        | ✔️    | With the use of 
 Optimized API call                                | ❌    | In need of a new API for the project                   |
 
 See the GIF below for a short overview of the final (for now) product.\
-![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone.gif)
+![](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Capstone.gif?raw=true)
 
 # 📲 Download APK 
 
-## ![V1.1 "somebody toucha my spaghet"](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/APK/Crypto_Tracker_V1.1.apk?inline=false)
+## ![V1.1 "somebody toucha my spaghet"](https://github.com/Krakert/Crypto-Tracker/releases/download/V1.1/Crypto_Tracker_V1.1.apk)
 
 see the release for more information and release notes per version:
-### ![Releases](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
+### ![Releases](https://github.com/Krakert/Crypto-Tracker/releases)
 
 # 🔜 What is next
 The app still is missing a Tile, so that is the first thing that needs work.
@@ -108,7 +108,7 @@ Tiles provide easy access to the information and actions users need to get thing
 
 |   Overlay    | Add a coin to track    |   Details about a selected coin   | Tile 
 |---	|---	|--- |---
-|  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-1.png)    |  ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-2.png)    |   ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-4.png) | ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone%20layout-3.png)    
+|  ![](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Capstone%20layout-1.png?raw=true)    |  ![](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Capstone%20layout-2.png?raw=true)    |   ![](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Capstone%20layout-4.png?raw=true) | ![](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Capstone%20layout-3.png?raw=true)    
 
 # 🪲 Connect watch to debugger
 
