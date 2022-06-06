@@ -1,5 +1,5 @@
-[![Latest Release](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/badges/release.svg)](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
-# ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/app/src/main/res/mipmap-hdpi/ic_launcher.png) Capstone project crypto Tracker
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Krakert/Crypto-Tracker?label=Latest%20version&style=for-the-badge)
+# Capstone project crypto Tracker
 
 # 🏁 Final Product (05-06) V1.1 "somebody toucha my spaghet"
 | feature set                                     | State | Note |
