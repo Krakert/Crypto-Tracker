@@ -14,7 +14,7 @@ Show a chart of the price history                 | ✔️    |
 Option to change the currency                     | ✔️    | Done with SharedPreferences                     |
 Optional to set the history dept in days          | ✔️    | Done with SharedPreferences                     |
 Option to change styling of the app               | ❌    | 
-Per devices a collection in FireStore             | ❌    | 
+Per devices a collection in FireStore             | ✔️    | With the use of SharedPreferences instead of FireStore |
 Optimized API call                                | ❌    | In need of a new API for the project            |
 
 See the GIF below for a short overview of the final (for now) product.\
