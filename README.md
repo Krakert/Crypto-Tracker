@@ -1,7 +1,7 @@
 [![Latest Release](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/badges/release.svg)](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/releases)
 # ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/app/src/main/res/mipmap-hdpi/ic_launcher.png) Capstone project crypto Tracker
 
-# 🏁 Final Product (05-06) V1.0 "Welcome little guy"
+# 🏁 Final Product (05-06) V1.1 "somebody toucha my spaghet"
 | feature set                                     | State | Note |
 |---                                              |---    |---   |
 Track the current price of a crypto coin          | ✔️    | With the use of the Coin Gecko API              |
@@ -11,11 +11,11 @@ Option to set a coin as a favourite for the Tile  | ✔️    | Is will be the c
 Show quick statistics on a Tile                   | ❌    | Making a tile is nothing like Compose           |
 Remove a coin for the tracking list               | ✔️    | 
 Show a chart of the price history                 | ✔️    | 
-Option to change the currency                     | ✔️    | Done with SharedPreferences                     |
-Optional to set the history dept in days          | ✔️    | Done with SharedPreferences                     |
+Option to change the currency                     | ✔️    | Done with SharedPreferences                            |
+Optional to set the history dept in days          | ✔️    | Done with SharedPreferences                            |
 Option to change styling of the app               | ❌    | 
-Per devices a collection in FireStore             | ✔️    | With the use of SharedPreferences instead of FireStore |
-Optimized API call                                | ❌    | In need of a new API for the project            |
+Per devices a collection of coins to track        | ✔️    | With the use of SharedPreferences instead of FireStore |
+Optimized API call                                | ❌    | In need of a new API for the project                   |
 
 See the GIF below for a short overview of the final (for now) product.\
 ![](https://gitlab.fdmci.hva.nl/android-app-development1/february-2022/ivmd3-pim-meijer/kraker-stefan-de/capstone-wearos/-/raw/main/design/Capstone.gif)
