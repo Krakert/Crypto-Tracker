@@ -142,3 +142,6 @@ When you debug a watch using Bluetooth, adb always uses the IP address `127.0.0.
 ```
 adb -s 127.0.0.1:4444 <command> 
 ```
+
+# ❤️ Support my work
+<a href="https://www.buymeacoffee.com/stefandekraker" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
