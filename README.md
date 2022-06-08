@@ -24,8 +24,8 @@ See the GIF below for a short overview of the final (for now) product.\
 
 ## ![V1.1 "somebody toucha my spaghet"](https://github.com/Krakert/Crypto-Tracker/releases/download/V1.1/Crypto_Tracker_V1.1.apk)
 
-see the release for more information and release notes per version:
-### ![Releases](https://github.com/Krakert/Crypto-Tracker/releases)
+see the release notes for more information and release notes per version:
+### ![Releases notes](https://github.com/Krakert/Crypto-Tracker/releases)
 
 # 🔜 What is next
 The app still is missing a Tile, so that is the first thing that needs work.
