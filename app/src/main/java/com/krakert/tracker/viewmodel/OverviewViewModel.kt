@@ -42,11 +42,13 @@ class OverviewViewModel(context: Context) : ViewModel() {
             val dataSharedPreference = sharedPreference.FavoriteCoins.toString()
             val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
 
-            if (dataSharedPreference == "") {
+            val listFavoriteCoins: ArrayList<Coin> = Gson().fromJson(dataSharedPreference, typeOfT)
+
+            if (listFavoriteCoins.isEmpty()) {
                 _viewState.value = ViewStateOverview.Empty
             } else  {
  /*               listFavoriteCoins = */
-                _viewState.value = ViewStateOverview.Success(Gson().fromJson(dataSharedPreference, typeOfT))
+                _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
         } catch (e: FirebaseRepository.FireBaseExceptionError) {
             val errorMsg = "Something went wrong while retrieving the list of coins"
