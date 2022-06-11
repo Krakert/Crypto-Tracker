@@ -22,7 +22,7 @@ See the GIF below for a short overview of the final (for now) product.\
 
 # 📲 Download APK 
 
-## ![V1.1 "somebody toucha my spaghet"](https://play.google.com/store/apps/details?id=com.krakert.tracker)
+## [V1.1 "somebody toucha my spaghet"](https://play.google.com/store/apps/details?id=com.krakert.tracker)
 
 see the release notes for more information and release notes per version:
 ### ![Releases notes](https://github.com/Krakert/Crypto-Tracker/releases)
