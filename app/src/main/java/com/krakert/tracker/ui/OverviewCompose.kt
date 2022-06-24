@@ -43,7 +43,7 @@ import com.krakert.tracker.viewmodel.OverviewViewModel
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
-
+    viewModel.getFavoriteCoins()
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {

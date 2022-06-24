@@ -26,10 +26,6 @@ class OverviewViewModel(context: Context) : ViewModel() {
     private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
-    init {
-        getFavoriteCoins()
-    }
-
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
 
@@ -38,16 +34,12 @@ class OverviewViewModel(context: Context) : ViewModel() {
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
-//            var listFavoriteCoins = ArrayList<Coin>()
             val dataSharedPreference = sharedPreference.FavoriteCoins.toString()
             val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
-
-            val listFavoriteCoins: ArrayList<Coin> = Gson().fromJson(dataSharedPreference, typeOfT)
-
-            if (listFavoriteCoins.isEmpty()) {
+            if (dataSharedPreference.isBlank()){
                 _viewState.value = ViewStateOverview.Empty
-            } else  {
- /*               listFavoriteCoins = */
+            } else {
+                val listFavoriteCoins: ArrayList<Coin> = Gson().fromJson(dataSharedPreference, typeOfT)
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
         } catch (e: FirebaseRepository.FireBaseExceptionError) {
