@@ -18,6 +18,7 @@ import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
 import com.krakert.tracker.model.Currency
 
@@ -26,6 +27,7 @@ fun ListSettings() {
     val context = LocalContext.current
     val sharedPreference = sharedPreference(context = context)
     var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking.toInt()) }
+    var minutesCache by remember { mutableStateOf(sharedPreference.MinutesCache)}
     val scrollState = rememberScalingLazyListState()
     var checked by remember { mutableStateOf(sharedPreference.Currency) }
     ScalingLazyColumn(
@@ -41,7 +43,6 @@ fun ListSettings() {
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        // For each index in my favorites
         item {
             CenterElement {
                 Text(
@@ -76,6 +77,46 @@ fun ListSettings() {
                         bottom = 8.dp
                     ),
                     text = "Day(s): $amountDaysTracking",
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        item { Divider() }
+        item {
+            CenterElement {
+                Text(
+                    modifier = Modifier.padding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp,
+                        top = 8.dp
+                    ),
+                    text = stringResource(R.string.txt_settings_minutes_cache),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+                InlineSlider(
+                    value = minutesCache,
+                    onValueChange = {
+                        minutesCache = if (it == 1) {
+                            2
+                        } else {
+                            it
+                        }
+                        sharedPreference.MinutesCache = minutesCache
+                    },
+                    valueProgression = 1..10,
+                    increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
+                    decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease") },
+                )
+                Text(
+                    modifier = Modifier.padding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp
+                    ),
+                    text = "Minutes: $minutesCache",
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center
                 )

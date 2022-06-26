@@ -19,5 +19,6 @@
     <string name="txt_toast_reset">Setting has been reset</string>
     <string name="txt_toast_set_tile">%1$s is set to the Tile</string>
     <string name="txt_toast_removed">%1$s has been removed</string>
+    <string name="txt_settings_minutes_cache">Max age of the data</string>
 
 </resources>

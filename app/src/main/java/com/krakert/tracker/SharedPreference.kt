@@ -9,6 +9,7 @@ object SharedPreference {
     private const val amountDaysTracking = "DAY_TRACKING"
     private const val favoriteCoin = "FAVORITE_COIN"
     private const val favoriteCoins = "FAVORITE_COINS"
+    private const val minutesCache = "MINUTES_CACHE"
 
     fun sharedPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -47,6 +48,14 @@ object SharedPreference {
         set(value) {
             editMe {
                 it.putString(favoriteCoins, value)
+            }
+        }
+
+    var SharedPreferences.MinutesCache
+        get() = getInt(minutesCache, 5)
+        set(value) {
+            editMe {
+                it.putInt(minutesCache, value)
             }
         }
 
