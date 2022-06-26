@@ -6,7 +6,6 @@ import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.model.Currency
 import com.krakert.tracker.model.DataDetailsCoin
-import com.krakert.tracker.model.MarketChart
 import drewcarlson.coingecko.CoinGeckoClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -22,15 +21,10 @@ class CoinGeckoRepository(context: Context) {
     private val daysOfTracking = sharedPreference.AmountDaysTracking.toDouble()
     private val currencyString = sharedPreference.Currency?.let { Currency.valueOf(it) }.toString().lowercase(Locale.getDefault())
 
-    suspend fun getHistoryByCoinId(coinId: String): MarketChart {
+    suspend fun getHistoryByCoinId(coinId: String): List<List<String>> {
         return try {
             withTimeout(10_000) {
-                MarketChart(
-                    prices = coinGecko.getCoinMarketChartById(coinId,
-                        currencyString,
-                        daysOfTracking
-                    ).prices
-                )
+                coinGecko.getCoinMarketChartById(coinId, currencyString,  daysOfTracking).prices
             }
         } catch (e: Exception) {
             throw CoinGeckoExceptionError("Retrieval of history data of the coin was unsuccessful")
@@ -43,7 +37,7 @@ class CoinGeckoRepository(context: Context) {
                 coinGecko.getPrice(coinId, currencyString)[coinId]!!.getPrice(currencyString)
             }
         } catch (e: Exception) {
-            throw CoinGeckoExceptionError("Retrieval of Latest price of the coin was unsuccessful")
+            throw CoinGeckoExceptionError("Retrieval of latest price of the coin was unsuccessful")
 
         }
     }

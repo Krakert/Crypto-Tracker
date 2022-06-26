@@ -29,7 +29,7 @@ import com.skydoves.landscapist.palette.BitmapPalette
 
 @Composable
 fun ListAddCoin(viewModel: AddCoinViewModel) {
-
+    viewModel.getListCoins()
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {
@@ -59,7 +59,7 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
                 Loading()
             }
             is ViewStateAddCoin.Success -> {
-                ShowList(scrollState = scrollState, listResult = listResult.coins.Coins, viewModel = viewModel)
+                ShowList(scrollState = scrollState, listResult = listResult.coins, viewModel = viewModel)
             }
         }
 
@@ -126,12 +126,12 @@ fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = coin.symbol.toString(), onPaletteAvailable = { palette = it })
+            LoadImage(url = coin.symbol, onPaletteAvailable = { palette = it })
         },
         onClick = { onClick() },
         label = {
             Text(
-                text = coin.name.toString(),
+                text = coin.name,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

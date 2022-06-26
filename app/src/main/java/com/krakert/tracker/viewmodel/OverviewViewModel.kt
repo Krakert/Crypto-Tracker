@@ -9,9 +9,11 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.DataCoin
 import com.krakert.tracker.repository.CoinGeckoRepository
+import com.krakert.tracker.repository.CryptoCacheRepository
 import com.krakert.tracker.repository.FirebaseRepository
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
@@ -20,10 +22,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 
 class OverviewViewModel(context: Context) : ViewModel() {
     private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository(context)
+    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
@@ -40,6 +47,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 _viewState.value = ViewStateOverview.Empty
             } else {
                 val listFavoriteCoins: ArrayList<Coin> = Gson().fromJson(dataSharedPreference, typeOfT)
+                println("size of the list of favorites is : ${listFavoriteCoins.size}")
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
         } catch (e: FirebaseRepository.FireBaseExceptionError) {
@@ -51,24 +59,59 @@ class OverviewViewModel(context: Context) : ViewModel() {
     }
 
     fun getAllDataByListCoinIds(listResult: List<Coin>) {
-        val data = arrayListOf<DataCoin>()
-        viewModelScope.launch {
-            try {
-                listResult.forEach { index ->
-                    data.add(
-                        DataCoin(
-                            history = coinGeckoRepo.getHistoryByCoinId(index.idCoin.toString()),
-                            currentPrice = coinGeckoRepo.getLatestPriceByCoinId(index.idCoin.toString())
-                        )
-                    )
+                viewModelScope.launch(Dispatchers.IO) {
+            val resultCache = cryptoCacheRepository.getListDataCoins()
+                    println(resultCache)
+            if (resultCache.isEmpty()) {
+                println("Cache empty, OverviewViewModel")
+                getAndSetData(listResult)
+            } else {
+                println("found data in the cache, OverviewViewModel")
+                val oldDate = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(resultCache[0].timeStamp),
+                    TimeZone.getDefault().toZoneId());
+                val dateNow = LocalDateTime.now()
+                if (ChronoUnit.MINUTES.between(oldDate, dateNow) >= sharedPreference.MinutesCache){
+                    println("Data is overdue, and needs updating, OverviewViewModel")
+                    getAndSetData(listResult)
+                } else {
+                    println("size listResult: ${listResult.size}")
+                    println("size resultCache: ${resultCache.size}")
+                    println("checking if cached data is usable, OverviewViewModel")
+                    if (listResult.size != resultCache.size){
+                        println("data out of sync with favourites, refreshing")
+                        getAndSetData(listResult)
+                    } else {
+                        println("data in sync with favourites")
+                        _viewStateDataCoin.value = ViewStateDataCoins.Success(resultCache)
+                    }
                 }
-                _viewStateDataCoin.value = ViewStateDataCoins.Success(data)
-            } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
-                val errorMsg = "Something went wrong while retrieving data"
-
-                Log.e(ContentValues.TAG, e.message ?: errorMsg)
-                _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
             }
+        }
+    }
+
+    private suspend fun getAndSetData(listResult: List<Coin>) {
+        val data = arrayListOf<DataCoin>()
+        val time = System.currentTimeMillis()
+        try {
+            listResult.forEach { index ->
+                data.add(
+                    DataCoin(
+                        id = index.idCoin,
+                        history = coinGeckoRepo.getHistoryByCoinId(index.idCoin),
+                        currentPrice = coinGeckoRepo.getLatestPriceByCoinId(index.idCoin),
+                        timeStamp = time
+                    )
+                )
+            }
+            println("Got data for ${data.size}, set time add $time")
+            cryptoCacheRepository.setListDataCoins(dataCoins = data)
+            _viewStateDataCoin.value = ViewStateDataCoins.Success(data)
+        } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
+            val errorMsg = "Something went wrong while retrieving data"
+
+            Log.e(ContentValues.TAG, e.message ?: errorMsg)
+            _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
         }
     }
 }

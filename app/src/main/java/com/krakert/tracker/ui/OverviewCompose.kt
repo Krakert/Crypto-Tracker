@@ -150,10 +150,10 @@ fun ShowStatsCoins(
                     )
             ) {
                 CenterElement {
-                    if (favoriteCoin == listCoins[index].idCoin.toString()) {
+                    if (favoriteCoin == listCoins[index].idCoin) {
                         Text(
                             text = buildAnnotatedString {
-                                append(listCoins[index].id.toString())
+                                append(listCoins[index].id)
                                 appendInlineContent("inlineContent", "[icon]")
                             },
                             fontSize = 20.sp,
@@ -161,7 +161,7 @@ fun ShowStatsCoins(
                         )
                     } else {
                         Text(
-                            text = listCoins[index].id.toString(),
+                            text = listCoins[index].id,
                             modifier = Modifier.padding(bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
@@ -185,10 +185,10 @@ fun ShowStatsCoins(
                                 val points = arrayListOf<PointF>()
                                 val pointsCon1 = arrayListOf<PointF>()
                                 val pointsCon2 = arrayListOf<PointF>()
-                                var maxData = dataCoins.data[index].history.prices[0][1].toFloat()
-                                var minData = dataCoins.data[index].history.prices[0][1].toFloat()
+                                var maxData = dataCoins.data[index].history[0][1].toFloat()
+                                var minData = dataCoins.data[index].history[0][1].toFloat()
 
-                                dataCoins.data[index].history.prices.forEachIndexed { _, index ->
+                                dataCoins.data[index].history.forEachIndexed { _, index ->
                                     if (maxData < index[1].toDouble()) {
                                         maxData = index[1].toFloat()
                                     }
@@ -199,13 +199,13 @@ fun ShowStatsCoins(
 
                                 val pointsMean = arrayListOf<Float>()
                                 // Calculate mean over 5 point and add that value to the list
-                                for (i in 0 until dataCoins.data[index].history.prices.size - 5 step 5){
+                                for (i in 0 until dataCoins.data[index].history.size - 5 step 5){
                                     pointsMean.add(med(listOf(
-                                        dataCoins.data[index].history.prices[i][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 1][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 2][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 3][1].toFloat(),
-                                        dataCoins.data[index].history.prices[i + 4][1].toFloat(),
+                                        dataCoins.data[index].history[i][1].toFloat(),
+                                        dataCoins.data[index].history[i + 1][1].toFloat(),
+                                        dataCoins.data[index].history[i + 2][1].toFloat(),
+                                        dataCoins.data[index].history[i + 3][1].toFloat(),
+                                        dataCoins.data[index].history[i + 4][1].toFloat(),
                                     )))
                                 }
 
