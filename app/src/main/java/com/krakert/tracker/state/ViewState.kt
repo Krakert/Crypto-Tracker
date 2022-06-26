@@ -6,7 +6,7 @@ sealed class ViewStateAddCoin {
     // Represents different states for the ListCoins screen
     object Empty : ViewStateAddCoin()
     object Loading : ViewStateAddCoin()
-    data class Success(val coins: Coins) : ViewStateAddCoin()
+    data class Success(val coins: List<Coin>) : ViewStateAddCoin()
     data class Error(val exception: Throwable) : ViewStateAddCoin()
 }
 
