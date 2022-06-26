@@ -1,15 +1,28 @@
 package com.krakert.tracker.model
 
 import android.os.Parcelable
+import androidx.room.*
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 data class Coins (
-    val Coins: List<Coin>? = null
+    val Coins: List<Coin>? = null,
 )
+
 @Parcelize
+@Entity(tableName = "coinTable")
 data class Coin (
-    val id: String? = null,
-    val idCoin: String? = null,
-    val name: String? = null,
-    val symbol: String? = null
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "id")
+    val id: String = "",
+    @ColumnInfo(name = "idCoin")
+    val idCoin: String = "",
+    @ColumnInfo(name = "name")
+    val name: String = "",
+    @ColumnInfo(name = "url")
+    val symbol: String = "",
+    @ColumnInfo(name = "timeStamp")
+    var timeStamp: Long = 0
 ) : Parcelable
