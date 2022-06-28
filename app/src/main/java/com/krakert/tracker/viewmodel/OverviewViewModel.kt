@@ -61,7 +61,6 @@ class OverviewViewModel(context: Context) : ViewModel() {
     fun getAllDataByListCoinIds(listResult: List<Coin>) {
                 viewModelScope.launch(Dispatchers.IO) {
             val resultCache = cryptoCacheRepository.getListDataCoins()
-                    println(resultCache)
             if (resultCache.isEmpty()) {
                 println("Cache empty, OverviewViewModel")
                 getAndSetData(listResult)
@@ -69,8 +68,10 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 println("found data in the cache, OverviewViewModel")
                 val oldDate = LocalDateTime.ofInstant(
                     Instant.ofEpochMilli(resultCache[0].timeStamp),
-                    TimeZone.getDefault().toZoneId());
+                    TimeZone.getDefault().toZoneId())
                 val dateNow = LocalDateTime.now()
+                println("Date now: $dateNow, date data: $oldDate")
+                println("time between: ${ChronoUnit.MINUTES.between(oldDate, dateNow)}, Max: ${sharedPreference.MinutesCache}")
                 if (ChronoUnit.MINUTES.between(oldDate, dateNow) >= sharedPreference.MinutesCache){
                     println("Data is overdue, and needs updating, OverviewViewModel")
                     getAndSetData(listResult)

@@ -2,7 +2,6 @@ package com.krakert.tracker.viewmodel
 
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.text.format.Time
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -48,7 +47,7 @@ class AddCoinViewModel(context: Context) : ViewModel() {
             println("found data in the cache, AddCoinViewModel")
             val oldDate = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(resultCache[0].timeStamp),
-                TimeZone.getDefault().toZoneId());
+                TimeZone.getDefault().toZoneId())
             val dateNow = LocalDateTime.now()
             if (ChronoUnit.HOURS.between(oldDate, dateNow) >= 24){
                 println("Data is overdue, and needs updating, AddCoinViewModel")
@@ -63,7 +62,6 @@ class AddCoinViewModel(context: Context) : ViewModel() {
     private suspend fun getAndSetData() {
         fireBaseRepo.getListCoins().collect {
             try {
-                println(it)
                 CoroutineScope(Dispatchers.IO).launch{
                     cryptoCacheRepository.setListCoins(it)
                 }

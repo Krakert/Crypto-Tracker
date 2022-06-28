@@ -2,8 +2,6 @@ package com.krakert.tracker.model
 
 import android.os.Parcelable
 import androidx.room.*
-import com.google.common.reflect.TypeToken
-import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
