@@ -7,12 +7,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
+import java.util.concurrent.TimeUnit
 
-class FirebaseRepository {
+//TODO: inject DAO and Prefs via Hilt
+class CacheCoinRepository : CoinRespository {
+    private val cacheRateLimbit = CacheRateLimiter<String>(10, TimeUnit.MINUTES)
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
     private var documentCoins = firestore.collection("Tracker").document("is3ksOVRTraukL5sSbgJ")
+    private val cacheKey = "cache_key_coins"
 
-    suspend fun getListCoins(): Flow<List<Coin>> {
+    override suspend fun getCoinsList(): Flow<List<Coin>> {
+        // if this.shouldFetch
+
+        // else - get from injected DAO
         return try {
             withTimeout(10_000) {
                 val result = documentCoins.get().await()
@@ -33,4 +40,10 @@ class FirebaseRepository {
     }
 
     inner class FireBaseExceptionError(message: String) : Exception(message)
+
+    override fun shouldFetch(): Boolean {
+        //TODO: inject prefs in constructor
+//        cacheRateLimit.shouldFetch(cacheKey, prefs)
+        return true
+    }
 }

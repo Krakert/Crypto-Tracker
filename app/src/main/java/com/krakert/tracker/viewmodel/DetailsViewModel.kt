@@ -12,7 +12,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.repository.CoinGeckoRepository
-import com.krakert.tracker.repository.FirebaseRepository
+import com.krakert.tracker.repository.CacheCoinRepository
 import com.krakert.tracker.state.ViewStateDetailsCoins
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -65,7 +65,7 @@ class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
                 sharedPreference.FavoriteCoin = ""
             }
 
-        } catch (e: FirebaseRepository.FireBaseExceptionError) {
+        } catch (e: CacheCoinRepository.FireBaseExceptionError) {
             val errorMsg = "Something went wrong while deleting a coins"
 
             Log.e(ContentValues.TAG, e.message ?: errorMsg)

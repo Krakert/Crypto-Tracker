@@ -6,7 +6,7 @@ import com.krakert.tracker.database.CryptoCacheRoomDatabase
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.DataCoin
 
-class CryptoCacheRepository(context: Context)  {
+class DbCoinRepository(context: Context)  {
     private val cryptoCacheDao: CryptoCacheDao
 
     init {

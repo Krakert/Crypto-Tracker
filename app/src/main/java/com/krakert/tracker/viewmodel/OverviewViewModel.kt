@@ -13,8 +13,8 @@ import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.DataCoin
 import com.krakert.tracker.repository.CoinGeckoRepository
-import com.krakert.tracker.repository.CryptoCacheRepository
-import com.krakert.tracker.repository.FirebaseRepository
+import com.krakert.tracker.repository.DbCoinRepository
+import com.krakert.tracker.repository.CacheCoinRepository
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ import java.util.*
 
 class OverviewViewModel(context: Context) : ViewModel() {
     private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository(context)
-    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
+    private val cryptoCacheRepository: DbCoinRepository = DbCoinRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
@@ -50,7 +50,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 println("size of the list of favorites is : ${listFavoriteCoins.size}")
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
-        } catch (e: FirebaseRepository.FireBaseExceptionError) {
+        } catch (e: CacheCoinRepository.FireBaseExceptionError) {
             val errorMsg = "Something went wrong while retrieving the list of coins"
 
             Log.e(ContentValues.TAG, e.message ?: errorMsg)

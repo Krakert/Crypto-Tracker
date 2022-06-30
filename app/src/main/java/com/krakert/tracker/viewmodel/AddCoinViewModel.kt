@@ -12,8 +12,8 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.model.Coin
-import com.krakert.tracker.repository.CryptoCacheRepository
-import com.krakert.tracker.repository.FirebaseRepository
+import com.krakert.tracker.repository.DbCoinRepository
+import com.krakert.tracker.repository.CacheCoinRepository
 import com.krakert.tracker.state.ViewStateAddCoin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,8 +27,8 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 class AddCoinViewModel(context: Context) : ViewModel() {
-    private val fireBaseRepo: FirebaseRepository = FirebaseRepository()
-    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
+    private val fireBaseRepo: CacheCoinRepository = CacheCoinRepository()
+    private val cryptoCacheRepository: DbCoinRepository = DbCoinRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
     // backing property to avoid state updates from other classes
@@ -60,13 +60,13 @@ class AddCoinViewModel(context: Context) : ViewModel() {
     }
 
     private suspend fun getAndSetData() {
-        fireBaseRepo.getListCoins().collect {
+        fireBaseRepo.getCoinsList().collect {
             try {
                 CoroutineScope(Dispatchers.IO).launch{
                     cryptoCacheRepository.setListCoins(it)
                 }
                 _viewState.value = ViewStateAddCoin.Success(it)
-            } catch (e: FirebaseRepository.FireBaseExceptionError) {
+            } catch (e: CacheCoinRepository.FireBaseExceptionError) {
                 val errorMsg = "Something went wrong while retrieving the list of coins"
                 Log.e(TAG, e.message ?: errorMsg)
                 _viewState.value = ViewStateAddCoin.Error(e)
@@ -105,7 +105,7 @@ class AddCoinViewModel(context: Context) : ViewModel() {
                 Toast.makeText(context, context.getString(R.string.txt_toast_added, coin.name), Toast.LENGTH_SHORT)
                     .show()
             }
-        } catch (e: FirebaseRepository.FireBaseExceptionError) {
+        } catch (e: CacheCoinRepository.FireBaseExceptionError) {
             val errorMsg = "Something went wrong while saving the list of favorite coins"
 
             Log.e(TAG, e.message ?: errorMsg)
