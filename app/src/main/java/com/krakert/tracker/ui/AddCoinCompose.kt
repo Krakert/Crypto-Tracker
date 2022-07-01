@@ -1,5 +1,6 @@
 package com.krakert.tracker.ui
 
+import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
@@ -20,12 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.krakert.tracker.R
+import com.krakert.tracker.SharedPreference
+import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
+import java.lang.reflect.Type
 
 @Composable
 fun ListAddCoin(viewModel: AddCoinViewModel) {
@@ -86,6 +92,15 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel
 @Composable
 private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?, viewModel: AddCoinViewModel) {
     val context = LocalContext.current
+    var listFavoriteCoins = ArrayList<Coin>()
+    val sharedPreference = SharedPreference.sharedPreference(context)
+    val dataSharedPreferences = sharedPreference.FavoriteCoins.toString()
+    val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
+
+    if (dataSharedPreferences.isNotEmpty()) {
+        listFavoriteCoins = Gson().fromJson(dataSharedPreferences, typeOfT)
+    }
+
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -104,6 +119,11 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
+//                    AddChipCoin(
+//                        coin = listResult[index],
+//                        added = listFavoriteCoins[index].name == listResult[index].name,
+//                        viewModel = viewModel,
+//                        context = context)
                     AddChipCoin(listResult[index]){
                         viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
                     }
@@ -114,8 +134,57 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
 }
 
 @Composable
+fun AddChipCoin(coin: Coin, added: Boolean, viewModel: AddCoinViewModel, context: Context) {
+    var palette by remember { mutableStateOf<Palette?>(null) }
+
+//    Chip(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(bottom = 8.dp),
+//        colors = gradientBackgroundChipColors(
+//            startBackgroundColor = Color(palette?.lightVibrantSwatch?.rgb ?: 0).copy(alpha = 0.5f),
+//            endBackgroundColor = MaterialTheme.colors.surface,
+//            gradientDirection = LayoutDirection.Ltr
+//        ),
+//        icon = {
+//            LoadImage(url = coin.symbol, onPaletteAvailable = { palette = it })
+//        },
+//        onClick = { onClick() },
+//        label = {
+//            Text(
+//                text = coin.name,
+//                maxLines = 1,
+//                overflow = TextOverflow.Ellipsis
+//            )
+//        },
+//    )
+    ToggleChip(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        checked = added,
+        onCheckedChange = {
+            viewModel.addCoinToFavoriteCoins(coin, context)
+        },
+        toggleControl = {
+            Icon(
+                imageVector = ToggleChipDefaults.switchIcon(added),
+                contentDescription =  if (added) "On" else "Off"
+            )
+        },
+        label = {
+            Text(
+                text = coin.name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        })
+}
+
+@Composable
 fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
     var palette by remember { mutableStateOf<Palette?>(null) }
+
     Chip(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,6 +207,7 @@ fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
         },
     )
 }
+
 
 @Composable
 fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
