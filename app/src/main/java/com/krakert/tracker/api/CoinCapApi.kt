@@ -12,7 +12,6 @@ class CoinCapApi {
 
         fun createApi(): CoinCapApiService {
             val okHttpClient = OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
 
             val coinCapApi = Retrofit.Builder()
