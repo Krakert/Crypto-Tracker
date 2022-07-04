@@ -1,6 +1,7 @@
 package com.krakert.tracker.model
 
 import android.os.Parcelable
+import androidx.compose.ui.text.toLowerCase
 import androidx.room.*
 import kotlinx.parcelize.Parcelize
 import com.google.gson.annotations.SerializedName
@@ -53,4 +54,6 @@ data class Coin(
 
     @SerializedName("vwap24Hr")
     val vwap24Hr: String
-) : Parcelable
+) : Parcelable {
+    fun getIcon() = "https://assets.coincap.io/assets/icons/${symbol.lowercase()}@2x.png"
+}
