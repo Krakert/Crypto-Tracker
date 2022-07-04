@@ -46,7 +46,7 @@ class CoinTileService : TileService() {
         val deviceParams = requestParams.deviceParameters!!
 
         if (tileCoin != "") {
-            val result = tileCoin?.let { CoinRepoTile.getDetails(it, applicationContext) }
+//            val result = tileCoin?.let { CoinRepoTile.getDetails(it, applicationContext) }
 
             // Creates Tile.
             Tile.Builder()
@@ -58,9 +58,9 @@ class CoinTileService : TileService() {
                             TimelineEntry.Builder()
                                 .setLayout(
                                     Layout.Builder()
-                                        .setRoot(
-                                            layoutSet(result!!, deviceParams)
-                                        )
+//                                        .setRoot(
+//                                            layoutSet(result!!, deviceParams)
+//                                        )
                                         .build()
                                 )
                                 .build()

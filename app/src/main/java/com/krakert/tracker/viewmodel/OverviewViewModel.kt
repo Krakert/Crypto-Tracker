@@ -12,9 +12,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.DataCoin
-import com.krakert.tracker.repository.CoinGeckoRepository
 import com.krakert.tracker.repository.CryptoCacheRepository
-import com.krakert.tracker.repository.FirebaseRepository
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +27,6 @@ import java.util.*
 
 
 class OverviewViewModel(context: Context) : ViewModel() {
-    private val coinGeckoRepo: CoinGeckoRepository = CoinGeckoRepository(context)
     private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
@@ -50,7 +47,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 println("size of the list of favorites is : ${listFavoriteCoins.size}")
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
-        } catch (e: FirebaseRepository.FireBaseExceptionError) {
+        } catch (e: Exception) {
             val errorMsg = "Something went wrong while retrieving the list of coins"
 
             Log.e(ContentValues.TAG, e.message ?: errorMsg)
@@ -74,14 +71,14 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 println("time between: ${ChronoUnit.MINUTES.between(oldDate, dateNow)}, Max: ${sharedPreference.MinutesCache}")
                 if (ChronoUnit.MINUTES.between(oldDate, dateNow) >= sharedPreference.MinutesCache){
                     println("Data is overdue, and needs updating, OverviewViewModel")
-                    getAndSetData(listResult)
+//                    getAndSetData(listResult)
                 } else {
                     println("size listResult: ${listResult.size}")
                     println("size resultCache: ${resultCache.size}")
                     println("checking if cached data is usable, OverviewViewModel")
                     if (listResult.size != resultCache.size){
                         println("data out of sync with favourites, refreshing")
-                        getAndSetData(listResult)
+//                        getAndSetData(listResult)
                     } else {
                         println("data in sync with favourites")
                         _viewStateDataCoin.value = ViewStateDataCoins.Success(resultCache)
@@ -92,28 +89,28 @@ class OverviewViewModel(context: Context) : ViewModel() {
     }
 
     private suspend fun getAndSetData(listResult: List<Coin>) {
-        val data = arrayListOf<DataCoin>()
-        val time = System.currentTimeMillis()
-        try {
-            listResult.forEach { index ->
-                data.add(
-                    DataCoin(
-                        id = index.idCoin,
-                        history = coinGeckoRepo.getHistoryByCoinId(index.idCoin),
-                        currentPrice = coinGeckoRepo.getLatestPriceByCoinId(index.idCoin),
-                        timeStamp = time
-                    )
-                )
-            }
-            println("Got data for ${data.size}, set time add $time")
-            cryptoCacheRepository.setListDataCoins(dataCoins = data)
-            _viewStateDataCoin.value = ViewStateDataCoins.Success(data)
-        } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
-            val errorMsg = "Something went wrong while retrieving data"
-
-            Log.e(ContentValues.TAG, e.message ?: errorMsg)
-            _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
-        }
+//        val data = arrayListOf<DataCoin>()
+//        val time = System.currentTimeMillis()
+//        try {
+//            listResult.forEach { index ->
+//                data.add(
+//                    DataCoin(
+//                        id = index.idCoin,
+//                        history = coinGeckoRepo.getHistoryByCoinId(index.idCoin),
+//                        currentPrice = coinGeckoRepo.getLatestPriceByCoinId(index.idCoin),
+//                        timeStamp = time
+//                    )
+//                )
+//            }
+//            println("Got data for ${data.size}, set time add $time")
+//            cryptoCacheRepository.setListDataCoins(dataCoins = data)
+//            _viewStateDataCoin.value = ViewStateDataCoins.Success(data)
+//        } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
+//            val errorMsg = "Something went wrong while retrieving data"
+//
+//            Log.e(ContentValues.TAG, e.message ?: errorMsg)
+//            _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
+//        }
     }
 }
 

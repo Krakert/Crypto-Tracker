@@ -1,6 +1,7 @@
 package com.krakert.tracker.model
 
-import drewcarlson.coingecko.models.shared.Image
+import android.media.Image
+
 
 data class DataDetailsCoin(
     val name: String,

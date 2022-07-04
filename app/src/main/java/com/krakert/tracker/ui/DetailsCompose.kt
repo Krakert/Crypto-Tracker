@@ -81,22 +81,22 @@ fun ShowDetailsCoins(
         state = scrollState
     ) {
         item {
-            CenterElement {
-                CoilImage(
-                    imageModel = detailsCoins.details.image.thumb,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .wrapContentSize(align = Alignment.Center),
-
-                    )
-                Text(
-                    text = detailsCoins.details.name,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.primary,
-                    fontSize = 24.sp
-                )
-            }
+//            CenterElement {
+//                CoilImage(
+//                    imageModel = detailsCoins.details.image.thumb,
+//                    contentScale = ContentScale.Fit,
+//                    modifier = Modifier
+//                        .size(24.dp)
+//                        .wrapContentSize(align = Alignment.Center),
+//
+//                    )
+//                Text(
+//                    text = detailsCoins.details.name,
+//                    textAlign = TextAlign.Center,
+//                    color = MaterialTheme.colors.primary,
+//                    fontSize = 24.sp
+//                )
+//            }
         }
         item {
             Row(
@@ -323,7 +323,7 @@ fun ShowDetailsCoins(
                     Icons.Rounded.Star
                 ) {
                     if (coin != null) {
-                        sharedPreference.FavoriteCoin = coin.idCoin
+//                        sharedPreference.FavoriteCoin = coin.idCoin
                         Toast.makeText(context, context.getString(R.string.txt_toast_set_tile, coin.name), Toast.LENGTH_SHORT).show()
                     }
                 }

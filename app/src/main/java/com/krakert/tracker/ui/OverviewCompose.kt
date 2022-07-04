@@ -150,23 +150,23 @@ fun ShowStatsCoins(
                     )
             ) {
                 CenterElement {
-                    if (favoriteCoin == listCoins[index].idCoin) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(listCoins[index].id)
-                                appendInlineContent("inlineContent", "[icon]")
-                            },
-                            fontSize = 20.sp,
-                            inlineContent = addIconFavorite()
-                        )
-                    } else {
-                        Text(
-                            text = listCoins[index].id,
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                        )
-                    }
+//                    if (favoriteCoin == listCoins[index].idCoin) {
+//                        Text(
+//                            text = buildAnnotatedString {
+//                                append(listCoins[index].id)
+//                                appendInlineContent("inlineContent", "[icon]")
+//                            },
+//                            fontSize = 20.sp,
+//                            inlineContent = addIconFavorite()
+//                        )
+//                    } else {
+//                        Text(
+//                            text = listCoins[index].id,
+//                            modifier = Modifier.padding(bottom = 8.dp),
+//                            textAlign = TextAlign.Center,
+//                            color = MaterialTheme.colors.primary,
+//                        )
+//                    }
                     // Here I load the data needed for the graph
                     when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
                         is ViewStateDataCoins.Error -> {
