@@ -101,15 +101,14 @@ class AddCoinViewModel(context: Context) : ViewModel() {
                 }
             }
             if (!alreadyAdded) {
-//                listFavoriteCoins.add(
-//                    Coin(
-//                        name = coin.name,
-//                        id = coin.id,
-//                        idCoin = coin.idCoin,
-//                        symbol = coin.symbol,
-//                        timeStamp = 0
-//                    )
-//                )
+                listFavoriteCoins.add(
+                    Coin(
+                        name = coin.name,
+                        id = coin.id,
+                        symbol = coin.symbol,
+                        timestamp = 0
+                    )
+                )
                 sharedPreference.FavoriteCoins = Gson().toJson(listFavoriteCoins)
                 Toast.makeText(context, context.getString(R.string.txt_toast_added, coin.name), Toast.LENGTH_SHORT)
                     .show()
