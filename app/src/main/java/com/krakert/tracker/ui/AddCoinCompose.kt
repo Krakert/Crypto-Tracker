@@ -195,7 +195,7 @@ fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = coin.symbol, onPaletteAvailable = { palette = it })
+            LoadImage(url = coin.getIcon(), onPaletteAvailable = { palette = it })
         },
         onClick = { onClick() },
         label = {
