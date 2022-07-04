@@ -17,10 +17,10 @@ data class Coins(
 @Entity(tableName = "coinTable")
 data class Coin(
     @SerializedName("changePercent24Hr")
-    val changePercent24Hr: String,
+    val changePercent24Hr: String? = null,
 
     @SerializedName("explorer")
-    val explorer: String,
+    val explorer: String? = null,
 
     @SerializedName("id")
     @PrimaryKey(autoGenerate = false)
@@ -28,32 +28,36 @@ data class Coin(
     val id: String,
 
     @SerializedName("marketCapUsd")
-    val marketCapUsd: String,
+    val marketCapUsd: String? = null,
 
     @SerializedName("maxSupply")
-    val maxSupply: String,
+    val maxSupply: String? = null,
 
     @SerializedName("name")
     @ColumnInfo(name = "name")
     val name: String,
 
     @SerializedName("priceUsd")
-    val priceUsd: String,
+    val priceUsd: String? = null,
 
     @SerializedName("rank")
-    val rank: String,
+    val rank: String? = null,
 
     @SerializedName("supply")
-    val supply: String,
+    val supply: String? = null,
 
     @SerializedName("symbol")
-    val symbol: String,
+    val symbol: String? = null,
 
     @SerializedName("volumeUsd24Hr")
-    val volumeUsd24Hr: String,
+    val volumeUsd24Hr: String? = null,
 
     @SerializedName("vwap24Hr")
-    val vwap24Hr: String
+    val vwap24Hr: String? = null,
+
+    @ColumnInfo(name = "timestamp")
+    val timestamp: Long
+
 ) : Parcelable {
-    fun getIcon() = "https://assets.coincap.io/assets/icons/${symbol.lowercase()}@2x.png"
+    fun getIcon() = "https://assets.coincap.io/assets/icons/${symbol?.lowercase()}@2x.png"
 }
