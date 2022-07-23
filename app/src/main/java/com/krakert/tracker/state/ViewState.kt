@@ -20,7 +20,7 @@ sealed class ViewStateOverview {
 
 sealed class ViewStateDataCoins {
     object Loading : ViewStateDataCoins()
-    data class Success(val data: List<DataCoin>) : ViewStateDataCoins()
+    data class Success(val data: List<String>) : ViewStateDataCoins()
     data class Error(val exception: Throwable) : ViewStateDataCoins()
 }
 

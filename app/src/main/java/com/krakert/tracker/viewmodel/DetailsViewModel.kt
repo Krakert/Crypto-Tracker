@@ -33,7 +33,7 @@ class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
 
     fun getDetailsCoinByCoinId(coinId: String) {
         viewModelScope.launch {
-            coinCapApiService.getDetailsCoin(coinId)
+            coinCapApiService.getDetailsByCoinId(coinId)
 //            collect { dataDetailsCoin ->
 //                try {
 //                    if (dataDetailsCoin.name.isEmpty()) {

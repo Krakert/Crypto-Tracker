@@ -9,9 +9,9 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.Converters
-import com.krakert.tracker.model.DataCoin
+import com.krakert.tracker.model.DataCoinChart
 
-@Database(entities = [Coin::class, DataCoin::class], version = 1, exportSchema = false)
+@Database(entities = [Coin::class, DataCoinChart::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class CryptoCacheRoomDatabase : RoomDatabase() {
 
