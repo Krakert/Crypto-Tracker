@@ -1,9 +1,7 @@
 package com.krakert.tracker.ui
 
-import android.graphics.PointF
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
@@ -17,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -32,18 +29,19 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.model.Coin
 import com.krakert.tracker.model.Currency
+import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.model.FavoriteCoins
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
-import com.krakert.tracker.theme.themeValues
 import com.krakert.tracker.viewmodel.OverviewViewModel
 
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
     viewModel.getFavoriteCoins()
+
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {
@@ -60,11 +58,11 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        when (val listResult = viewModel.favoriteCoins.collectAsState().value) {
-            ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
+        when (val response = viewModel.favoriteCoins.collectAsState().value) {
+            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
             is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite, viewModel = viewModel, navController = navController)
+            is ViewStateOverview.Loading -> Loading()
+            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState, listFavoriteCoins = response.favorite, viewModel = viewModel, navController = navController)
         }
 
     }
@@ -108,7 +106,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listCoins: List<Coin>,
+    listFavoriteCoins: FavoriteCoins,
     viewModel: OverviewViewModel,
     navController: NavHostController
 ) {
@@ -119,7 +117,7 @@ fun ShowStatsCoins(
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
 
-//    viewModel.getAllDataByListCoinIds(listCoins)
+    viewModel.getPriceByListCoinIds(listFavoriteCoins)
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -135,7 +133,7 @@ fun ShowStatsCoins(
         state = scrollState
     ) {
         // For each index in my favorites
-        items(listCoins.size) { index ->
+        items(listFavoriteCoins.size) { index ->
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -143,17 +141,17 @@ fun ShowStatsCoins(
                         onClick = {
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 key = "Coin",
-                                value = listCoins[index]
+                                value = listFavoriteCoins[index]
                             )
                             navController.navigate(Screen.Details.route)
                         }
                     )
             ) {
                 CenterElement {
-                    if (favoriteCoin == listCoins[index].id) {
+                    if (favoriteCoin == listFavoriteCoins[index].id) {
                         Text(
                             text = buildAnnotatedString {
-                                append(listCoins[index].id.replaceFirstChar{it.uppercase()})
+                                append(listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()})
                                 appendInlineContent("inlineContent", "[icon]")
                             },
                             fontSize = 20.sp,
@@ -161,21 +159,21 @@ fun ShowStatsCoins(
                         )
                     } else {
                         Text(
-                            text = listCoins[index].id.replaceFirstChar{it.uppercase()},
+                            text = listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()},
                             modifier = Modifier.padding(bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
                         )
                     }
                     // Here I load the data needed for the graph
-                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
-                        is ViewStateDataCoins.Error -> {
-                            Text(text = "Could not load the data")
-                        }
-                        is ViewStateDataCoins.Loading -> {
-                            Loading()
-                        }
-                        is ViewStateDataCoins.Success -> {
+//                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
+//                        is ViewStateDataCoins.Error -> {
+//                            Text(text = "Could not load the data")
+//                        }
+//                        is ViewStateDataCoins.Loading -> {
+//                            Loading()
+//                        }
+//                        is ViewStateDataCoins.Success -> {
 //                            Canvas(
 //                                modifier = Modifier
 //                                    .fillMaxWidth()
@@ -199,7 +197,7 @@ fun ShowStatsCoins(
 //
 //                                val pointsMean = arrayListOf<Float>()
 //                                // Calculate mean over 5 point and add that value to the list
-//                                for (i in 0 until dataCoins.data[index].history.size - 5 step 5){
+//                                for (i in 0 Util dataCoins.data[index].history.size - 5 step 5){
 //                                    pointsMean.add(med(listOf(
 //                                        dataCoins.data[index].history[i][1].toFloat(),
 //                                        dataCoins.data[index].history[i + 1][1].toFloat(),
@@ -219,7 +217,7 @@ fun ShowStatsCoins(
 //                                    currentX += distance
 //                                }
 //
-//                                for (i in 1 until points.size) {
+//                                for (i in 1 Util points.size) {
 //                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
 //                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
 //                                }
@@ -227,7 +225,7 @@ fun ShowStatsCoins(
 //
 //                                path.reset()
 //                                path.moveTo(points.first().x, points.first().y)
-//                                for (i in 1 until points.size) {
+//                                for (i in 1 Util points.size) {
 //                                    path.cubicTo(
 //                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
 //                                        points[i].x, points[i].y
@@ -246,8 +244,8 @@ fun ShowStatsCoins(
 //                                    .append(dataCoins.data[index].currentPrice.toString())
 //                            })
 //                            Divider()
-                        }
-                    }
+//                        }
+//                    }
                 }
             }
         }

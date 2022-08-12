@@ -37,16 +37,22 @@ android {
 }
 
 dependencies {
+    // Livedata
+    implementation 'androidx.compose.runtime:runtime-livedata:1.2.1'
+
+    // ViewModel
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha01'
+
     // Retrofit and OKHTTP
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
     // Room
-    kapt 'androidx.room:room-compiler:2.4.2'
-    implementation 'androidx.room:room-runtime:2.4.2'
+    kapt 'androidx.room:room-compiler:2.4.3'
+    implementation 'androidx.room:room-runtime:2.4.3'
     // Kotlin Extensions and Coroutines support for Room
-    implementation 'androidx.room:room-ktx:2.4.2'
+    implementation 'androidx.room:room-ktx:2.4.3'
     // Gson
     implementation 'com.google.code.gson:gson:2.9.0'
 

@@ -6,21 +6,22 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-class CoinCapApi {
+class CoinGeckoApi {
     companion object {
-        private const val baseUrl = "https://api.coincap.io"
+        private const val baseUrl = "https://api.coingecko.com/api/v3/"
 
-        fun createApi(): CoinCapApiService {
+        fun createApi(): CoinGeckoApiService {
             val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build()
 
-            val coinCapApi = Retrofit.Builder()
+            val coinGeckoApi = Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
-            return coinCapApi.create(CoinCapApiService::class.java)
+            return coinGeckoApi.create(CoinGeckoApiService::class.java)
         }
     }
 }

@@ -122,20 +122,20 @@ fun ShowDetailsCoins(
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins.details.priceChangePercentage24h))
+//                        append(String.format("%4.2f", detailsCoins.details.priceChangePercentage24h))
                         appendInlineContent("inlineContent", "[icon]")
                     },
                     fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins.details.priceChangePercentage24h)
+//                    inlineContent = addIcon(detailsCoins.details.priceChangePercentage24h)
                 )
 
                 Text(
                     text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins.details.priceChangePercentage7d))
+//                        append(String.format("%4.2f", detailsCoins.details.priceChangePercentage7d))
                         appendInlineContent("inlineContent", "[icon]")
                     },
                     fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins.details.priceChangePercentage7d)
+//                    inlineContent = addIcon(detailsCoins.details.priceChangePercentage7d)
                 )
             }
         }
@@ -163,7 +163,7 @@ fun ShowDetailsCoins(
                         text = buildString {
                             append(currencyObject?.nameFull?.get(1))
                                 .append(" ")
-                                .append(detailsCoins.details.priceCurrent)
+//                                .append(detailsCoins.details.priceCurrent)
                         },
                         textAlign = TextAlign.Center,
                         fontSize = 28.sp,
@@ -193,11 +193,11 @@ fun ShowDetailsCoins(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 CenterElement {
-                    Text(
-                        text = String.format("%,.0f", detailsCoins.details.circulatingSupply),
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp,
-                    )
+//                    Text(
+//                        text = String.format("%,.0f", detailsCoins.details.circulatingSupply),
+//                        textAlign = TextAlign.Center,
+//                        fontSize = 18.sp,
+//                    )
                 }
             }
         }
@@ -225,7 +225,7 @@ fun ShowDetailsCoins(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins.details.high24h.toString())
+//                            .append(detailsCoins.details.high24h.toString())
                     },
                     fontSize = 16.sp,
                 )
@@ -233,7 +233,7 @@ fun ShowDetailsCoins(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins.details.low24h.toString())
+//                            .append(detailsCoins.details.low24h.toString())
                     },
                     fontSize = 16.sp,
                 )
@@ -263,7 +263,7 @@ fun ShowDetailsCoins(
                         text = buildString {
                             append(currencyObject?.nameFull?.get(1))
                                 .append(" ")
-                                .append(String.format("%,.2f", detailsCoins.details.marketCap))
+//                                .append(String.format("%,.2f", detailsCoins.details.marketCap))
 
                         },
                         textAlign = TextAlign.Center,
@@ -279,16 +279,16 @@ fun ShowDetailsCoins(
                 CenterElement {
                     Text(
                         text = buildAnnotatedString {
-                            append(
-                                String.format(
-                                    "%4.2f",
-                                    detailsCoins.details.marketCapChangePercentage24h
-                                )
-                            )
+//                            append(
+//                                String.format(
+//                                    "%4.2f",
+//                                    detailsCoins.details.marketCapChangePercentage24h
+//                                )
+//                            )
                             appendInlineContent("inlineContent", "[icon]")
                         },
                         fontSize = 20.sp,
-                        inlineContent = addIcon(detailsCoins.details.priceChangePercentage24h)
+//                        inlineContent = addIcon(detailsCoins.details.priceChangePercentage24h)
                     )
                 }
             }

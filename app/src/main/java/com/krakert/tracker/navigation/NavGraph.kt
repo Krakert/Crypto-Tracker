@@ -32,11 +32,7 @@ fun NavGraph() {
                 )
             }
             composable(Screen.Add.route) {
-                ListAddCoin(
-                    viewModel = AddCoinViewModel(
-                        context = context
-                    )
-                )
+                ListAddCoin()
             }
             composable(Screen.Details.route) {
                 val result = navController.previousBackStackEntry?.savedStateHandle?.get<Coin>("Coin")

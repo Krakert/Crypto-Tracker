@@ -10,8 +10,8 @@ import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.CoinCapApi
-import com.krakert.tracker.api.CoinCapApiService
+import com.krakert.tracker.api.CoinGeckoApi
+import com.krakert.tracker.api.CoinGeckoApiService
 import com.krakert.tracker.model.Coin
 import com.krakert.tracker.state.ViewStateDetailsCoins
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
-    private val coinCapApiService: CoinCapApiService = CoinCapApi.createApi()
+    private val coinCapApiService: CoinGeckoApiService = CoinGeckoApi.createApi()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
 //    init {
@@ -33,7 +33,7 @@ class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
 
     fun getDetailsCoinByCoinId(coinId: String) {
         viewModelScope.launch {
-            coinCapApiService.getDetailsByCoinId(coinId)
+//            coinCapApiService.getDetailsByCoinId(coinId)
 //            collect { dataDetailsCoin ->
 //                try {
 //                    if (dataDetailsCoin.name.isEmpty()) {

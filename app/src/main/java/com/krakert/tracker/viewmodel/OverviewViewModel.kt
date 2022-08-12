@@ -3,16 +3,18 @@ package com.krakert.tracker.viewmodel
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.CoinCapApi
-import com.krakert.tracker.api.CoinCapApiService
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.repository.CryptoCacheRepository
+import com.krakert.tracker.api.Util
+import com.krakert.tracker.model.*
+import com.krakert.tracker.repository.CryptoApiRepository
+//import com.krakert.tracker.repository.CryptoCacheRepository
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
@@ -23,24 +25,27 @@ import java.lang.reflect.Type
 
 
 class OverviewViewModel(context: Context) : ViewModel() {
-    private val coinCapApiService: CoinCapApiService = CoinCapApi.createApi()
-    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
+    private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
+//    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
 
-    private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
-    val dataCoin = _viewStateDataCoin.asStateFlow()
+    //initialize it with an Empty type of Resource
+    private val _httpResource: MutableLiveData<Util.Resource<PriceCoins>> = MutableLiveData(Util.Resource.Loading())
+
+    val httpResource: LiveData<Util.Resource<PriceCoins>>
+        get() = _httpResource
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val dataSharedPreference = sharedPreference.FavoriteCoins.toString()
-            val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
+            val typeOfT: Type = object : TypeToken<FavoriteCoins>() {}.type
             if (dataSharedPreference.isBlank()) {
                 _viewState.value = ViewStateOverview.Empty
             } else {
-                val listFavoriteCoins: ArrayList<Coin> =
+                val listFavoriteCoins: FavoriteCoins =
                     Gson().fromJson(dataSharedPreference, typeOfT)
                 println("size of the list of favorites is : ${listFavoriteCoins.size}")
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
@@ -53,6 +58,11 @@ class OverviewViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun getPriceByListCoinIds(listCoins: FavoriteCoins) {
+        viewModelScope.launch {
+            _httpResource.value = cryptoApiRepository.getPriceCoins(listCoins)
+        }
+    }
     fun getAllDataByListCoinIds(listResult: List<Coin>) = viewModelScope.launch {
 //`        viewModelScope.launch(Dispatchers.IO) {
 //            val resultCache = cryptoCacheRepository.getListDataCoins()
@@ -87,7 +97,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
 //        }
 
 //        println(coinCapApiService.getHistoryByCoinId(listResult[0].id.lowercase()))
-        println(coinCapApiService.getHistoryByCoinId(listResult[0].id.lowercase()).history)
+//        println(coinCapApiService.getHistoryByCoinId(listResult[0].id.lowercase()).history)
 
 //        val data = arrayListOf<DataCoinChart>()
 //        val time = System.currentTimeMillis()
@@ -118,7 +128,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
 
     }
 
-    private suspend fun getAndSetData(listResult: List<Coin>) {
+    suspend fun getAndSetData(listResult: List<Coin>) {
 //        val data = arrayListOf<DataCoin>()
 //        val time = System.currentTimeMillis()
 //        try {

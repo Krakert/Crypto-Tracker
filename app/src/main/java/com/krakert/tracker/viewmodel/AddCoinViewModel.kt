@@ -1,51 +1,48 @@
 package com.krakert.tracker.viewmodel
 
+//import com.krakert.tracker.repository.CryptoCacheRepository
+import android.app.Application
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.CoinCapApi
-import com.krakert.tracker.api.CoinCapApiService
+import com.krakert.tracker.api.Util.Resource
 import com.krakert.tracker.model.Coin
-import com.krakert.tracker.repository.CryptoCacheRepository
-import com.krakert.tracker.state.ViewStateAddCoin
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.krakert.tracker.model.ListCoins
+import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.repository.CryptoApiRepository
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
-import java.util.*
 
-class AddCoinViewModel(context: Context) : ViewModel() {
-    private val coinCapApiService: CoinCapApiService = CoinCapApi.createApi()
-    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
+class AddCoinViewModel(application: Application) : AndroidViewModel(application) {
+
+//    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
+    private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
+    private val context = getApplication<Application>()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
-    // backing property to avoid state updates from other classes
-    private val _viewState = MutableStateFlow<ViewStateAddCoin>(ViewStateAddCoin.Loading)
+    //initialize it with an Empty type of Resource
+    private val _httpResource: MutableLiveData<Resource<ListCoins>> = MutableLiveData(Resource.Loading())
 
-    // the UI collects from this StateFlow to get it's state update
-    val listCoins = _viewState.asStateFlow()
+    val httpResource: LiveData<Resource<ListCoins>>
+        get() = _httpResource
 
-    fun getListCoins() = viewModelScope.launch(Dispatchers.IO) {
-        val result = coinCapApiService.getListCoins(100, 0)
-//        println(result)
-        for (coin in result.coins) {
-            println(coin.name)
+    fun getListCoins() {
+        viewModelScope.launch {
+            _httpResource.value  = cryptoApiRepository.getListCoins()
         }
+    }
 
-        _viewState.value = ViewStateAddCoin.Success(result.coins)
+//        _viewState.value = ViewStateAddCoin.Success(result.coins)
 
 //        val resultCache = cryptoCacheRepository.getListCoins()
 //        println(resultCache)
@@ -66,7 +63,6 @@ class AddCoinViewModel(context: Context) : ViewModel() {
 //                _viewState.value = ViewStateAddCoin.Success(resultCache)
 //            }
 //        }
-    }
 
 //    private suspend fun getAndSetData() {
 //        fireBaseRepo.getListCoins().collect {
@@ -85,10 +81,10 @@ class AddCoinViewModel(context: Context) : ViewModel() {
 
     fun addCoinToFavoriteCoins(coin: Coin, context: Context) {
         try {
-            var listFavoriteCoins = ArrayList<Coin>()
+            var listFavoriteCoins = ArrayList<FavoriteCoin>()
             var alreadyAdded = false
             val dataSharedPreferences = sharedPreference.FavoriteCoins.toString()
-            val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
+            val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
 
             if (dataSharedPreferences.isNotEmpty()) {
                 listFavoriteCoins = Gson().fromJson(dataSharedPreferences, typeOfT)
@@ -102,12 +98,9 @@ class AddCoinViewModel(context: Context) : ViewModel() {
             }
             if (!alreadyAdded) {
                 listFavoriteCoins.add(
-                    Coin(
-                        name = coin.name,
-                        id = coin.id,
-                        symbol = coin.symbol,
-                        timestamp = 0
-                    )
+                    FavoriteCoin(
+                    id = coin.id,
+                    name = coin.name)
                 )
                 sharedPreference.FavoriteCoins = Gson().toJson(listFavoriteCoins)
                 Toast.makeText(context, context.getString(R.string.txt_toast_added, coin.name), Toast.LENGTH_SHORT)
@@ -117,7 +110,7 @@ class AddCoinViewModel(context: Context) : ViewModel() {
             val errorMsg = "Something went wrong while saving the list of favorite coins"
 
             Log.e(TAG, e.message ?: errorMsg)
-            _viewState.value = ViewStateAddCoin.Error(e)
+//            _viewState.value = ViewStateAddCoin.Error(e)
         }
     }
 }

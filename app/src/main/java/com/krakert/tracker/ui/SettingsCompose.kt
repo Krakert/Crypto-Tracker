@@ -148,7 +148,7 @@ fun ListSettings() {
                     checked = checked == index.name,
                     toggleControl = {
                         Icon(
-                            imageVector = ToggleChipDefaults.switchIcon(checked == index.name),
+                            imageVector = ToggleChipDefaults.radioIcon(checked == index.name),
                             contentDescription =  if (checked == index.name) "On" else "Off"
                         )
                     },
