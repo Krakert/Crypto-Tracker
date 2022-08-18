@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
-class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
+class DetailsViewModel(context: Context, coin: String) : ViewModel() {
     private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 

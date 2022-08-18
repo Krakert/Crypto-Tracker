@@ -34,15 +34,17 @@ fun NavGraph() {
                 ListAddCoin()
             }
             composable(Screen.Details.route) {
-                val result = navController.previousBackStackEntry?.savedStateHandle?.get<Coin>("Coin")
-                ShowDetails(
-                    coin = result,
-                    viewModel = DetailsViewModel(
-                        context = context,
-                        coin = result
-                    ),
-                    navController = navController
-                )
+                val result = navController.previousBackStackEntry?.savedStateHandle?.get<String>("Coin")
+                if (result != null) {
+                    ShowDetails(
+                        coinId = result,
+                        viewModel = DetailsViewModel(
+                            context = context,
+                            coin = result
+                        ),
+                        navController = navController
+                    )
+                }
             }
             composable(Screen.Settings.route) {
                 ListSettings()

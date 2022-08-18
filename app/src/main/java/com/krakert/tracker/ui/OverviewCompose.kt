@@ -147,7 +147,7 @@ fun ShowStatsCoins(
                         onClick = {
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 key = "Coin",
-                                value = listFavoriteCoins[index]
+                                value = listFavoriteCoins[index].id
                             )
                             navController.navigate(Screen.Details.route)
                         }

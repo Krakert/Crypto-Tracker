@@ -36,17 +36,16 @@ import com.krakert.tracker.theme.themeValues
 import com.krakert.tracker.viewmodel.DetailsViewModel
 
 @Composable
-fun ShowDetails(coin: Coin?, viewModel: DetailsViewModel, navController: NavHostController) {
+fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
 
     when (val detailsCoins = viewModel.detailsCoin.collectAsState().value) {
         ViewStateDetailsCoins.Loading -> Loading()
         is ViewStateDetailsCoins.Error, is ViewStateDetailsCoins.Empty -> ShowIncorrectState(
-            textIncorrectState =
-            R.string.txt_toast_error,
+            textIncorrectState = R.string.txt_toast_error,
             viewModel = viewModel,
-            coinId = coin?.name.toString()
+            coinId = coinId
         )
-        is ViewStateDetailsCoins.Success -> ShowDetailsCoins(detailsCoins, viewModel, coin, navController)
+        is ViewStateDetailsCoins.Success -> ShowDetailsCoins(detailsCoins, viewModel, coinId, navController)
     }
 }
 
@@ -54,7 +53,7 @@ fun ShowDetails(coin: Coin?, viewModel: DetailsViewModel, navController: NavHost
 fun ShowDetailsCoins(
     detailsCoins: ViewStateDetailsCoins.Success,
     viewModel: DetailsViewModel,
-    coin: Coin?,
+    coinId: String,
     navController: NavHostController
 ) {
 
@@ -304,25 +303,25 @@ fun ShowDetailsCoins(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.Delete
-                ) {
-                    if (coin != null) {
-                        viewModel.removeCoinFromFavoriteCoins(coin = coin)
-                        navController.navigate(Screen.Overview.route)
-                        Toast.makeText(context, context.getString(R.string.txt_toast_removed, coin.name), Toast.LENGTH_SHORT).show()
-                    }
-                }
-                IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.Star
-                ) {
-                    if (coin != null) {
-//                        sharedPreference.FavoriteCoin = coin.idCoin
-                        Toast.makeText(context, context.getString(R.string.txt_toast_set_tile, coin.name), Toast.LENGTH_SHORT).show()
-                    }
-                }
+//                IconButton(
+//                    Modifier.size(ButtonDefaults.LargeButtonSize),
+//                    Icons.Rounded.Delete
+//                ) {
+//                    if (coin != null) {
+//                        viewModel.removeCoinFromFavoriteCoins(coin = coin)
+//                        navController.navigate(Screen.Overview.route)
+//                        Toast.makeText(context, context.getString(R.string.txt_toast_removed, coin.name), Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                IconButton(
+//                    Modifier.size(ButtonDefaults.LargeButtonSize),
+//                    Icons.Rounded.Star
+//                ) {
+//                    if (coin != null) {
+////                        sharedPreference.FavoriteCoin = coin.idCoin
+//                        Toast.makeText(context, context.getString(R.string.txt_toast_set_tile, coin.name), Toast.LENGTH_SHORT).show()
+//                    }
+//                }
             }
         }
     }
