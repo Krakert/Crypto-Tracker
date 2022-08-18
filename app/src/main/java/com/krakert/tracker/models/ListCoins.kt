@@ -1,7 +1,7 @@
 
 
 
-package com.krakert.tracker.model
+package com.krakert.tracker.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
@@ -57,14 +57,14 @@ data class Coin(
     fun getIcon() = image
 }
 
-/**
- * This data class is used to store a arraylist of the lasted prices of the coins the user has in his favorites list.
- */
-class PriceCoins : ArrayList<PriceCoin>()
-
-data class PriceCoin(
-    @SerializedName("usd")
-    val usd: Double,
-    @SerializedName("usd_24h_change")
-    val usd24hChange: Double
-)
+///**
+// * This data class is used to store a arraylist of the lasted prices of the coins the user has in his favorites list.
+// */
+//class PriceCoins : ArrayList<PriceCoin>()
+//
+//data class PriceCoin(
+//    @SerializedName("usd")
+//    val usd: Double,
+//    @SerializedName("usd_24h_change")
+//    val usd24hChange: Double
+//)

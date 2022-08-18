@@ -3,6 +3,8 @@ package com.krakert.tracker.viewmodel
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
@@ -12,43 +14,33 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
-import com.krakert.tracker.model.Coin
+import com.krakert.tracker.api.Util
+import com.krakert.tracker.models.Coin
+import com.krakert.tracker.models.CoinFullData
+import com.krakert.tracker.repository.CryptoApiRepository
 import com.krakert.tracker.state.ViewStateDetailsCoins
+import drewcarlson.coingecko.CoinGeckoClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class DetailsViewModel(context: Context, coin: Coin?) : ViewModel() {
-    private val coinCapApiService: CoinGeckoApiService = CoinGeckoApi.createApi()
+    private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
     private val sharedPreference = SharedPreference.sharedPreference(context)
-
-//    init {
-//        getDetailsCoinByCoinId(coin?.idCoin.toString())
-//    }
 
 
     private val _viewStateDetailsCoin = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
     val detailsCoin = _viewStateDetailsCoin.asStateFlow()
 
-    fun getDetailsCoinByCoinId(coinId: String) {
+    private val _httpResourceFullData: MutableLiveData<Util.Resource<CoinFullData>> = MutableLiveData(Util.Resource.Loading())
+
+    val httpResourceFullData: LiveData<Util.Resource<CoinFullData>>
+        get() = _httpResourceFullData
+
+    fun getDetailsCoinByCoinId(coinId: String){
         viewModelScope.launch {
-//            coinCapApiService.getDetailsByCoinId(coinId)
-//            collect { dataDetailsCoin ->
-//                try {
-//                    if (dataDetailsCoin.name.isEmpty()) {
-//                        _viewStateDetailsCoin.value = ViewStateDetailsCoins.Empty
-//                    } else {
-//                        _viewStateDetailsCoin.value = ViewStateDetailsCoins.Success(dataDetailsCoin)
-//                    }
-//                } catch (e: CoinGeckoRepository.CoinGeckoExceptionError) {
-//                    val errorMsg = "Something went wrong while retrieving data"
-//
-//                    Log.e(ContentValues.TAG, e.message ?: errorMsg)
-//                    _viewStateDetailsCoin.value = ViewStateDetailsCoins.Error(e)
-//
-//                }
-//            }
+            _httpResourceFullData.value = cryptoApiRepository.getDetailsCoinByCoinId(coinId)
         }
     }
 

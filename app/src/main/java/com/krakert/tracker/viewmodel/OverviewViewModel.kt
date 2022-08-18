@@ -12,10 +12,9 @@ import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Util
-import com.krakert.tracker.model.*
+import com.krakert.tracker.models.*
 import com.krakert.tracker.repository.CryptoApiRepository
 //import com.krakert.tracker.repository.CryptoCacheRepository
-import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,11 +31,12 @@ class OverviewViewModel(context: Context) : ViewModel() {
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
 
-    //initialize it with an Empty type of Resource
-    private val _httpResource: MutableLiveData<Util.Resource<PriceCoins>> = MutableLiveData(Util.Resource.Loading())
+    private val _httpResourcePricing: MutableLiveData<Util.Resource<Map<String, CoinPrice>>> = MutableLiveData(Util.Resource.Loading())
 
-    val httpResource: LiveData<Util.Resource<PriceCoins>>
-        get() = _httpResource
+    val httpResourcePricing: LiveData<Util.Resource<Map<String, CoinPrice>>>
+        get() = _httpResourcePricing
+
+
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -60,7 +60,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
 
     fun getPriceByListCoinIds(listCoins: FavoriteCoins) {
         viewModelScope.launch {
-            _httpResource.value = cryptoApiRepository.getPriceCoins(listCoins)
+            _httpResourcePricing.value = cryptoApiRepository.getPriceCoins(listCoins)
         }
     }
     fun getAllDataByListCoinIds(listResult: List<Coin>) = viewModelScope.launch {

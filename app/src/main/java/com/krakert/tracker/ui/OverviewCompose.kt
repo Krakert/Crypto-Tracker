@@ -12,7 +12,10 @@ import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalContext
@@ -29,11 +32,9 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.model.Currency
-import com.krakert.tracker.model.FavoriteCoin
-import com.krakert.tracker.model.FavoriteCoins
+import com.krakert.tracker.api.Util
+import com.krakert.tracker.models.*
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import com.krakert.tracker.viewmodel.OverviewViewModel
 
@@ -107,7 +108,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
     listFavoriteCoins: FavoriteCoins,
-    viewModel: OverviewViewModel,
+    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController
 ) {
 
@@ -116,8 +117,13 @@ fun ShowStatsCoins(
     val sharedPreference = SharedPreference.sharedPreference(context = context)
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
+    LaunchedEffect(Unit) {
+        viewModel.getPriceByListCoinIds(listFavoriteCoins)
+    }
 
-    viewModel.getPriceByListCoinIds(listFavoriteCoins)
+    val httpResourcePricing: Util.Resource<Map<String, CoinPrice>>? by viewModel.httpResourcePricing.observeAsState()
+    println(httpResourcePricing?.data.toString())
+
 
     ScalingLazyColumn(
         modifier = Modifier

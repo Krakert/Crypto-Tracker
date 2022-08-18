@@ -1,4 +1,4 @@
-package com.krakert.tracker.model
+package com.krakert.tracker.models
 
 import android.content.res.Configuration
 

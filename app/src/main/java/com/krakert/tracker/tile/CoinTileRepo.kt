@@ -1,12 +1,5 @@
 package com.krakert.tracker.tile
 
-import android.content.Context
-import com.krakert.tracker.SharedPreference
-import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.model.Currency
-import kotlinx.coroutines.withTimeout
-import java.util.*
-
 data class DataTileCoin(
     val name: String,
     val priceChangePercentage24h: Double,

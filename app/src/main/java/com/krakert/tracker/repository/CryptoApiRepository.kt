@@ -4,9 +4,7 @@ import android.util.Log
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
 import com.krakert.tracker.api.Util.Resource
-import com.krakert.tracker.model.ListCoins
-import com.krakert.tracker.model.FavoriteCoins
-import com.krakert.tracker.model.PriceCoins
+import com.krakert.tracker.models.*
 import kotlinx.coroutines.withTimeout
 
 class CryptoApiRepository {
@@ -25,7 +23,7 @@ class CryptoApiRepository {
         return Resource.Success(response)
     }
 
-    suspend fun getPriceCoins(listCoins: FavoriteCoins) : Resource<PriceCoins> {
+    suspend fun getPriceCoins(listCoins: FavoriteCoins) : Resource<Map<String, CoinPrice>> {
         val response = try {
             withTimeout(10_000){
                 val idCoins = arrayListOf<String>()
@@ -38,6 +36,23 @@ class CryptoApiRepository {
             Log.e("CryptoApiRepository", e.message ?: "No exception message available")
             return Resource.Error("An unknown error occured")
         }
+        println("______")
+        println(response)
+        return Resource.Success(response)
+    }
+
+    suspend fun getDetailsCoinByCoinId(coinId: String): Resource<CoinFullData> {
+        val response = try {
+            withTimeout(10_000) {
+                coinGeckoApiService.getDetailsCoinByCoinId(coinId)
+            }
+        } catch (e: Exception) {
+            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
+            throw CoinGeckoExceptionError("Retrieval of details of the coin was unsuccessful")
+        }
+        println("________________________")
+        println(response.marketData?.currentPrice?.get("usd"))
+        println("________________________")
         return Resource.Success(response)
     }
 

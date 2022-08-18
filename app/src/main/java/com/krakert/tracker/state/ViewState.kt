@@ -1,6 +1,6 @@
 package com.krakert.tracker.state
 
-import com.krakert.tracker.model.*
+import com.krakert.tracker.models.*
 
 sealed class ViewStateOverview {
     // Represents different states for the ListCoins screen
@@ -19,6 +19,6 @@ sealed class ViewStateDataCoins {
 sealed class ViewStateDetailsCoins {
     object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()
-    data class Success(val details: DataDetailsCoin) : ViewStateDetailsCoins()
+    data class Success(val details: CoinFullData) : ViewStateDetailsCoins()
     data class Error(val exception: Throwable) : ViewStateDetailsCoins()
 }

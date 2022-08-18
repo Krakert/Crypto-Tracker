@@ -1,12 +1,5 @@
 package com.krakert.tracker.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.model.DataCoinChart
-
 //@Dao
 //interface CryptoCacheDao {
 //

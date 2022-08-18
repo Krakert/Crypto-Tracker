@@ -1,16 +1,5 @@
 package com.krakert.tracker.database
 
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.model.Converters
-import com.krakert.tracker.model.DataCoinChart
-
 //@Database(entities = [Coin::class, DataCoinChart::class], version = 1, exportSchema = false)
 //@TypeConverters(Converters::class)
 //abstract class CryptoCacheRoomDatabase : RoomDatabase() {

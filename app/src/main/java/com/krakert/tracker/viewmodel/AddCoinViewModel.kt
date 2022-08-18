@@ -16,9 +16,9 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Util.Resource
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.model.ListCoins
-import com.krakert.tracker.model.FavoriteCoin
+import com.krakert.tracker.models.Coin
+import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.repository.CryptoApiRepository
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type

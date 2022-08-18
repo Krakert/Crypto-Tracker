@@ -12,10 +12,8 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -30,14 +28,12 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.model.Currency
+import com.krakert.tracker.models.Coin
+import com.krakert.tracker.models.Currency
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDetailsCoins
 import com.krakert.tracker.theme.themeValues
 import com.krakert.tracker.viewmodel.DetailsViewModel
-import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun ShowDetails(coin: Coin?, viewModel: DetailsViewModel, navController: NavHostController) {

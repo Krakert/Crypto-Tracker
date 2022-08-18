@@ -1,8 +1,8 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.model.ListCoins
-import com.krakert.tracker.model.DataCoinChart
-import com.krakert.tracker.model.PriceCoins
+import com.krakert.tracker.models.CoinFullData
+import com.krakert.tracker.models.CoinPrice
+import com.krakert.tracker.models.ListCoins
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -25,18 +25,16 @@ interface CoinGeckoApiService {
         @Query("include_24hr_vol") dayVol: String = "false",
         @Query("include_24hr_change") dayChange: String = "true",
         @Query("include_last_updated_at") lastUpdated: String = "false"
-    ) : PriceCoins
+    ) : Map<String, CoinPrice>
 
-//    @GET("coins/{id}")
-//    suspend fun getDetailsByCoinId(
-//        @Path("id") id: String,
-//        @Query("localization") localization: String = "false",
-//        @Query("tickers") tickers: Boolean = false,
-//        @Query("market_data") markerData: Boolean = true,
-//        @Query("community_data") communityData: Boolean = false,
-//        @Query("developer_data") developerData: Boolean = false,
-//        @Query("sparkline") sparkline: Boolean = false
-//        )  : DataDetailsCoin
-
-
+    @GET("coins/{id}")
+    suspend fun getDetailsCoinByCoinId(
+        @Path("id") id: String,
+        @Query("localization") localization: String = "false",
+        @Query("tickers") tickers: Boolean = false,
+        @Query("market_data") markerData: Boolean = true,
+        @Query("community_data") communityData: Boolean = false,
+        @Query("developer_data") developerData: Boolean = false,
+        @Query("sparkline") sparkline: Boolean = false
+    )  : CoinFullData
 }
