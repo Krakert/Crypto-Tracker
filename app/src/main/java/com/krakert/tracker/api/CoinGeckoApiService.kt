@@ -1,8 +1,7 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.models.CoinFullData
-import com.krakert.tracker.models.CoinPrice
-import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.*
+import okhttp3.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -25,7 +24,7 @@ interface CoinGeckoApiService {
         @Query("include_24hr_vol") dayVol: String = "false",
         @Query("include_24hr_change") dayChange: String = "true",
         @Query("include_last_updated_at") lastUpdated: String = "false"
-    ) : Map<String, CoinPrice>
+    ) : HashMap<String, CoinPriceData>
 
     @GET("coins/{id}")
     suspend fun getDetailsCoinByCoinId(

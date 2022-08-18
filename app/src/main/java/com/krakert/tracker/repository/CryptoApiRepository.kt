@@ -3,7 +3,7 @@ package com.krakert.tracker.repository
 import android.util.Log
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
-import com.krakert.tracker.api.Util.Resource
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.*
 import kotlinx.coroutines.withTimeout
 
@@ -23,21 +23,16 @@ class CryptoApiRepository {
         return Resource.Success(response)
     }
 
-    suspend fun getPriceCoins(listCoins: FavoriteCoins) : Resource<Map<String, CoinPrice>> {
+    suspend fun getPriceCoins(idCoins: String) : Resource<HashMap<String, CoinPriceData>> {
         val response = try {
             withTimeout(10_000){
-                val idCoins = arrayListOf<String>()
-                listCoins.forEach {
-                    idCoins.add(it.id)
-                }
-                coinGeckoApiService.getPriceByListCoinIds(ids = idCoins.joinToString(","))
+                coinGeckoApiService.getPriceByListCoinIds(idCoins)
             }
         } catch(e: Exception) {
             Log.e("CryptoApiRepository", e.message ?: "No exception message available")
             return Resource.Error("An unknown error occured")
         }
-        println("______")
-        println(response)
+
         return Resource.Success(response)
     }
 

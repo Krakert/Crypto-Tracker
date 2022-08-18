@@ -12,14 +12,11 @@ import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.CoinGeckoApi
-import com.krakert.tracker.api.CoinGeckoApiService
-import com.krakert.tracker.api.Util
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Coin
 import com.krakert.tracker.models.CoinFullData
 import com.krakert.tracker.repository.CryptoApiRepository
 import com.krakert.tracker.state.ViewStateDetailsCoins
-import drewcarlson.coingecko.CoinGeckoClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,9 +30,9 @@ class DetailsViewModel(context: Context, coin: String) : ViewModel() {
     private val _viewStateDetailsCoin = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
     val detailsCoin = _viewStateDetailsCoin.asStateFlow()
 
-    private val _httpResourceFullData: MutableLiveData<Util.Resource<CoinFullData>> = MutableLiveData(Util.Resource.Loading())
+    private val _httpResourceFullData: MutableLiveData<Resource<CoinFullData>> = MutableLiveData(Resource.Loading())
 
-    val httpResourceFullData: LiveData<Util.Resource<CoinFullData>>
+    val httpResourceFullData: LiveData<Resource<CoinFullData>>
         get() = _httpResourceFullData
 
     fun getDetailsCoinByCoinId(coinId: String){

@@ -15,7 +15,7 @@ import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.Util.Resource
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Coin
 import com.krakert.tracker.models.ListCoins
 import com.krakert.tracker.models.FavoriteCoin

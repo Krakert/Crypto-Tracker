@@ -1,5 +1,6 @@
 package com.krakert.tracker.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -32,7 +33,7 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.api.Util
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.*
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateOverview
@@ -121,9 +122,8 @@ fun ShowStatsCoins(
         viewModel.getPriceByListCoinIds(listFavoriteCoins)
     }
 
-    val httpResourcePricing: Util.Resource<Map<String, CoinPrice>>? by viewModel.httpResourcePricing.observeAsState()
-    println(httpResourcePricing?.data.toString())
-
+    val httpResourcePricing: Resource<HashMap<String, CoinPriceData>>? by viewModel.httpResourcePricing.observeAsState()
+    val data = httpResourcePricing?.data
 
     ScalingLazyColumn(
         modifier = Modifier
