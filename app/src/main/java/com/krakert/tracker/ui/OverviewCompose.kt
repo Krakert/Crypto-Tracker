@@ -1,7 +1,6 @@
 package com.krakert.tracker.ui
 
 import android.graphics.PointF
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
@@ -17,8 +16,6 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -36,8 +33,8 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.*
+import com.krakert.tracker.models.Currency
+import com.krakert.tracker.models.FavoriteCoins
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
@@ -175,7 +172,7 @@ fun ShowStatsCoins(
                         )
                     }
                     // Here I load the data needed for the graph
-                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
+                    when (val result = viewModel.dataCoin.collectAsState().value) {
                         is ViewStateDataCoins.Error -> {
                             Text(text = "Could not load the data")
                         }
@@ -183,75 +180,77 @@ fun ShowStatsCoins(
                             Loading()
                         }
                         is ViewStateDataCoins.Success -> {
-//                            Canvas(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(105.dp)
-//                                    .padding(bottom = 8.dp)
-//                            ) {
-//                                val points = arrayListOf<PointF>()
-//                                val pointsCon1 = arrayListOf<PointF>()
-//                                val pointsCon2 = arrayListOf<PointF>()
-//                                dataCoins.data.data?.get(listFavoriteCoins[index].id)?.get("market_chart")
-//                                var maxData = dataCoins.data[index].history[0][1].toFloat()
-//                                var minData = dataCoins.data[index].history[0][1].toFloat()
-//
-//                                dataCoins.data[index].history.forEachIndexed { _, index ->
-//                                    if (maxData < index[1].toDouble()) {
-//                                        maxData = index[1].toFloat()
-//                                    }
-//                                    if (minData > index[1].toFloat()){
-//                                        minData = index[1].toFloat()
-//                                    }
-//                                }
-//
-//                                val pointsMean = arrayListOf<Float>()
-//                                // Calculate mean over 5 point and add that value to the list
-//                                for (i in 0 until dataCoins.data[index].history.size - 5 step 5){
-//                                    pointsMean.add(med(listOf(
-//                                        dataCoins.data[index].history[i][1].toFloat(),
-//                                        dataCoins.data[index].history[i + 1][1].toFloat(),
-//                                        dataCoins.data[index].history[i + 2][1].toFloat(),
-//                                        dataCoins.data[index].history[i + 3][1].toFloat(),
-//                                        dataCoins.data[index].history[i + 4][1].toFloat(),
-//                                    )))
-//                                }
-//
-//                                val distance = size.width / (pointsMean.size + 1)
-//                                var currentX = 0F
-//
-//                                pointsMean.forEach { point ->
-//                                    val y = (point - maxData) / (minData - maxData) * size.height
-//                                    val x = currentX + distance
-//                                    points.add(PointF(x, y))
-//                                    currentX += distance
-//                                }
-//
-//                                for (i in 1 until points.size) {
-//                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
-//                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
-//                                }
-//
-//
-//                                path.reset()
-//                                path.moveTo(points.first().x, points.first().y)
-//                                for (i in 1 until points.size) {
-//                                    path.cubicTo(
-//                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
-//                                        points[i].x, points[i].y
-//                                    )
-//                                }
-//
-//                                drawPath(
-//                                    path = path,
-//                                    color = themeValues[3].colors.secondary,
-//                                    style = Stroke(width = 6f)
-//                                )
-//                            }
+                            Canvas(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(105.dp)
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                val points = arrayListOf<PointF>()
+                                val pointsCon1 = arrayListOf<PointF>()
+                                val pointsCon2 = arrayListOf<PointF>()
+                                @Suppress("UNCHECKED_CAST")
+                                val marketChart: List<List<Double>> = result.data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
+
+                                var maxData = marketChart[0][1].toFloat()
+                                var minData = marketChart[0][1].toFloat()
+
+                                marketChart.forEachIndexed { _, index ->
+                                    if (maxData < index[1].toFloat()) {
+                                        maxData = index[1].toFloat()
+                                    }
+                                    if (minData > index[1].toFloat()){
+                                        minData = index[1].toFloat()
+                                    }
+                                }
+
+                                val pointsMean = arrayListOf<Float>()
+                                // Calculate mean over 5 point and add that value to the list
+                                for (i in 0 until marketChart.size - 5 step 5){
+                                    pointsMean.add(med(listOf(
+                                        marketChart[i][1].toFloat(),
+                                        marketChart[i + 1][1].toFloat(),
+                                        marketChart[i + 2][1].toFloat(),
+                                        marketChart[i + 3][1].toFloat(),
+                                        marketChart[i + 4][1].toFloat(),
+                                    )))
+                                }
+
+                                val distance = size.width / (pointsMean.size + 1)
+                                var currentX = 0F
+
+                                pointsMean.forEach { point ->
+                                    val y = (point - maxData) / (minData - maxData) * size.height
+                                    val x = currentX + distance
+                                    points.add(PointF(x, y))
+                                    currentX += distance
+                                }
+
+                                for (i in 1 until points.size) {
+                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
+                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
+                                }
+
+
+                                path.reset()
+                                path.moveTo(points.first().x, points.first().y)
+                                for (i in 1 until points.size) {
+                                    path.cubicTo(
+                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
+                                        points[i].x, points[i].y
+                                    )
+                                }
+
+                                drawPath(
+                                    path = path,
+                                    color = themeValues[3].colors.secondary,
+                                    style = Stroke(width = 6f)
+                                )
+                            }
                             Text(text = buildString {
                                 append(currencyObject?.nameFull?.get(1))
                                     .append(" ")
-                                    .append(dataCoins.data.data?.get(listFavoriteCoins[index].id)?.get(sharedPreference.Currency?.lowercase()))
+                                    .append(result.data.data?.get(listFavoriteCoins[index].id)?.get(sharedPreference.Currency?.lowercase()))
                             })
                             Divider()
                         }
