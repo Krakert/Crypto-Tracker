@@ -6,14 +6,13 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.krakert.tracker.models.Coin
-import com.krakert.tracker.theme.WearAppTheme
+import com.krakert.tracker.ui.tile.theme.WearAppTheme
 import com.krakert.tracker.ui.ListAddCoin
 import com.krakert.tracker.ui.ListOverview
 import com.krakert.tracker.ui.ListSettings
 import com.krakert.tracker.ui.ShowDetails
-import com.krakert.tracker.viewmodel.DetailsViewModel
-import com.krakert.tracker.viewmodel.OverviewViewModel
+import com.krakert.tracker.ui.viewmodel.DetailsViewModel
+import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 
 @Composable
 fun NavGraph() {

@@ -1,4 +1,4 @@
-package com.krakert.tracker.tile
+package com.krakert.tracker.ui.tile
 
 data class DataTileCoin(
     val name: String,

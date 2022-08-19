@@ -1,6 +1,8 @@
 package com.krakert.tracker.api
 
 import com.krakert.tracker.models.*
+import com.krakert.tracker.models.responses.CoinFullData
+import com.krakert.tracker.models.responses.MarketChart
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

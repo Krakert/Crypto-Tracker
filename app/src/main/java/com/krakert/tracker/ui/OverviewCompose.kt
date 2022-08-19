@@ -1,6 +1,6 @@
 package com.krakert.tracker.ui
 
-import android.graphics.PointF
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
@@ -16,6 +16,8 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -33,13 +35,11 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.models.Currency
-import com.krakert.tracker.models.FavoriteCoins
+import com.krakert.tracker.models.*
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.state.ViewStateDataCoins
-import com.krakert.tracker.state.ViewStateOverview
-import com.krakert.tracker.theme.themeValues
-import com.krakert.tracker.viewmodel.OverviewViewModel
+import com.krakert.tracker.ui.state.ViewStateDataCoins
+import com.krakert.tracker.ui.state.ViewStateOverview
+import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 
 
 @Composable
@@ -62,11 +62,14 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        when (val response = viewModel.favoriteCoins.collectAsState().value) {
+        val response by viewModel.favoriteCoins.collectAsState()
+
+        when (response) {
             is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
             is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
             is ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState, listFavoriteCoins = response.favorite, viewModel = viewModel, navController = navController)
+            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState,
+                listFavoriteCoins = (response as ViewStateOverview.Success).favorite, viewModel = viewModel, navController = navController)
         }
 
     }
@@ -121,9 +124,9 @@ fun ShowStatsCoins(
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
 
-    LaunchedEffect(Unit) {
-        viewModel.getAllDataByListCoinIds(listFavoriteCoins)
-    }
+    //removed launchedeffect
+    viewModel.getAllDataByListCoinIds(listFavoriteCoins)
+
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -172,7 +175,8 @@ fun ShowStatsCoins(
                         )
                     }
                     // Here I load the data needed for the graph
-                    when (val result = viewModel.dataCoin.collectAsState().value) {
+                    val dataCoins by viewModel.dataCoin.collectAsState()
+                    when (dataCoins) {
                         is ViewStateDataCoins.Error -> {
                             Text(text = "Could not load the data")
                         }
@@ -247,10 +251,15 @@ fun ShowStatsCoins(
                                     style = Stroke(width = 6f)
                                 )
                             }
+
+                            //retrieving this value is a little bit messy..
+                            val textData = (dataCoins as ViewStateDataCoins.Success).data.data?.get(
+                                listFavoriteCoins[index].id
+                            )?.get(sharedPreference.Currency?.lowercase())
                             Text(text = buildString {
                                 append(currencyObject?.nameFull?.get(1))
                                     .append(" ")
-                                    .append(result.data.data?.get(listFavoriteCoins[index].id)?.get(sharedPreference.Currency?.lowercase()))
+                                    .append(textData)
                             })
                             Divider()
                         }

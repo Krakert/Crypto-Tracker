@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,11 +26,9 @@ import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Coin
-import com.krakert.tracker.models.ListCoins
-import com.krakert.tracker.state.ViewStateAddCoin
-import com.krakert.tracker.viewmodel.AddCoinViewModel
+import com.krakert.tracker.ui.state.ViewStateAddCoin
+import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
 import java.lang.reflect.Type

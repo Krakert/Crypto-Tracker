@@ -1,4 +1,4 @@
-package com.krakert.tracker.theme
+package com.krakert.tracker.ui.tile.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.Colors

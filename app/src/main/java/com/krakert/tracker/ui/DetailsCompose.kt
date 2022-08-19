@@ -28,12 +28,10 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.models.Coin
 import com.krakert.tracker.models.Currency
-import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.state.ViewStateDetailsCoins
-import com.krakert.tracker.theme.themeValues
-import com.krakert.tracker.viewmodel.DetailsViewModel
+import com.krakert.tracker.ui.state.ViewStateDetailsCoins
+import com.krakert.tracker.ui.tile.theme.themeValues
+import com.krakert.tracker.ui.viewmodel.DetailsViewModel
 
 @Composable
 fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
