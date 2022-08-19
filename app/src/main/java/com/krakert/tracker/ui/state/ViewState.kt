@@ -16,7 +16,7 @@ sealed class ViewStateOverview {
     // Represents different states for the overview screen
     object Empty : ViewStateOverview()
     object Loading : ViewStateOverview()
-    data class Success(val favorite: FavoriteCoins) : ViewStateOverview()
+    data class Success(val favorite: ArrayList<FavoriteCoin>) : ViewStateOverview()
     data class Error(val exception: Throwable) : ViewStateOverview()
 }
 

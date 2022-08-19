@@ -1,6 +1,8 @@
 package com.krakert.tracker.models
 
-class FavoriteCoins: ArrayList<FavoriteCoin>()
+/**
+ * This class is used to store all the coins the app needs to keep track of
+ */
 
 data class FavoriteCoin(
     val id: String,

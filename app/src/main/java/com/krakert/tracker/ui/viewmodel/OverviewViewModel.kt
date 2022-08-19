@@ -35,8 +35,11 @@ class OverviewViewModel(context: Context) : ViewModel() {
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val dataSharedPreference = sharedPreference.FavoriteCoins.toString()
-            val typeOfT: Type = object : TypeToken<FavoriteCoins>() {}.type
-            if (dataSharedPreference.isBlank()) {
+            val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
+
+            val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreference, typeOfT)
+
+            if (listFavoriteCoins.isEmpty()) {
                 _viewState.value = ViewStateOverview.Empty
             } else {
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)

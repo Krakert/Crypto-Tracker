@@ -1,6 +1,6 @@
 package com.krakert.tracker.ui
 
-import android.util.Log
+import android.graphics.PointF
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
@@ -14,10 +14,8 @@ import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -35,10 +33,12 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.models.*
+import com.krakert.tracker.models.Currency
+import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.ui.state.ViewStateDataCoins
 import com.krakert.tracker.ui.state.ViewStateOverview
+import com.krakert.tracker.ui.tile.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 
 
@@ -113,7 +113,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listFavoriteCoins: FavoriteCoins,
+    listFavoriteCoins: ArrayList<FavoriteCoin>,
     viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController
 ) {
@@ -194,7 +194,7 @@ fun ShowStatsCoins(
                                 val pointsCon1 = arrayListOf<PointF>()
                                 val pointsCon2 = arrayListOf<PointF>()
                                 @Suppress("UNCHECKED_CAST")
-                                val marketChart: List<List<Double>> = result.data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
+                                val marketChart = (dataCoins as ViewStateDataCoins.Success).data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
 
                                 var maxData = marketChart[0][1].toFloat()
                                 var minData = marketChart[0][1].toFloat()

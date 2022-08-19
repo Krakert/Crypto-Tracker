@@ -10,22 +10,26 @@ import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.Coin
+import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.repository.CryptoApiRepository
-import com.krakert.tracker.repository.CryptoApiRepository.*
+import com.krakert.tracker.repository.CryptoApiRepository.CoinGeckoExceptionError
 import com.krakert.tracker.ui.state.ViewStateDetailsCoins
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
-class DetailsViewModel(context: Context, coin: String) : ViewModel() {
+class DetailsViewModel(context: Context, coinId: String) : ViewModel() {
     private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
 
     private val _viewStateDetailsCoin = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
     val detailsCoin = _viewStateDetailsCoin.asStateFlow()
+
+    init {
+        getDetailsCoinByCoinId(coinId)
+    }
 
 
     fun getDetailsCoinByCoinId(coinId: String){
@@ -44,24 +48,29 @@ class DetailsViewModel(context: Context, coin: String) : ViewModel() {
         }
     }
 
-    fun removeCoinFromFavoriteCoins(coin: Coin) {
+    fun removeCoinFromFavoriteCoins(coinId: String) {
         try {
             val dataSharedPreferences = sharedPreference.FavoriteCoins.toString()
             val favoriteCoin = sharedPreference.FavoriteCoin
-            val typeOfT: Type = object : TypeToken<ArrayList<Coin>>() {}.type
-            val listFavoriteCoins: ArrayList<Coin> = Gson().fromJson(dataSharedPreferences, typeOfT)
-            listFavoriteCoins.remove(coin)
+            val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
+            val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreferences, typeOfT)
+
+            var indexToRemove: Int? = null
+                listFavoriteCoins.forEach {
+                    if (it.id == coinId.lowercase())
+                        indexToRemove = listFavoriteCoins.indexOf(it)
+                }
+
+            indexToRemove?.let { listFavoriteCoins.removeAt(it) }
 
             sharedPreference.FavoriteCoins = Gson().toJson(listFavoriteCoins)
 
-//            if (favoriteCoin == coin.idCoin){
-//                sharedPreference.FavoriteCoin = ""
-//            }
+            if (favoriteCoin == coinId){
+                sharedPreference.FavoriteCoin = ""
+            }
 
         } catch (e: Exception) {
-            val errorMsg = "Something went wrong while deleting a coins"
-
-            Log.e(ContentValues.TAG, e.message ?: errorMsg)
+            Log.e(ContentValues.TAG, e.message ?: "Something went wrong while deleting a coins")
         }
     }
 }
