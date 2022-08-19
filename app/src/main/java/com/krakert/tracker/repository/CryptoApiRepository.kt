@@ -4,75 +4,114 @@ import android.util.Log
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.*
+import com.krakert.tracker.models.CoinFullData
+import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.MarketChart
 import kotlinx.coroutines.withTimeout
 
 class CryptoApiRepository {
     private val coinGeckoApiService: CoinGeckoApiService = CoinGeckoApi.createApi()
 
-    suspend fun getListCoins() : Resource<ListCoins> {
-        val response = try {
-            withTimeout(10_000){
-                coinGeckoApiService.getListCoins()
-            }
-        } catch(e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("An unknown error occured")
-        }
-
-        return Resource.Success(response)
-    }
-
-    suspend fun getPriceCoins(idCoins: String) : Resource<HashMap<String, CoinPriceData>> {
-        val response = try {
-            withTimeout(10_000){
-                coinGeckoApiService.getPriceByListCoinIds(idCoins)
-            }
-        } catch(e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("An unknown error occured")
-        }
-
-        return Resource.Success(response)
-    }
-
-    suspend fun getDetailsCoinByCoinId(coinId: String): Resource<CoinFullData> {
+    suspend fun getListCoins(
+        currency: String = "usd",
+        ids: String? = null,
+        order: String = "market_cap_desc",
+        perPage: Int = 100,
+        page: Int = 1
+    ): Resource<ListCoins> {
         val response = try {
             withTimeout(10_000) {
-                coinGeckoApiService.getDetailsCoinByCoinId(coinId)
+                coinGeckoApiService.getListCoins(
+                    currency = currency,
+                    ids = ids,
+                    order = order,
+                    perPage = perPage,
+                    page = page
+                )
             }
         } catch (e: Exception) {
             Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            throw CoinGeckoExceptionError("Retrieval of details of the coin was unsuccessful")
+            return Resource.Error("Retrieval of a list of coins was unsuccessful")
         }
-        println("________________________")
-        println(response.marketData?.currentPrice?.get("usd"))
-        println("________________________")
+
         return Resource.Success(response)
     }
 
-//    suspend fun getDetailsCoinByCoinId(coinId: String): Resource<DataDetailsCoin> {
-//        val response = try {
-//            withTimeout(10_000) {
-//                coinGeckoApiService.getDetailsCoinByCoinId()
-//                        DataDetailsCoin(
-//                            name = data.name,
-//                            priceCurrent = data.marketData?.currentPrice?.get(currencyString) ?: 0.0,
-//                            image = data.image,
-//                            priceChangePercentage24h = data.marketData?.priceChangePercentage24h ?: 0.0,
-//                            priceChangePercentage7d = data.marketData?.priceChangePercentage7d ?: 0.0,
-//                            circulatingSupply = data.marketData?.circulatingSupply ?: 0.0,
-//                            high24h = data.marketData?.high24h?.get(currencyString) ?: 0.0,
-//                            low24h = data.marketData?.low24h?.get(currencyString) ?: 0.0,
-//                            marketCap = data.marketData?.marketCap?.get(currencyString) ?: 0.0,
-//                            marketCapChangePercentage24h = data.marketData?.marketCapChangePercentage24h ?: 0.0
-//                        )
-//            }
-//        } catch (e: Exception) {
-//            throw CoinGeckoExceptionError("Retrieval of details of the coin was unsuccessful")
-//        }
-//        return Resource.Success(response)
-//    }
+    suspend fun getPriceCoins(
+        idCoins: String,
+        currency: String = "usd",
+        marketCap: String = "false",
+        dayVol: String = "false",
+        dayChange: String = "true",
+        lastUpdated: String = "false"
+    ): Resource<MutableMap<String, MutableMap<String, Any>>> {
+        val response = try {
+            withTimeout(10_000) {
+                coinGeckoApiService.getPriceByListCoinIds(
+                    ids = idCoins,
+                    currency = currency,
+                    marketCap = marketCap,
+                    dayVol = dayVol,
+                    dayChange = dayChange,
+                    lastUpdated = lastUpdated
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
+            return Resource.Error("Retrieval of latest price of the coins was unsuccessful")
+        }
+
+        return Resource.Success(response)
+    }
+
+    suspend fun getDetailsCoinByCoinId(
+        coinId: String,
+        localization: String = "false",
+        tickers: Boolean = false,
+        markerData: Boolean = true,
+        communityData: Boolean = false,
+        developerData: Boolean = false,
+        sparkline: Boolean = false,
+    ): Resource<CoinFullData> {
+        val response = try {
+            withTimeout(10_000) {
+                coinGeckoApiService.getDetailsCoinByCoinId(
+                    id = coinId,
+                    localization = localization,
+                    tickers = tickers,
+                    markerData = markerData,
+                    communityData = communityData,
+                    developerData = developerData,
+                    sparkline = sparkline
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
+            return Resource.Error("Retrieval of details of the coin was unsuccessful")
+        }
+        return Resource.Success(response)
+    }
+
+    suspend fun getHistoryByCoinId(
+        coinId: String,
+        currency: String,
+        days: String,
+    ): Resource<MarketChart> {
+        val response = try {
+            withTimeout(10_000) {
+                coinGeckoApiService.getHistoryByCoinId(
+                    id = coinId,
+                    currency = currency,
+                    days = days
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
+            return Resource.Error("Retrieval of history data of the coin was unsuccessful")
+        }
+        return Resource.Success(response)
+    }
+
 
     class CoinGeckoExceptionError(message: String) : Exception(message)
 }
