@@ -1,4 +1,4 @@
-package com.krakert.tracker.viewmodel
+package com.krakert.tracker.ui.viewmodel
 
 //import com.krakert.tracker.repository.CryptoCacheRepository
 import android.content.ContentValues
@@ -14,8 +14,8 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.FavoriteCoins
 import com.krakert.tracker.repository.CryptoApiRepository
-import com.krakert.tracker.state.ViewStateDataCoins
-import com.krakert.tracker.state.ViewStateOverview
+import com.krakert.tracker.ui.state.ViewStateDataCoins
+import com.krakert.tracker.ui.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

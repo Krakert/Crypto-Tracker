@@ -4,9 +4,9 @@ import android.util.Log
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.CoinFullData
+import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.ListCoins
-import com.krakert.tracker.models.MarketChart
+import com.krakert.tracker.models.responses.MarketChart
 import kotlinx.coroutines.withTimeout
 
 class CryptoApiRepository {

@@ -1,7 +1,8 @@
-package com.krakert.tracker.state
+package com.krakert.tracker.ui.state
 
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.*
+import com.krakert.tracker.models.responses.CoinFullData
 
 sealed class ViewStateAddCoin {
     // Represents different states for the add coin screen

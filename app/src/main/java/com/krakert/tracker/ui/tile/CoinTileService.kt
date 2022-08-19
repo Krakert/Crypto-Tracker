@@ -1,4 +1,4 @@
-package com.krakert.tracker.tile
+package com.krakert.tracker.ui.tile
 
 import androidx.wear.tiles.DeviceParametersBuilders.DeviceParameters
 import androidx.wear.tiles.DimensionBuilders

@@ -1,4 +1,4 @@
-package com.krakert.tracker.models.data
+package com.krakert.tracker.models
 
 import com.google.gson.annotations.SerializedName
 
