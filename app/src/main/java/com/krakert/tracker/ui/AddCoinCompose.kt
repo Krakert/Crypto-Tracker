@@ -30,6 +30,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Coin
 import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.state.ViewStateAddCoin
 import com.krakert.tracker.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
@@ -38,9 +39,9 @@ import java.lang.reflect.Type
 @Composable
 fun ListAddCoin( viewModel: AddCoinViewModel = viewModel()) {
 
-    val httpResource: Resource<ListCoins>? by viewModel.httpResource.observeAsState()
-    viewModel.getListCoins()
-
+    LaunchedEffect(Unit){
+        viewModel.getListCoins()
+    }
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -60,11 +61,19 @@ fun ListAddCoin( viewModel: AddCoinViewModel = viewModel()) {
             )
         }
     ) {
-        when (httpResource) {
-            is Resource.Empty -> ShowIncorrectState(R.string.txt_toast_reload, viewModel)
-            is Resource.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            is Resource.Loading -> Loading()
-            is Resource.Success -> ShowList(scrollState = scrollState, listResult = (httpResource as Resource.Success<ListCoins>).data, viewModel = viewModel)
+        when (val listResult = viewModel.listCoins.collectAsState().value) {
+            ViewStateAddCoin.Empty -> {
+                ShowIncorrectState(R.string.txt_toast_reload, viewModel)
+            }
+            is ViewStateAddCoin.Error -> {
+                ShowIncorrectState(R.string.txt_toast_error, viewModel)
+            }
+            ViewStateAddCoin.Loading -> {
+                Loading()
+            }
+            is ViewStateAddCoin.Success -> {
+                ShowList(scrollState = scrollState, listResult = listResult.coins.data, viewModel = viewModel)
+            }
         }
 
     }

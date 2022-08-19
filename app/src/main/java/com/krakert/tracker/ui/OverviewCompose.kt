@@ -1,8 +1,10 @@
 package com.krakert.tracker.ui
 
+import android.graphics.PointF
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
@@ -19,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -36,7 +39,9 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.*
 import com.krakert.tracker.navigation.Screen
+import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
+import com.krakert.tracker.theme.themeValues
 import com.krakert.tracker.viewmodel.OverviewViewModel
 
 
@@ -118,12 +123,10 @@ fun ShowStatsCoins(
     val sharedPreference = SharedPreference.sharedPreference(context = context)
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
-    LaunchedEffect(Unit) {
-        viewModel.getPriceByListCoinIds(listFavoriteCoins)
-    }
 
-    val httpResourcePricing: Resource<HashMap<String, CoinPriceData>>? by viewModel.httpResourcePricing.observeAsState()
-    val data = httpResourcePricing?.data
+    LaunchedEffect(Unit) {
+        viewModel.getAllDataByListCoinIds(listFavoriteCoins)
+    }
 
     ScalingLazyColumn(
         modifier = Modifier
@@ -172,14 +175,14 @@ fun ShowStatsCoins(
                         )
                     }
                     // Here I load the data needed for the graph
-//                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
-//                        is ViewStateDataCoins.Error -> {
-//                            Text(text = "Could not load the data")
-//                        }
-//                        is ViewStateDataCoins.Loading -> {
-//                            Loading()
-//                        }
-//                        is ViewStateDataCoins.Success -> {
+                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
+                        is ViewStateDataCoins.Error -> {
+                            Text(text = "Could not load the data")
+                        }
+                        is ViewStateDataCoins.Loading -> {
+                            Loading()
+                        }
+                        is ViewStateDataCoins.Success -> {
 //                            Canvas(
 //                                modifier = Modifier
 //                                    .fillMaxWidth()
@@ -189,6 +192,7 @@ fun ShowStatsCoins(
 //                                val points = arrayListOf<PointF>()
 //                                val pointsCon1 = arrayListOf<PointF>()
 //                                val pointsCon2 = arrayListOf<PointF>()
+//                                dataCoins.data.data?.get(listFavoriteCoins[index].id)?.get("market_chart")
 //                                var maxData = dataCoins.data[index].history[0][1].toFloat()
 //                                var minData = dataCoins.data[index].history[0][1].toFloat()
 //
@@ -203,7 +207,7 @@ fun ShowStatsCoins(
 //
 //                                val pointsMean = arrayListOf<Float>()
 //                                // Calculate mean over 5 point and add that value to the list
-//                                for (i in 0 Util dataCoins.data[index].history.size - 5 step 5){
+//                                for (i in 0 until dataCoins.data[index].history.size - 5 step 5){
 //                                    pointsMean.add(med(listOf(
 //                                        dataCoins.data[index].history[i][1].toFloat(),
 //                                        dataCoins.data[index].history[i + 1][1].toFloat(),
@@ -223,7 +227,7 @@ fun ShowStatsCoins(
 //                                    currentX += distance
 //                                }
 //
-//                                for (i in 1 Util points.size) {
+//                                for (i in 1 until points.size) {
 //                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
 //                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
 //                                }
@@ -231,7 +235,7 @@ fun ShowStatsCoins(
 //
 //                                path.reset()
 //                                path.moveTo(points.first().x, points.first().y)
-//                                for (i in 1 Util points.size) {
+//                                for (i in 1 until points.size) {
 //                                    path.cubicTo(
 //                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
 //                                        points[i].x, points[i].y
@@ -244,14 +248,14 @@ fun ShowStatsCoins(
 //                                    style = Stroke(width = 6f)
 //                                )
 //                            }
-//                            Text(text = buildString {
-//                                append(currencyObject?.nameFull?.get(1))
-//                                    .append(" ")
-//                                    .append(dataCoins.data[index].currentPrice.toString())
-//                            })
-//                            Divider()
-//                        }
-//                    }
+                            Text(text = buildString {
+                                append(currencyObject?.nameFull?.get(1))
+                                    .append(" ")
+                                    .append(dataCoins.data.data?.get(listFavoriteCoins[index].id)?.get(sharedPreference.Currency?.lowercase()))
+                            })
+                            Divider()
+                        }
+                    }
                 }
             }
         }

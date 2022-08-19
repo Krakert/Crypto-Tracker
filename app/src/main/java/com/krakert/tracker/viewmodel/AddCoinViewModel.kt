@@ -7,19 +7,18 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Coin
-import com.krakert.tracker.models.ListCoins
 import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.repository.CryptoApiRepository
+import com.krakert.tracker.state.ViewStateAddCoin
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
@@ -30,15 +29,15 @@ class AddCoinViewModel(application: Application) : AndroidViewModel(application)
     private val context = getApplication<Application>()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
-    //initialize it with an Empty type of Resource
-    private val _httpResource: MutableLiveData<Resource<ListCoins>> = MutableLiveData(Resource.Loading())
+    // backing property to avoid state updates from other classes
+    private val _viewState = MutableStateFlow<ViewStateAddCoin>(ViewStateAddCoin.Loading)
 
-    val httpResource: LiveData<Resource<ListCoins>>
-        get() = _httpResource
+    // the UI collects from this StateFlow to get it's state update
+    val listCoins = _viewState.asStateFlow()
 
     fun getListCoins() {
         viewModelScope.launch {
-            _httpResource.value  = cryptoApiRepository.getListCoins()
+            _viewState.value = ViewStateAddCoin.Success(cryptoApiRepository.getListCoins())
         }
     }
 
