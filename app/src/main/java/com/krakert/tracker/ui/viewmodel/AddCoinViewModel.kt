@@ -1,6 +1,5 @@
 package com.krakert.tracker.ui.viewmodel
 
-//import com.krakert.tracker.repository.CryptoCacheRepository
 import android.app.Application
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -23,8 +22,6 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 
 class AddCoinViewModel(application: Application) : AndroidViewModel(application) {
-
-//    private val cryptoCacheRepository: CryptoCacheRepository = CryptoCacheRepository(context)
     private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
     private val context = getApplication<Application>()
     private val sharedPreference = SharedPreference.sharedPreference(context)
@@ -40,43 +37,6 @@ class AddCoinViewModel(application: Application) : AndroidViewModel(application)
             _viewState.value = ViewStateAddCoin.Success(cryptoApiRepository.getListCoins())
         }
     }
-
-//        _viewState.value = ViewStateAddCoin.Success(result.coins)
-
-//        val resultCache = cryptoCacheRepository.getListCoins()
-//        println(resultCache)
-//        if (resultCache.isEmpty()) {
-//            println("Cache empty, AddCoinViewModel")
-//            getAndSetData()
-//        } else {
-//            println("found data in the cache, AddCoinViewModel")
-//            val oldDate = LocalDateTime.ofInstant(
-//                Instant.ofEpochMilli(resultCache[0].timeStamp),
-//                TimeZone.getDefault().toZoneId())
-//            val dateNow = LocalDateTime.now()
-//            if (ChronoUnit.HOURS.between(oldDate, dateNow) >= 24){
-//                println("Data is overdue, and needs updating, AddCoinViewModel")
-////                getAndSetData()
-//            } else {
-//                println("Using cached data")
-//                _viewState.value = ViewStateAddCoin.Success(resultCache)
-//            }
-//        }
-
-//    private suspend fun getAndSetData() {
-//        fireBaseRepo.getListCoins().collect {
-//            try {
-//                CoroutineScope(Dispatchers.IO).launch{
-//                    cryptoCacheRepository.setListCoins(it)
-//                }
-//                _viewState.value = ViewStateAddCoin.Success(it)
-//            } catch (e: FirebaseRepository.FireBaseExceptionError) {
-//                val errorMsg = "Something went wrong while retrieving the list of coins"
-//                Log.e(TAG, e.message ?: errorMsg)
-//                _viewState.value = ViewStateAddCoin.Error(e)
-//            }
-//        }
-//    }
 
     fun addCoinToFavoriteCoins(coin: Coin, context: Context) {
         try {
@@ -106,10 +66,8 @@ class AddCoinViewModel(application: Application) : AndroidViewModel(application)
                     .show()
             }
         } catch (e: Exception) {
-            val errorMsg = "Something went wrong while saving the list of favorite coins"
-
-            Log.e(TAG, e.message ?: errorMsg)
-//            _viewState.value = ViewStateAddCoin.Error(e)
+            Log.e(TAG, e.message ?: "Something went wrong while saving the list of favorite coins")
+            _viewState.value = ViewStateAddCoin.Error(e)
         }
     }
 }
