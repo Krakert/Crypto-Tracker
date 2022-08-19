@@ -1,20 +1,20 @@
 package com.krakert.tracker.viewmodel
 
+//import com.krakert.tracker.repository.CryptoCacheRepository
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference
+import com.krakert.tracker.SharedPreference.AmountDaysTracking
+import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.*
+import com.krakert.tracker.models.FavoriteCoins
 import com.krakert.tracker.repository.CryptoApiRepository
-//import com.krakert.tracker.repository.CryptoCacheRepository
+import com.krakert.tracker.state.ViewStateDataCoins
 import com.krakert.tracker.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,14 +30,15 @@ class OverviewViewModel(context: Context) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val favoriteCoins = _viewState.asStateFlow()
+    // StateFlow
+    private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
+    val dataCoin = _viewStateDataCoin.asStateFlow()
 
-    private val _httpResourcePricing: MutableLiveData<Resource<HashMap<String, CoinPriceData>>> = MutableLiveData(
-        Resource.Empty())
+    // Live data
+//    private val _viewStateDataCoin: MutableLiveData<Resource<MutableMap<String, MutableMap<String, Any>>>> = MutableLiveData(Resource.Empty())
 
-    val httpResourcePricing: LiveData<Resource<HashMap<String, CoinPriceData>>>
-        get() = _httpResourcePricing
-
-
+//    val dataCoin: LiveData<Resource<MutableMap<String, MutableMap<String, Any>>>>
+//        get() = _viewStateDataCoin
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -48,7 +49,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
             } else {
                 val listFavoriteCoins: FavoriteCoins =
                     Gson().fromJson(dataSharedPreference, typeOfT)
-                println("size of the list of favorites is : ${listFavoriteCoins.size}")
+//                println("size of the list of favorites is : ${listFavoriteCoins.size}")
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
         } catch (e: Exception) {
@@ -59,13 +60,46 @@ class OverviewViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun getPriceByListCoinIds(listCoins: FavoriteCoins) {
+//    fun getPriceByListCoinIds(listCoins: FavoriteCoins) {
+//        viewModelScope.launch {
+//            val idCoins = arrayListOf<String>()
+//            listCoins.forEach {
+//                idCoins.add(it.id)
+//            }
+//            val result = cryptoApiRepository.getPriceCoins(
+//                idCoins = idCoins.joinToString(","),
+//                currency = sharedPreference.Currency.toString())
+//            Log.i("API CALL: getPriceCoins", result.data.toString())
+//        }
+//    }
+
+    fun getAllDataByListCoinIds(listCoins: FavoriteCoins){
         viewModelScope.launch {
-            _httpResourcePricing.value = cryptoApiRepository.getPriceCoins("bitcoin,cardano")
-            Log.i("test", "test")
+            val idCoins = arrayListOf<String>()
+            val time = System.currentTimeMillis()
+            listCoins.forEach {
+                idCoins.add(it.id)
+            }
+            val mapData = cryptoApiRepository.getPriceCoins(
+                idCoins = idCoins.joinToString(","),
+                currency = sharedPreference.Currency.toString()
+            )
+            Log.i("API CALL: getPriceCoins", mapData.data.toString())
+
+            listCoins.forEach { index ->
+                val result = cryptoApiRepository.getHistoryByCoinId(
+                    coinId = index.id,
+                    currency = sharedPreference.Currency.toString(),
+                    days = sharedPreference.AmountDaysTracking.toString()
+                )
+                result.data?.prices?.let { mapData.data?.get(index.id)?.put("market_chart", it) }
+                mapData.data?.get(index.id)?.put("time_stamp", time)
+                Log.i("API CALL: getHistoryByCoinId", result.toString())
+            }
+            _viewStateDataCoin.value = ViewStateDataCoins.Success(mapData)
         }
     }
-    fun getAllDataByListCoinIds(listResult: List<Coin>) = viewModelScope.launch {
+
 //`        viewModelScope.launch(Dispatchers.IO) {
 //            val resultCache = cryptoCacheRepository.getListDataCoins()
 //            if (resultCache.isEmpty()) {
@@ -98,9 +132,6 @@ class OverviewViewModel(context: Context) : ViewModel() {
 //            }
 //        }
 
-//        println(coinCapApiService.getHistoryByCoinId(listResult[0].id.lowercase()))
-//        println(coinCapApiService.getHistoryByCoinId(listResult[0].id.lowercase()).history)
-
 //        val data = arrayListOf<DataCoinChart>()
 //        val time = System.currentTimeMillis()
 //        try {
@@ -128,9 +159,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
 //            _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
 //        }
 
-    }
-
-    suspend fun getAndSetData(listResult: List<Coin>) {
+//    suspend fun getAndSetData(listResult: List<Coin>) {
 //        val data = arrayListOf<DataCoin>()
 //        val time = System.currentTimeMillis()
 //        try {
@@ -153,7 +182,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
 //            Log.e(ContentValues.TAG, e.message ?: errorMsg)
 //            _viewStateDataCoin.value = ViewStateDataCoins.Error(e)
 //        }
-    }
+//    }
 }
 
 
