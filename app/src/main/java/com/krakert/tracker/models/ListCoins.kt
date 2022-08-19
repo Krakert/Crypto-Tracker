@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 /**
- * This classed is used to store all the data for each coin in the "add coin" screen of the app
+ * This class is used to store all the data for each coin in the "add coin" screen of the app
  */
 class ListCoins : ArrayList<Coin>()
 

@@ -1,4 +1,4 @@
-package com.krakert.tracker.models
+package com.krakert.tracker.models.database
 
 import androidx.room.*
 import com.google.common.reflect.TypeToken

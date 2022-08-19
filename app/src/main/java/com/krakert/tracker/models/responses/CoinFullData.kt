@@ -1,7 +1,6 @@
 package com.krakert.tracker.models.responses
 
 import com.google.gson.annotations.SerializedName
-import com.krakert.tracker.models.Image
 import com.krakert.tracker.models.Links
 
 data class CoinFullData(

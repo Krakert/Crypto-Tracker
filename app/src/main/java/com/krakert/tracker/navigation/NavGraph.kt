@@ -39,7 +39,7 @@ fun NavGraph() {
                         coinId = result,
                         viewModel = DetailsViewModel(
                             context = context,
-                            coin = result
+                            coinId = result
                         ),
                         navController = navController
                     )
