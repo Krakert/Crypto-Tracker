@@ -313,7 +313,7 @@ fun ShowDetailsCoins(
                     Icons.Rounded.Delete
                 ) {
                     viewModel.removeCoinFromFavoriteCoins(coinId = coinId)
-                    navController.navigate(Screen.Overview.route)
+                    navController.popBackStack()
                     Toast.makeText(context, context.getString(R.string.txt_toast_removed, detailsCoins.details.data?.name), Toast.LENGTH_SHORT).show()
                 }
                 IconButton(
