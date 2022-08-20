@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.krakert.tracker.ui.tile.theme.WearAppTheme
+import com.krakert.tracker.ui.theme.WearAppTheme
 import com.krakert.tracker.ui.ListAddCoin
 import com.krakert.tracker.ui.ListOverview
 import com.krakert.tracker.ui.ListSettings

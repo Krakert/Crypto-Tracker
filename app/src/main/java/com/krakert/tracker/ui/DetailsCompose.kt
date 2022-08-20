@@ -37,7 +37,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.models.Currency
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.ui.state.ViewStateDetailsCoins
-import com.krakert.tracker.ui.tile.theme.themeValues
+import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
 import com.skydoves.landscapist.coil.CoilImage
 

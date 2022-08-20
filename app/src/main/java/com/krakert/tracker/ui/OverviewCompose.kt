@@ -38,7 +38,7 @@ import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.ui.state.ViewStateDataCoins
 import com.krakert.tracker.ui.state.ViewStateOverview
-import com.krakert.tracker.ui.tile.theme.themeValues
+import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 
 
@@ -133,8 +133,8 @@ fun ShowStatsCoins(
             .fillMaxSize(),
         contentPadding = PaddingValues(
             top = 8.dp,
-            start = 8.dp,
-            end = 8.dp,
+//            start = 8.dp,
+//            end = 8.dp,
             bottom = 32.dp
         ),
         verticalArrangement = Arrangement.Center,
