@@ -1,4 +1,4 @@
-package com.krakert.tracker.theme
+package com.krakert.tracker.ui.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily

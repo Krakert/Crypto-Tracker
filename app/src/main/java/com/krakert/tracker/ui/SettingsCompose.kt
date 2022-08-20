@@ -20,7 +20,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
-import com.krakert.tracker.model.Currency
+import com.krakert.tracker.models.Currency
 
 @Composable
 fun ListSettings() {
@@ -148,7 +148,7 @@ fun ListSettings() {
                     checked = checked == index.name,
                     toggleControl = {
                         Icon(
-                            imageVector = ToggleChipDefaults.switchIcon(checked == index.name),
+                            imageVector = ToggleChipDefaults.radioIcon(checked == index.name),
                             contentDescription =  if (checked == index.name) "On" else "Off"
                         )
                     },

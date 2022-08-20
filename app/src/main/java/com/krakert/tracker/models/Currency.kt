@@ -1,4 +1,4 @@
-package com.krakert.tracker.model
+package com.krakert.tracker.models
 
 enum class Currency(val nameFull: List<String>) {
     USD(listOf("Dollar","$")),

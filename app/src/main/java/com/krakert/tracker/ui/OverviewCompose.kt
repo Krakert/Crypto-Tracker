@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -32,18 +33,19 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.model.Currency
+import com.krakert.tracker.models.Currency
+import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.state.ViewStateDataCoins
-import com.krakert.tracker.state.ViewStateOverview
-import com.krakert.tracker.theme.themeValues
-import com.krakert.tracker.viewmodel.OverviewViewModel
+import com.krakert.tracker.ui.state.ViewStateDataCoins
+import com.krakert.tracker.ui.state.ViewStateOverview
+import com.krakert.tracker.ui.theme.themeValues
+import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
     viewModel.getFavoriteCoins()
+
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {
@@ -60,11 +62,14 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        when (val listResult = viewModel.favoriteCoins.collectAsState().value) {
-            ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
+        val response by viewModel.favoriteCoins.collectAsState()
+
+        when (response) {
+            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
             is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState, listCoins = listResult.favorite, viewModel = viewModel, navController = navController)
+            is ViewStateOverview.Loading -> Loading()
+            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState,
+                listFavoriteCoins = (response as ViewStateOverview.Success).favorite, viewModel = viewModel, navController = navController)
         }
 
     }
@@ -108,8 +113,8 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listCoins: List<Coin>,
-    viewModel: OverviewViewModel,
+    listFavoriteCoins: ArrayList<FavoriteCoin>,
+    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     navController: NavHostController
 ) {
 
@@ -119,15 +124,17 @@ fun ShowStatsCoins(
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
 
-    viewModel.getAllDataByListCoinIds(listCoins)
+    //removed launchedeffect
+    viewModel.getAllDataByListCoinIds(listFavoriteCoins)
+
 
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(
             top = 8.dp,
-            start = 8.dp,
-            end = 8.dp,
+//            start = 8.dp,
+//            end = 8.dp,
             bottom = 32.dp
         ),
         verticalArrangement = Arrangement.Center,
@@ -135,7 +142,7 @@ fun ShowStatsCoins(
         state = scrollState
     ) {
         // For each index in my favorites
-        items(listCoins.size) { index ->
+        items(listFavoriteCoins.size) { index ->
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -143,17 +150,17 @@ fun ShowStatsCoins(
                         onClick = {
                             navController.currentBackStackEntry?.savedStateHandle?.set(
                                 key = "Coin",
-                                value = listCoins[index]
+                                value = listFavoriteCoins[index].id
                             )
                             navController.navigate(Screen.Details.route)
                         }
                     )
             ) {
                 CenterElement {
-                    if (favoriteCoin == listCoins[index].idCoin) {
+                    if (favoriteCoin == listFavoriteCoins[index].id) {
                         Text(
                             text = buildAnnotatedString {
-                                append(listCoins[index].id)
+                                append(listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()})
                                 appendInlineContent("inlineContent", "[icon]")
                             },
                             fontSize = 20.sp,
@@ -161,14 +168,15 @@ fun ShowStatsCoins(
                         )
                     } else {
                         Text(
-                            text = listCoins[index].id,
+                            text = listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()},
                             modifier = Modifier.padding(bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
                         )
                     }
                     // Here I load the data needed for the graph
-                    when (val dataCoins = viewModel.dataCoin.collectAsState().value) {
+                    val dataCoins by viewModel.dataCoin.collectAsState()
+                    when (dataCoins) {
                         is ViewStateDataCoins.Error -> {
                             Text(text = "Could not load the data")
                         }
@@ -185,11 +193,14 @@ fun ShowStatsCoins(
                                 val points = arrayListOf<PointF>()
                                 val pointsCon1 = arrayListOf<PointF>()
                                 val pointsCon2 = arrayListOf<PointF>()
-                                var maxData = dataCoins.data[index].history[0][1].toFloat()
-                                var minData = dataCoins.data[index].history[0][1].toFloat()
+                                @Suppress("UNCHECKED_CAST")
+                                val marketChart = (dataCoins as ViewStateDataCoins.Success).data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
 
-                                dataCoins.data[index].history.forEachIndexed { _, index ->
-                                    if (maxData < index[1].toDouble()) {
+                                var maxData = marketChart[0][1].toFloat()
+                                var minData = marketChart[0][1].toFloat()
+
+                                marketChart.forEachIndexed { _, index ->
+                                    if (maxData < index[1].toFloat()) {
                                         maxData = index[1].toFloat()
                                     }
                                     if (minData > index[1].toFloat()){
@@ -199,13 +210,13 @@ fun ShowStatsCoins(
 
                                 val pointsMean = arrayListOf<Float>()
                                 // Calculate mean over 5 point and add that value to the list
-                                for (i in 0 until dataCoins.data[index].history.size - 5 step 5){
+                                for (i in 0 until marketChart.size - 5 step 5){
                                     pointsMean.add(med(listOf(
-                                        dataCoins.data[index].history[i][1].toFloat(),
-                                        dataCoins.data[index].history[i + 1][1].toFloat(),
-                                        dataCoins.data[index].history[i + 2][1].toFloat(),
-                                        dataCoins.data[index].history[i + 3][1].toFloat(),
-                                        dataCoins.data[index].history[i + 4][1].toFloat(),
+                                        marketChart[i][1].toFloat(),
+                                        marketChart[i + 1][1].toFloat(),
+                                        marketChart[i + 2][1].toFloat(),
+                                        marketChart[i + 3][1].toFloat(),
+                                        marketChart[i + 4][1].toFloat(),
                                     )))
                                 }
 
@@ -240,10 +251,15 @@ fun ShowStatsCoins(
                                     style = Stroke(width = 6f)
                                 )
                             }
+
+                            //retrieving this value is a little bit messy..
+                            val textData = (dataCoins as ViewStateDataCoins.Success).data.data?.get(
+                                listFavoriteCoins[index].id
+                            )?.get(sharedPreference.Currency?.lowercase())
                             Text(text = buildString {
                                 append(currencyObject?.nameFull?.get(1))
                                     .append(" ")
-                                    .append(dataCoins.data[index].currentPrice.toString())
+                                    .append(textData)
                             })
                             Divider()
                         }

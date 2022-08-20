@@ -1,6 +1,5 @@
 package com.krakert.tracker.ui
 
-import android.content.Context
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
@@ -26,16 +26,20 @@ import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.model.Coin
-import com.krakert.tracker.state.ViewStateAddCoin
-import com.krakert.tracker.viewmodel.AddCoinViewModel
+import com.krakert.tracker.models.Coin
+import com.krakert.tracker.ui.state.ViewStateAddCoin
+import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
 import java.lang.reflect.Type
 
 @Composable
-fun ListAddCoin(viewModel: AddCoinViewModel) {
-    viewModel.getListCoins()
+fun ListAddCoin( viewModel: AddCoinViewModel = viewModel()) {
+
+    LaunchedEffect(Unit){
+        viewModel.getListCoins()
+    }
+
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {
@@ -65,7 +69,7 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
                 Loading()
             }
             is ViewStateAddCoin.Success -> {
-                ShowList(scrollState = scrollState, listResult = listResult.coins, viewModel = viewModel)
+                ShowList(scrollState = scrollState, listResult = listResult.coins.data, viewModel = viewModel)
             }
         }
 
@@ -119,11 +123,6 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
-//                    AddChipCoin(
-//                        coin = listResult[index],
-//                        added = listFavoriteCoins[index].name == listResult[index].name,
-//                        viewModel = viewModel,
-//                        context = context)
                     AddChipCoin(listResult[index]){
                         viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
                     }
@@ -131,54 +130,6 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
             }
         }
     }
-}
-
-@Composable
-fun AddChipCoin(coin: Coin, added: Boolean, viewModel: AddCoinViewModel, context: Context) {
-    var palette by remember { mutableStateOf<Palette?>(null) }
-
-//    Chip(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(bottom = 8.dp),
-//        colors = gradientBackgroundChipColors(
-//            startBackgroundColor = Color(palette?.lightVibrantSwatch?.rgb ?: 0).copy(alpha = 0.5f),
-//            endBackgroundColor = MaterialTheme.colors.surface,
-//            gradientDirection = LayoutDirection.Ltr
-//        ),
-//        icon = {
-//            LoadImage(url = coin.symbol, onPaletteAvailable = { palette = it })
-//        },
-//        onClick = { onClick() },
-//        label = {
-//            Text(
-//                text = coin.name,
-//                maxLines = 1,
-//                overflow = TextOverflow.Ellipsis
-//            )
-//        },
-//    )
-    ToggleChip(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        checked = added,
-        onCheckedChange = {
-            viewModel.addCoinToFavoriteCoins(coin, context)
-        },
-        toggleControl = {
-            Icon(
-                imageVector = ToggleChipDefaults.switchIcon(added),
-                contentDescription =  if (added) "On" else "Off"
-            )
-        },
-        label = {
-            Text(
-                text = coin.name,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        })
 }
 
 @Composable
@@ -195,7 +146,7 @@ fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = coin.symbol, onPaletteAvailable = { palette = it })
+            LoadImage(url = coin.getIcon(), onPaletteAvailable = { palette = it })
         },
         onClick = { onClick() },
         label = {
