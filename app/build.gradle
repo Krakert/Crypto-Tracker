@@ -37,12 +37,6 @@ android {
 }
 
 dependencies {
-
-    implementation 'org.drewcarlson:coingecko:0.4.1'
-    implementation 'io.ktor:ktor-client-okhttp:2.0.1'
-    implementation 'io.ktor:ktor-client-android:2.0.1'
-
-
     // Livedata
     implementation 'androidx.compose.runtime:runtime-livedata:1.2.1'
 
