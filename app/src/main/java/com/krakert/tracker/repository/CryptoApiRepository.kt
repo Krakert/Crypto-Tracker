@@ -4,10 +4,11 @@ import android.util.Log
 import com.krakert.tracker.api.CoinGeckoApi
 import com.krakert.tracker.api.CoinGeckoApiService
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
 import kotlinx.coroutines.withTimeout
+import retrofit2.HttpException
 
 class CryptoApiRepository {
     private val coinGeckoApiService: CoinGeckoApiService = CoinGeckoApi.createApi()
@@ -17,7 +18,7 @@ class CryptoApiRepository {
         ids: String? = null,
         order: String = "market_cap_desc",
         perPage: Int = 100,
-        page: Int = 1
+        page: Int = 1,
     ): Resource<ListCoins> {
         val response = try {
             withTimeout(10_000) {
@@ -29,9 +30,10 @@ class CryptoApiRepository {
                     page = page
                 )
             }
-        } catch (e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("Retrieval of a list of coins was unsuccessful")
+        } catch (e: HttpException) {
+            Log.e("CryptoApiRepository",
+                "Retrieval of a list of coins was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
+            return Resource.Error(e.code().toString())
         }
 
         return Resource.Success(response)
@@ -43,7 +45,7 @@ class CryptoApiRepository {
         marketCap: String = "false",
         dayVol: String = "false",
         dayChange: String = "true",
-        lastUpdated: String = "false"
+        lastUpdated: String = "false",
     ): Resource<MutableMap<String, MutableMap<String, Any>>> {
         val response = try {
             withTimeout(10_000) {
@@ -56,9 +58,10 @@ class CryptoApiRepository {
                     lastUpdated = lastUpdated
                 )
             }
-        } catch (e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("Retrieval of latest price of the coins was unsuccessful")
+        } catch (e: HttpException) {
+            Log.e("CryptoApiRepository",
+                "Retrieval of latest price of coins was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
+            return Resource.Error(e.code().toString())
         }
 
         return Resource.Success(response)
@@ -85,9 +88,10 @@ class CryptoApiRepository {
                     sparkline = sparkline
                 )
             }
-        } catch (e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("Retrieval of details of the coin was unsuccessful")
+        } catch (e: HttpException) {
+            Log.e("CryptoApiRepository",
+                "Retrieval of details of the coin was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
+            return Resource.Error(e.code().toString())
         }
         return Resource.Success(response)
     }
@@ -105,9 +109,10 @@ class CryptoApiRepository {
                     days = days
                 )
             }
-        } catch (e: Exception) {
-            Log.e("CryptoApiRepository", e.message ?: "No exception message available")
-            return Resource.Error("Retrieval of history data of the coin was unsuccessful")
+        } catch (e: HttpException) {
+            Log.e("CryptoApiRepository",
+                "Retrieval of history data of coin was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
+            return Resource.Error(e.code().toString())
         }
         return Resource.Success(response)
     }
