@@ -43,7 +43,7 @@ class DetailsViewModel(context: Context, coinId: String) : ViewModel() {
                 }
             } catch (e: CoinGeckoExceptionError) {
                 Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving data")
-                _viewStateDetailsCoin.value = ViewStateDetailsCoins.Error(e)
+                _viewStateDetailsCoin.value = ViewStateDetailsCoins.Error(e.message.toString())
             }
         }
     }

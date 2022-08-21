@@ -67,7 +67,7 @@ class AddCoinViewModel(application: Application) : AndroidViewModel(application)
             }
         } catch (e: Exception) {
             Log.e(TAG, e.message ?: "Something went wrong while saving the list of favorite coins")
-            _viewState.value = ViewStateAddCoin.Error(e)
+            _viewState.value = ViewStateAddCoin.Error(e.message.toString())
         }
     }
 }
