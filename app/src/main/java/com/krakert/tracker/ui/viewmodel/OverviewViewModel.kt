@@ -11,6 +11,7 @@ import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.repository.CryptoApiRepository
 import com.krakert.tracker.ui.state.ViewStateDataCoins
@@ -45,10 +46,8 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
             }
         } catch (e: Exception) {
-            val errorMsg = "Something went wrong while retrieving the list of coins"
-
-            Log.e(ContentValues.TAG, e.message ?: errorMsg)
-            _viewState.value = ViewStateOverview.Error(e)
+            Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving the list of coins")
+            _viewState.value = ViewStateOverview.Error(e.message.toString())
         }
     }
 
@@ -56,6 +55,8 @@ class OverviewViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             val idCoins = arrayListOf<String>()
             val time = System.currentTimeMillis()
+            var errorString = ""
+            var hadError = false
             listCoins.forEach {
                 idCoins.add(it.id)
             }
@@ -63,17 +64,34 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 idCoins = idCoins.joinToString(","),
                 currency = sharedPreference.Currency.toString()
             )
-
             listCoins.forEach { index ->
                 val result = cryptoApiRepository.getHistoryByCoinId(
                     coinId = index.id,
                     currency = sharedPreference.Currency.toString(),
                     days = sharedPreference.AmountDaysTracking.toString()
                 )
-                result.data?.prices?.let { mapData.data?.get(index.id)?.put("market_chart", it) }
-                mapData.data?.get(index.id)?.put("time_stamp", time)
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.prices?.let {
+                            mapData.data?.get(index.id)?.put("market_chart", it)
+                        }
+                        mapData.data?.get(index.id)?.put("time_stamp", time)
+                    }
+                    is Resource.Error -> {
+                        hadError = true
+                        when (result.message?.toInt()) {
+                            429 -> errorString = "Please retry in 1 minute"
+                            404 -> errorString = "Please try again"
+                        }
+
+                    }
+                }
             }
-            _viewStateDataCoin.value = ViewStateDataCoins.Success(mapData)
+            if (hadError){
+                _viewStateDataCoin.value = ViewStateDataCoins.Error(errorString)
+            } else {
+                _viewStateDataCoin.value = ViewStateDataCoins.Success(mapData)
+            }
         }
     }
 }
