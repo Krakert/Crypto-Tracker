@@ -10,7 +10,7 @@ import com.krakert.tracker.models.database.Converters
 
 @Database(entities = [Coin::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class CryptoCacheRoomDatabase : RoomDatabase() {
+abstract class CryptoDatabase : RoomDatabase() {
 
     abstract fun cryptoCacheDao(): CryptoCacheDao
 
@@ -18,15 +18,15 @@ abstract class CryptoCacheRoomDatabase : RoomDatabase() {
         private const val DATABASE_NAME = "CRYPTO_CACHE_DATABASE"
 
         @Volatile
-        private var cryptoCacheRoomDatabaseInstance: CryptoCacheRoomDatabase? = null
+        private var cryptoDatabaseInstance: CryptoDatabase? = null
 
-        fun getDatabase(context: Context): CryptoCacheRoomDatabase? {
-            if (cryptoCacheRoomDatabaseInstance == null) {
-                synchronized(CryptoCacheRoomDatabase::class.java) {
-                    if (cryptoCacheRoomDatabaseInstance == null) {
-                        cryptoCacheRoomDatabaseInstance = Room.databaseBuilder(
+        fun getDatabase(context: Context): CryptoDatabase? {
+            if (cryptoDatabaseInstance == null) {
+                synchronized(CryptoDatabase::class.java) {
+                    if (cryptoDatabaseInstance == null) {
+                        cryptoDatabaseInstance = Room.databaseBuilder(
                             context.applicationContext,
-                            CryptoCacheRoomDatabase::class.java,
+                            CryptoDatabase::class.java,
                             DATABASE_NAME
                         )
                             .allowMainThreadQueries()
@@ -35,7 +35,7 @@ abstract class CryptoCacheRoomDatabase : RoomDatabase() {
                     }
                 }
             }
-            return cryptoCacheRoomDatabaseInstance
+            return cryptoDatabaseInstance
         }
     }
 }

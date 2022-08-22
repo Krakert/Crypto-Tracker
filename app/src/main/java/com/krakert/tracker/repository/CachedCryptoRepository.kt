@@ -1,28 +1,37 @@
 package com.krakert.tracker.repository
 
 import android.util.Log
-import com.krakert.tracker.api.CoinGeckoApi
-import com.krakert.tracker.api.CoinGeckoApiService
+import com.krakert.tracker.api.CoinGeckoDataSource
 import com.krakert.tracker.api.Resource
+import com.krakert.tracker.database.CryptoCacheDao
 import com.krakert.tracker.models.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withTimeout
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class CryptoApiRepository {
-    private val coinGeckoApiService: CoinGeckoApiService = CoinGeckoApi.createApi()
+class CachedCryptoRepository
+    @Inject
+    constructor(
+        private val coinGeckoDataSource: CoinGeckoDataSource,
+        private val cryptoCacheDao: CryptoCacheDao
+    ) : CryptoRepository {
 
-    suspend fun getListCoins(
-        currency: String = "usd",
-        ids: String? = null,
-        order: String = "market_cap_desc",
-        perPage: Int = 100,
-        page: Int = 1,
+    override suspend fun getListCoins(
+        currency: String,
+        ids: String?,
+        order: String,
+        perPage: Int,
+        page: Int,
     ): Resource<ListCoins> {
         val response = try {
             withTimeout(10_000) {
-                coinGeckoApiService.getListCoins(
+                coinGeckoDataSource.getListCoins(
                     currency = currency,
                     ids = ids,
                     order = order,
@@ -39,46 +48,41 @@ class CryptoApiRepository {
         return Resource.Success(response)
     }
 
-    suspend fun getPriceCoins(
-        idCoins: String,
-        currency: String = "usd",
-        marketCap: String = "false",
-        dayVol: String = "false",
-        dayChange: String = "true",
-        lastUpdated: String = "false",
-    ): Resource<MutableMap<String, MutableMap<String, Any>>> {
-        val response = try {
-            withTimeout(10_000) {
-                coinGeckoApiService.getPriceByListCoinIds(
-                    ids = idCoins,
-                    currency = currency,
-                    marketCap = marketCap,
-                    dayVol = dayVol,
-                    dayChange = dayChange,
-                    lastUpdated = lastUpdated
-                )
-            }
-        } catch (e: HttpException) {
-            Log.e("CryptoApiRepository",
-                "Retrieval of latest price of coins was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
-            return Resource.Error(e.code().toString())
-        }
+    override fun getPriceCoins(idCoins: String, currency: String): Flow<Resource<MutableMap<String, MutableMap<String, Any>>>> {
+        return flow {
+//            emit(fetchTrendingMoviesCached())
+            emit(Resource.Loading())
+            val result = coinGeckoDataSource.fetchCoinsPriceById(idCoins, currency)
 
-        return Resource.Success(response)
+            //Cache to database if response is successful
+            if (result is Resource.Success) {
+//                result.data.let { it ->
+//                    cryptoCacheDao.deleteAll(it)
+//                    cryptoCacheDao.insertAll(it)
+//                }
+            }
+            emit(result)
+        }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getDetailsCoinByCoinId(
+//    private fun fetchCachedListPrice(): Result<TrendingMovieResponse>? =
+//        cryptoCacheDao.getListCoins()?.let {
+//            Result.success(TrendingMovieResponse(it))
+//        }
+
+
+    override suspend fun getDetailsCoinByCoinId(
         coinId: String,
-        localization: String = "false",
-        tickers: Boolean = false,
-        markerData: Boolean = true,
-        communityData: Boolean = false,
-        developerData: Boolean = false,
-        sparkline: Boolean = false,
+        localization: String,
+        tickers: Boolean,
+        markerData: Boolean,
+        communityData: Boolean,
+        developerData: Boolean,
+        sparkline: Boolean,
     ): Resource<CoinFullData> {
         val response = try {
             withTimeout(10_000) {
-                coinGeckoApiService.getDetailsCoinByCoinId(
+                coinGeckoDataSource.getDetailsCoinByCoinId(
                     id = coinId,
                     localization = localization,
                     tickers = tickers,
@@ -96,14 +100,14 @@ class CryptoApiRepository {
         return Resource.Success(response)
     }
 
-    suspend fun getHistoryByCoinId(
+    override suspend fun getHistoryByCoinId(
         coinId: String,
         currency: String,
         days: String,
     ): Resource<MarketChart> {
         val response = try {
             withTimeout(10_000) {
-                coinGeckoApiService.getHistoryByCoinId(
+                coinGeckoDataSource.getHistoryByCoinId(
                     id = coinId,
                     currency = currency,
                     days = days
@@ -119,4 +123,8 @@ class CryptoApiRepository {
 
 
     class CoinGeckoExceptionError(message: String) : Exception(message)
+
+    override fun shouldFetch(): Boolean {
+        TODO("Not yet implemented")
+    }
 }

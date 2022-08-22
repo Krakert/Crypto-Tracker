@@ -2,6 +2,7 @@ package com.krakert.tracker.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
@@ -17,7 +18,7 @@ import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 @Composable
 fun NavGraph() {
     val navController: NavHostController = rememberSwipeDismissableNavController()
-    val context = LocalContext.current
+    LocalContext.current
     WearAppTheme {
         SwipeDismissableNavHost(
             navController = navController,
@@ -26,7 +27,7 @@ fun NavGraph() {
             composable(Screen.Overview.route) {
                 ListOverview(
                     navController = navController,
-                    viewModel = OverviewViewModel(context)
+                    viewModel = hiltViewModel()
                 )
             }
             composable(Screen.Add.route) {
@@ -37,10 +38,7 @@ fun NavGraph() {
                 if (result != null) {
                     ShowDetails(
                         coinId = result,
-                        viewModel = DetailsViewModel(
-                            context = context,
-                            coinId = result
-                        ),
+                        viewModel = hiltViewModel(),
                         navController = navController
                     )
                 }

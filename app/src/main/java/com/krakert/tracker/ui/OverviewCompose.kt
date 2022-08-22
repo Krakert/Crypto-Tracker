@@ -175,7 +175,7 @@ fun ShowStatsCoins(
                         )
                     }
                     // Here I load the data needed for the graph
-                    val dataCoins by viewModel.dataCoin.collectAsState()
+                    val dataCoins = viewModel.dataCoin.collectAsState().value
                     when (dataCoins) {
                         is ViewStateDataCoins.Error -> {
                             Text(text = "Could not load the data")
@@ -193,8 +193,7 @@ fun ShowStatsCoins(
                                 val points = arrayListOf<PointF>()
                                 val pointsCon1 = arrayListOf<PointF>()
                                 val pointsCon2 = arrayListOf<PointF>()
-                                @Suppress("UNCHECKED_CAST")
-                                val marketChart = (dataCoins as ViewStateDataCoins.Success).data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
+                                val marketChart = dataCoins.data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
 
                                 var maxData = marketChart[0][1].toFloat()
                                 var minData = marketChart[0][1].toFloat()
@@ -253,7 +252,7 @@ fun ShowStatsCoins(
                             }
 
                             //retrieving this value is a little bit messy..
-                            val textData = (dataCoins as ViewStateDataCoins.Success).data.data?.get(
+                            val textData = dataCoins.data.data?.get(
                                 listFavoriteCoins[index].id
                             )?.get(sharedPreference.Currency?.lowercase())
                             Text(text = buildString {
