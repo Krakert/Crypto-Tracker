@@ -33,14 +33,13 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Currency
 import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.ui.state.ViewStateDataCoins
 import com.krakert.tracker.ui.state.ViewStateOverview
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
-
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
@@ -62,16 +61,26 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        val response by viewModel.favoriteCoins.collectAsState()
+        val response by viewModel.stateOverview.collectAsState()
 
         when (response) {
             is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
             is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            is ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState,
-                listFavoriteCoins = (response as ViewStateOverview.Success).favorite, viewModel = viewModel, navController = navController)
+            is ViewStateOverview.Loading -> {
+                ShowLoadingState(
+                    scrollState = scrollState,
+                    listFavoriteCoins = (response as ViewStateOverview.Loading).favorite,
+                    viewModel = viewModel
+                )
+            }
+            is ViewStateOverview.Loaded -> {
+                ShowStatsCoins(
+                    scrollState = scrollState,
+                    resultAPi = (response as ViewStateOverview.Loaded).httpResponse,
+                    navController = navController
+                )
+            }
         }
-
     }
 }
 
@@ -111,30 +120,21 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
 }
 
 @Composable
-fun ShowStatsCoins(
+private fun ShowLoadingState(
     scrollState: ScalingLazyListState,
     listFavoriteCoins: ArrayList<FavoriteCoin>,
-    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    navController: NavHostController
-) {
-
-    val path = Path()
+    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val context = LocalContext.current
     val sharedPreference = SharedPreference.sharedPreference(context = context)
-    val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
 
-    //removed launchedeffect
     viewModel.getAllDataByListCoinIds(listFavoriteCoins)
-
 
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(
             top = 8.dp,
-//            start = 8.dp,
-//            end = 8.dp,
             bottom = 32.dp
         ),
         verticalArrangement = Arrangement.Center,
@@ -146,123 +146,176 @@ fun ShowStatsCoins(
             Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clickable(
-                        onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                key = "Coin",
-                                value = listFavoriteCoins[index].id
-                            )
-                            navController.navigate(Screen.Details.route)
-                        }
-                    )
             ) {
                 CenterElement {
                     if (favoriteCoin == listFavoriteCoins[index].id) {
                         Text(
                             text = buildAnnotatedString {
-                                append(listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()})
+                                append(listFavoriteCoins[index].name.replaceFirstChar { it.uppercase() })
                                 appendInlineContent("inlineContent", "[icon]")
                             },
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colors.primary,
                             fontSize = 20.sp,
                             inlineContent = addIconFavorite()
                         )
                     } else {
                         Text(
-                            text = listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()},
+                            text = listFavoriteCoins[index].name.replaceFirstChar { it.uppercase() },
                             modifier = Modifier.padding(bottom = 8.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colors.primary,
+                            fontSize = 20.sp,
                         )
                     }
-                    // Here I load the data needed for the graph
-                    val dataCoins by viewModel.dataCoin.collectAsState()
-                    when (dataCoins) {
-                        is ViewStateDataCoins.Error -> {
-                            Text(text = "Could not load the data")
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ShowStatsCoins(
+    scrollState: ScalingLazyListState,
+    resultAPi: Resource<MutableMap<String, MutableMap<String, Any>>>,
+    navController: NavHostController
+) {
+
+    val path = Path()
+    val context = LocalContext.current
+    val sharedPreference = SharedPreference.sharedPreference(context = context)
+    val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
+    val favoriteCoin = sharedPreference.FavoriteCoin
+
+
+    ScalingLazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            top = 8.dp,
+            bottom = 32.dp
+        ),
+        verticalArrangement = Arrangement.Center,
+        autoCentering = AutoCenteringParams(itemIndex = 0),
+        state = scrollState
+    ) {
+        resultAPi.data?.forEach { (k, v) ->
+
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            onClick = {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    key = "Coin",
+                                    value = k
+                                )
+                                navController.navigate(Screen.Details.route)
+                            }
+                        )
+                ){
+                    CenterElement {
+                        if (favoriteCoin == k) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(v["name"].toString().replaceFirstChar { it.uppercase() })
+                                    appendInlineContent("inlineContent", "[icon]")
+                                },
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 20.sp,
+                                inlineContent = addIconFavorite()
+                            )
+                        } else {
+                            Text(
+                                text = v["name"].toString().replaceFirstChar { it.uppercase() },
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 20.sp,
+                            )
                         }
-                        is ViewStateDataCoins.Loading -> {
-                            Loading()
-                        }
-                        is ViewStateDataCoins.Success -> {
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(105.dp)
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                val points = arrayListOf<PointF>()
-                                val pointsCon1 = arrayListOf<PointF>()
-                                val pointsCon2 = arrayListOf<PointF>()
-                                @Suppress("UNCHECKED_CAST")
-                                val marketChart = (dataCoins as ViewStateDataCoins.Success).data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
 
-                                var maxData = marketChart[0][1].toFloat()
-                                var minData = marketChart[0][1].toFloat()
+                        Canvas(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(105.dp)
+                                .padding(bottom = 8.dp)
+                        ) {
+                            val points = arrayListOf<PointF>()
+                            val pointsCon1 = arrayListOf<PointF>()
+                            val pointsCon2 = arrayListOf<PointF>()
 
-                                marketChart.forEachIndexed { _, index ->
-                                    if (maxData < index[1].toFloat()) {
-                                        maxData = index[1].toFloat()
-                                    }
-                                    if (minData > index[1].toFloat()){
-                                        minData = index[1].toFloat()
-                                    }
+                            @Suppress("UNCHECKED_CAST")
+                            val marketChart = v["market_chart"] as List<List<Double>>
+
+                            var maxData = marketChart[0][1].toFloat()
+                            var minData = marketChart[0][1].toFloat()
+
+                            marketChart.forEachIndexed { _, index ->
+                                if (maxData < index[1].toFloat()) {
+                                    maxData = index[1].toFloat()
                                 }
-
-                                val pointsMean = arrayListOf<Float>()
-                                // Calculate mean over 5 point and add that value to the list
-                                for (i in 0 until marketChart.size - 5 step 5){
-                                    pointsMean.add(med(listOf(
-                                        marketChart[i][1].toFloat(),
-                                        marketChart[i + 1][1].toFloat(),
-                                        marketChart[i + 2][1].toFloat(),
-                                        marketChart[i + 3][1].toFloat(),
-                                        marketChart[i + 4][1].toFloat(),
-                                    )))
+                                if (minData > index[1].toFloat()){
+                                    minData = index[1].toFloat()
                                 }
+                            }
 
-                                val distance = size.width / (pointsMean.size + 1)
-                                var currentX = 0F
+                            val pointsMean = arrayListOf<Float>()
+                            // Calculate mean over 5 point and add that value to the list
+                            for (i in 0 until marketChart.size - 5 step 5){
+                                pointsMean.add(med(listOf(
+                                    marketChart[i][1].toFloat(),
+                                    marketChart[i + 1][1].toFloat(),
+                                    marketChart[i + 2][1].toFloat(),
+                                    marketChart[i + 3][1].toFloat(),
+                                    marketChart[i + 4][1].toFloat(),
+                                )))
+                            }
 
-                                pointsMean.forEach { point ->
-                                    val y = (point - maxData) / (minData - maxData) * size.height
-                                    val x = currentX + distance
-                                    points.add(PointF(x, y))
-                                    currentX += distance
-                                }
+                            val distance = size.width / (pointsMean.size + 1)
+                            var currentX = 0F
 
-                                for (i in 1 until points.size) {
-                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
-                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
-                                }
+                            pointsMean.forEach { point ->
+                                val y = (point - maxData) / (minData - maxData) * size.height
+                                val x = currentX + distance
+                                points.add(PointF(x, y))
+                                currentX += distance
+                            }
+
+                            for (i in 1 until points.size) {
+                                pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
+                                pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
+                            }
 
 
-                                path.reset()
-                                path.moveTo(points.first().x, points.first().y)
-                                for (i in 1 until points.size) {
-                                    path.cubicTo(
-                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
-                                        points[i].x, points[i].y
-                                    )
-                                }
-
-                                drawPath(
-                                    path = path,
-                                    color = themeValues[3].colors.secondary,
-                                    style = Stroke(width = 6f)
+                            path.reset()
+                            path.moveTo(points.first().x, points.first().y)
+                            for (i in 1 until points.size) {
+                                path.cubicTo(
+                                    pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
+                                    points[i].x, points[i].y
                                 )
                             }
 
-                            //retrieving this value is a little bit messy..
-                            val textData = (dataCoins as ViewStateDataCoins.Success).data.data?.get(
-                                listFavoriteCoins[index].id
-                            )?.get(sharedPreference.Currency?.lowercase())
-                            Text(text = buildString {
-                                append(currencyObject?.nameFull?.get(1))
-                                    .append(" ")
-                                    .append(textData)
-                            })
-                            Divider()
+                            drawPath(
+                                path = path,
+                                color = themeValues[3].colors.secondary,
+                                style = Stroke(width = 6f)
+                            )
                         }
+
+                        val textData = v[sharedPreference.Currency?.lowercase()]
+                        Text(text = buildString {
+                            append(currencyObject?.nameFull?.get(1))
+                                .append(" ")
+                                .append(textData)
+                        })
+                        Divider()
                     }
                 }
             }

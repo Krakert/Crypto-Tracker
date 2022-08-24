@@ -15,16 +15,9 @@ sealed class ViewStateAddCoin {
 sealed class ViewStateOverview {
     // Represents different states for the overview screen
     object Empty : ViewStateOverview()
-    object Loading : ViewStateOverview()
-    data class Success(val favorite: ArrayList<FavoriteCoin>) : ViewStateOverview()
+    data class Loading (val favorite: ArrayList<FavoriteCoin>) : ViewStateOverview()
+    data class Loaded (val httpResponse: Resource<MutableMap<String, MutableMap<String, Any>>>) : ViewStateOverview()
     data class Error(val exception: String) : ViewStateOverview()
-}
-
-sealed class ViewStateDataCoins {
-    // Represents different states for the data that is shown on the overview screen
-    object Loading : ViewStateDataCoins()
-    data class Success(val data: Resource<MutableMap<String, MutableMap<String, Any>>>) : ViewStateDataCoins()
-    data class Error(val exception: String) : ViewStateDataCoins()
 }
 
 sealed class ViewStateDetailsCoins {

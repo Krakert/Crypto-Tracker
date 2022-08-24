@@ -14,7 +14,6 @@ import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.FavoriteCoin
 import com.krakert.tracker.repository.CryptoApiRepository
-import com.krakert.tracker.ui.state.ViewStateDataCoins
 import com.krakert.tracker.ui.state.ViewStateOverview
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,11 +26,8 @@ class OverviewViewModel(context: Context) : ViewModel() {
     private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
     private val sharedPreference = SharedPreference.sharedPreference(context)
 
-    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
-    val favoriteCoins = _viewState.asStateFlow()
-    // StateFlow
-    private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
-    val dataCoin = _viewStateDataCoin.asStateFlow()
+    private val _viewStateOverview = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
+    val stateOverview = _viewStateOverview.asStateFlow()
 
     fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -40,14 +36,12 @@ class OverviewViewModel(context: Context) : ViewModel() {
 
             val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreference, typeOfT)
 
-            if (listFavoriteCoins.isEmpty()) {
-                _viewState.value = ViewStateOverview.Empty
-            } else {
-                _viewState.value = ViewStateOverview.Success(listFavoriteCoins)
+            if (listFavoriteCoins.isNotEmpty()) {
+                _viewStateOverview.value = ViewStateOverview.Loading(listFavoriteCoins)
             }
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving the list of coins")
-            _viewState.value = ViewStateOverview.Error(e.message.toString())
+            _viewStateOverview.value = ViewStateOverview.Error(e.message.toString())
         }
     }
 
@@ -76,6 +70,7 @@ class OverviewViewModel(context: Context) : ViewModel() {
                             mapData.data?.get(index.id)?.put("market_chart", it)
                         }
                         mapData.data?.get(index.id)?.put("time_stamp", time)
+                        mapData.data?.get(index.id)?.put("name", index.name)
                     }
                     is Resource.Error -> {
                         hadError = true
@@ -88,12 +83,10 @@ class OverviewViewModel(context: Context) : ViewModel() {
                 }
             }
             if (hadError){
-                _viewStateDataCoin.value = ViewStateDataCoins.Error(errorString)
+                _viewStateOverview.value = ViewStateOverview.Error(errorString)
             } else {
-                _viewStateDataCoin.value = ViewStateDataCoins.Success(mapData)
+                _viewStateOverview.value = ViewStateOverview.Loaded(mapData)
             }
         }
     }
 }
-
-
