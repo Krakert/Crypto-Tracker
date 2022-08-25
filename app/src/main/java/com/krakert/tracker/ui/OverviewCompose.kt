@@ -40,11 +40,12 @@ import com.krakert.tracker.ui.state.ViewStateDataCoins
 import com.krakert.tracker.ui.state.ViewStateOverview
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
+import com.krakert.tracker.ui.viewmodel.ViewStateOverview
 
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
-    viewModel.getFavoriteCoins()
+    viewModel.fetchAllOverviewData()
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -62,7 +63,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        val response by viewModel.favoriteCoins.collectAsState()
+        val response by viewModel.overviewViewState.collectAsState()
 
         when (response) {
             is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
@@ -99,7 +100,7 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
             Modifier
                 .size(ButtonDefaults.LargeButtonSize)
                 .padding(top = 8.dp), Icons.Rounded.Cached) {
-            viewModel.getFavoriteCoins()
+            viewModel.fetchAllOverviewData()
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         }
         Text(
@@ -175,15 +176,15 @@ fun ShowStatsCoins(
                         )
                     }
                     // Here I load the data needed for the graph
-                    val dataCoins = viewModel.dataCoin.collectAsState().value
+                    val dataCoins = viewModel.overviewViewState.collectAsState().value
                     when (dataCoins) {
-                        is ViewStateDataCoins.Error -> {
+                        is ViewStateOverview.Error -> {
                             Text(text = "Could not load the data")
                         }
-                        is ViewStateDataCoins.Loading -> {
+                        is ViewStateOverview.Loading -> {
                             Loading()
                         }
-                        is ViewStateDataCoins.Success -> {
+                        is ViewStateOverview.Success -> {
                             Canvas(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -262,6 +263,7 @@ fun ShowStatsCoins(
                             })
                             Divider()
                         }
+                        else -> {}
                     }
                 }
             }

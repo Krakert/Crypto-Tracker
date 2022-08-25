@@ -12,10 +12,8 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.FavoriteCoin
-import com.krakert.tracker.repository.CachedCryptoRepository
+import com.krakert.tracker.models.OverviewMergedCoinData
 import com.krakert.tracker.repository.CryptoRepository
-import com.krakert.tracker.ui.state.ViewStateDataCoins
-import com.krakert.tracker.ui.state.ViewStateOverview
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +22,14 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import javax.inject.Inject
 
+sealed class ViewStateOverview {
+    // Represents different states for the overview screen
+    object Empty : ViewStateOverview()
+    object Loading : ViewStateOverview()
+    data class Success(val data: List<OverviewMergedCoinData>) : ViewStateOverview()
+    data class Error(val exception: String) : ViewStateOverview()
+}
+
 @HiltViewModel
 class OverviewViewModel
     @Inject constructor(
@@ -31,23 +37,26 @@ class OverviewViewModel
         private val sharedPreferences : SharedPreferences
     ): ViewModel() {
 
-    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
-    val favoriteCoins = _viewState.asStateFlow()
-    // StateFlow
-    private val _viewStateDataCoin = MutableStateFlow<ViewStateDataCoins>(ViewStateDataCoins.Loading)
-    val dataCoin = _viewStateDataCoin.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
+    val overviewViewState = _viewState.asStateFlow()
 
-    fun getFavoriteCoins() = viewModelScope.launch(Dispatchers.IO) {
+    init {
+        fetchAllOverviewData()
+    }
+
+    //TODO: is viewmodelscope really necessary here?
+    fun fetchAllOverviewData() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val dataSharedPreference = sharedPreferences.FavoriteCoins.toString()
             val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
 
             val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreference, typeOfT)
 
-            _viewState.value = if (listFavoriteCoins.isEmpty()) {
-                ViewStateOverview.Empty
+            if(listFavoriteCoins.isEmpty()) {
+                //TODO: Extract to strings.xml
+                _viewState.value = ViewStateOverview.Error("Please add one or more favorite coins")
             } else {
-                ViewStateOverview.Success(listFavoriteCoins)
+                getAllDataByListCoinIds()
             }
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving the list of coins")
@@ -57,52 +66,45 @@ class OverviewViewModel
 
     fun getAllDataByListCoinIds(listCoins: ArrayList<FavoriteCoin>){
         viewModelScope.launch {
-            val idCoins = arrayListOf<String>()
             val time = System.currentTimeMillis()
-            var errorString = ""
-
-            listCoins.forEach {
-                idCoins.add(it.id)
-            }
 
             cachedCryptoRepository.getPriceCoins(
-                idCoins = idCoins.joinToString(","),
+                idCoins = getCoinsIdString(listCoins),
                 currency = sharedPreferences.Currency.toString()
-            ).collect {
-                val mapData = it
-                when(mapData) {
+            ).collect { priceCoin ->
+                when(priceCoin) {
                     is Resource.Success -> {
+                        val overviewCoinList = arrayListOf<OverviewMergedCoinData>()
 
-                        listCoins.forEach { index ->
-                            val result = cachedCryptoRepository.getHistoryByCoinId(
-                                coinId = index.id,
+                        listCoins.forEach { item ->
+                            val currency = sharedPreferences.Currency?.lowercase()
+                            OverviewMergedCoinData(id = item.id, name = item.name, priceCoin.data?.get(item.id)?.get(currency).toString(),
+                                listOf())
+                            val historyCoinData = cachedCryptoRepository.getHistoryByCoinId(
+                                coinId = item.id,
                                 currency = sharedPreferences.Currency.toString(),
                                 days = sharedPreferences.AmountDaysTracking.toString()
                             )
-                            when (result) {
+
+                            when (historyCoinData) {
                                 is Resource.Success -> {
-//                                    mapData.data.prices?.let {
-//                                        it.data[index.id]?.put("market_chart", it)
-//                                    }
-                                        Log.e("test", "test")
-//                                    mapData.data?.get(index.id)?.put("time_stamp", time)
+                                    historyCoinData.data?.prices?.let { marketChart ->
+                                        priceCoin.data?.get(item.id)?.put("market_chart", marketChart)
+                                    }
+                                    priceCoin.data?.get(item.id)?.put("time_stamp", time)
                                 }
                                 is Resource.Error -> {
-                                    _viewStateDataCoin.value = ViewStateDataCoins.Error(errorString)
-
-//                                    when (result.message?.toInt()) {
-//                                        429 -> errorString = "Please retry in 1 minute"
-//                                        404 -> errorString = "Please try again"
-//                                    }
+                                    _viewState.value = ViewStateOverview.Error("History for ${item} failed")
 
                                 }
                             }
                         }
 
-                        _viewStateDataCoin.value = ViewStateDataCoins.Success(it)
+                        //All out success
+                        _viewState.value = ViewStateOverview.Success(priceCoin)
                     }
                     is Resource.Error -> {
-                        _viewStateDataCoin.value = ViewStateDataCoins.Error(errorString)
+                        _viewState.value = ViewStateOverview.Error("Cant get price coin data")
 
                     }
                     else -> {}
@@ -110,6 +112,19 @@ class OverviewViewModel
 
             }
         }
+    }
+
+    //TODO: StringBuilder might be nice
+    private fun getCoinsIdString(
+        listCoins: ArrayList<FavoriteCoin>,
+    ) : String {
+        val idCoins = arrayListOf<String>()
+
+        listCoins.forEach {
+            idCoins.add(it.id)
+        }
+
+        return idCoins.joinToString(",")
     }
 }
 

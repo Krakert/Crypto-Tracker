@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent ::class)
@@ -20,7 +21,8 @@ object NetworkModule {
     fun provideHTTPLoggingInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        return interceptor;
+
+        return interceptor
     }
 
     @Provides
@@ -28,11 +30,12 @@ object NetworkModule {
     ): OkHttpClient {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
+        return OkHttpClient.Builder().apply {
+            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            readTimeout(10, TimeUnit.SECONDS)
+            writeTimeout(10, TimeUnit.SECONDS)
+        }.build()
         //you can use the AuthInterceptor if you need to do some form of auth
-        return OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-//                .addInterceptor(AuthInterceptor(BuildConfig.API_KEY))
-                .build()
     }
 
     @Provides

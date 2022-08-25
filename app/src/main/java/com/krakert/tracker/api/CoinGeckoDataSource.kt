@@ -55,8 +55,14 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
                      Resource.Success(it)
                 } ?: Resource.Error( "Empty body in retrofit response")
             } else {
-                val errorResponse = ErrorUtils.parseError(result, retrofit)
-                Resource.Error(errorResponse?.status_message ?: defaultErrorMessage)
+               val errorMsg = when(result.code()) {
+                    429 -> "Try again in 1 minute"
+                    404 -> "Not found"
+                    else ->  {
+                        ErrorUtils.parseError(result, retrofit)?.status_message
+                    }
+                }
+                Resource.Error(errorMsg ?: defaultErrorMessage)
             }
         } catch (e: Throwable) {
             Resource.Error(e.toString())
