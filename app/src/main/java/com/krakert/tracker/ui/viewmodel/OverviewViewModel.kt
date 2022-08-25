@@ -12,14 +12,10 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.FavoriteCoin
-<<<<<<< HEAD
+import com.krakert.tracker.models.GraphItem
 import com.krakert.tracker.models.OverviewMergedCoinData
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-=======
-import com.krakert.tracker.repository.CryptoApiRepository
-import com.krakert.tracker.ui.state.ViewStateOverview
->>>>>>> State-flow-rework
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,37 +41,30 @@ class OverviewViewModel
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
     val overviewViewState = _viewState.asStateFlow()
 
-<<<<<<< HEAD
     init {
         fetchAllOverviewData()
     }
-=======
-    private val _viewStateOverview = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
-    val stateOverview = _viewStateOverview.asStateFlow()
->>>>>>> State-flow-rework
 
     //TODO: is viewmodelscope really necessary here?
     fun fetchAllOverviewData() = viewModelScope.launch(Dispatchers.IO) {
         try {
             val dataSharedPreference = sharedPreferences.FavoriteCoins.toString()
             val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
+            var listFavoriteCoins = arrayListOf<FavoriteCoin>()
 
-            val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreference, typeOfT)
+            if (dataSharedPreference.isNotEmpty()){
+                listFavoriteCoins = Gson().fromJson(dataSharedPreference, typeOfT)
+            }
 
-<<<<<<< HEAD
             if(listFavoriteCoins.isEmpty()) {
                 //TODO: Extract to strings.xml
                 _viewState.value = ViewStateOverview.Error("Please add one or more favorite coins")
             } else {
-                getAllDataByListCoinIds()
-=======
-            if (listFavoriteCoins.isNotEmpty()) {
-                _viewStateOverview.value = ViewStateOverview.Loading(listFavoriteCoins)
->>>>>>> State-flow-rework
+                getAllDataByListCoinIds(listFavoriteCoins)
             }
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving the list of coins")
-            _viewStateOverview.value = ViewStateOverview.Error(e.message.toString())
+            _viewState.value = ViewStateOverview.Error(e.message.toString())
         }
     }
 
@@ -92,9 +81,6 @@ class OverviewViewModel
                         val overviewCoinList = arrayListOf<OverviewMergedCoinData>()
 
                         listCoins.forEach { item ->
-                            val currency = sharedPreferences.Currency?.lowercase()
-                            OverviewMergedCoinData(id = item.id, name = item.name, priceCoin.data?.get(item.id)?.get(currency).toString(),
-                                listOf())
                             val historyCoinData = cachedCryptoRepository.getHistoryByCoinId(
                                 coinId = item.id,
                                 currency = sharedPreferences.Currency.toString(),
@@ -107,6 +93,28 @@ class OverviewViewModel
                                         priceCoin.data?.get(item.id)?.put("market_chart", marketChart)
                                     }
                                     priceCoin.data?.get(item.id)?.put("time_stamp", time)
+
+                                    //TODO: Is this oke? Like this?
+                                    val graphData = arrayListOf<GraphItem>()
+                                    historyCoinData.data?.prices?.forEach { datapoint ->
+                                        graphData.add(
+                                            GraphItem(
+                                                price = datapoint[1],
+                                                timestamp = datapoint[0].toLong()
+                                            )
+                                        )
+
+                                    }
+
+                                    val currency = sharedPreferences.Currency?.lowercase()
+                                    overviewCoinList.add(OverviewMergedCoinData(
+                                        id = item.id,
+                                        name = item.name,
+                                        priceCoin.data?.get(item.id)?.get(currency).toString(),
+                                        graphData = graphData,
+                                        timestamp = time)
+                                    )
+
                                 }
                                 is Resource.Error -> {
                                     _viewState.value = ViewStateOverview.Error("History for ${item} failed")
@@ -114,14 +122,8 @@ class OverviewViewModel
                                 }
                             }
                         }
-<<<<<<< HEAD
-
                         //All out success
-                        _viewState.value = ViewStateOverview.Success(priceCoin)
-=======
-                        mapData.data?.get(index.id)?.put("time_stamp", time)
-                        mapData.data?.get(index.id)?.put("name", index.name)
->>>>>>> State-flow-rework
+                        _viewState.value = ViewStateOverview.Success(overviewCoinList)
                     }
                     is Resource.Error -> {
                         _viewState.value = ViewStateOverview.Error("Cant get price coin data")
@@ -129,8 +131,6 @@ class OverviewViewModel
                     }
                     else -> {}
                 }
-<<<<<<< HEAD
-
             }
         }
     }
@@ -148,16 +148,3 @@ class OverviewViewModel
         return idCoins.joinToString(",")
     }
 }
-
-
-=======
-            }
-            if (hadError){
-                _viewStateOverview.value = ViewStateOverview.Error(errorString)
-            } else {
-                _viewStateOverview.value = ViewStateOverview.Loaded(mapData)
-            }
-        }
-    }
-}
->>>>>>> State-flow-rework

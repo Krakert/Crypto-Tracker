@@ -33,11 +33,10 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.Currency
 import com.krakert.tracker.models.FavoriteCoin
+import com.krakert.tracker.models.OverviewMergedCoinData
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.ui.state.ViewStateOverview
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateOverview
@@ -65,22 +64,14 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
         val response by viewModel.overviewViewState.collectAsState()
 
         when (response) {
-            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
-            is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
-            is ViewStateOverview.Loading -> {
-                ShowLoadingState(
-                    scrollState = scrollState,
-                    listFavoriteCoins = (response as ViewStateOverview.Loading).favorite,
-                    viewModel = viewModel
-                )
-            }
-            is ViewStateOverview.Loaded -> {
+            is ViewStateOverview.Error -> ShowEmptyState(R.string.txt_empty_overview, navController)
+            is ViewStateOverview.Loading -> Loading()
+            is ViewStateOverview.Success ->
                 ShowStatsCoins(
                     scrollState = scrollState,
-                    resultAPi = (response as ViewStateOverview.Loaded).httpResponse,
+                    resultAPi = (response as ViewStateOverview.Success).data,
                     navController = navController
                 )
-            }
         }
     }
 }
@@ -95,14 +86,14 @@ fun ShowEmptyState(@StringRes text: Int, navController: NavHostController) {
             textAlign = TextAlign.Center
 
         )
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.PlusOne){
+        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.PlusOne) {
             navController.navigate(Screen.Add.route)
         }
     }
 }
 
 @Composable
-private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
+private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel) {
     val context = LocalContext.current
     CenterElement {
         IconButton(
@@ -120,68 +111,12 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewMode
     }
 }
 
-@Composable
-private fun ShowLoadingState(
-    scrollState: ScalingLazyListState,
-    listFavoriteCoins: ArrayList<FavoriteCoin>,
-    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    val context = LocalContext.current
-    val sharedPreference = SharedPreference.sharedPreference(context = context)
-    val favoriteCoin = sharedPreference.FavoriteCoin
-
-    viewModel.getAllDataByListCoinIds(listFavoriteCoins)
-
-    ScalingLazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(
-            top = 8.dp,
-            bottom = 32.dp
-        ),
-        verticalArrangement = Arrangement.Center,
-        autoCentering = AutoCenteringParams(itemIndex = 0),
-        state = scrollState
-    ) {
-        // For each index in my favorites
-        items(listFavoriteCoins.size) { index ->
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                CenterElement {
-                    if (favoriteCoin == listFavoriteCoins[index].id) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(listFavoriteCoins[index].name.replaceFirstChar { it.uppercase() })
-                                appendInlineContent("inlineContent", "[icon]")
-                            },
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                            fontSize = 20.sp,
-                            inlineContent = addIconFavorite()
-                        )
-                    } else {
-                        Text(
-                            text = listFavoriteCoins[index].name.replaceFirstChar { it.uppercase() },
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                            fontSize = 20.sp,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
 
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    resultAPi: Resource<MutableMap<String, MutableMap<String, Any>>>,
-    navController: NavHostController
+    resultAPi: List<OverviewMergedCoinData>,
+    navController: NavHostController,
 ) {
 
     val path = Path()
@@ -202,8 +137,7 @@ fun ShowStatsCoins(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        resultAPi.data?.forEach { (k, v) ->
-
+        resultAPi.forEach {
             item {
                 Row(
                     modifier = Modifier
@@ -212,17 +146,17 @@ fun ShowStatsCoins(
                             onClick = {
                                 navController.currentBackStackEntry?.savedStateHandle?.set(
                                     key = "Coin",
-                                    value = k
+                                    value = it.id
                                 )
                                 navController.navigate(Screen.Details.route)
                             }
                         )
-                ){
+                ) {
                     CenterElement {
-                        if (favoriteCoin == k) {
+                        if (favoriteCoin == it.id) {
                             Text(
                                 text = buildAnnotatedString {
-                                    append(v["name"].toString().replaceFirstChar { it.uppercase() })
+                                    append(it.name.replaceFirstChar { it.uppercase() })
                                     appendInlineContent("inlineContent", "[icon]")
                                 },
                                 modifier = Modifier.padding(bottom = 8.dp),
@@ -233,7 +167,7 @@ fun ShowStatsCoins(
                             )
                         } else {
                             Text(
-                                text = v["name"].toString().replaceFirstChar { it.uppercase() },
+                                text = it.name.replaceFirstChar { it.uppercase() },
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colors.primary,
@@ -251,30 +185,27 @@ fun ShowStatsCoins(
                             val pointsCon1 = arrayListOf<PointF>()
                             val pointsCon2 = arrayListOf<PointF>()
 
-                            @Suppress("UNCHECKED_CAST")
-                            val marketChart = v["market_chart"] as List<List<Double>>
-
-                            var maxData = marketChart[0][1].toFloat()
-                            var minData = marketChart[0][1].toFloat()
-
-                            marketChart.forEachIndexed { _, index ->
-                                if (maxData < index[1].toFloat()) {
-                                    maxData = index[1].toFloat()
+                            var maxData = it.graphData[0].price.toFloat()
+                            var minData = it.graphData[0].price.toFloat()
+//
+                            it.graphData.forEach {
+                                if (maxData < it.price.toFloat()) {
+                                    maxData = it.price.toFloat()
                                 }
-                                if (minData > index[1].toFloat()){
-                                    minData = index[1].toFloat()
+                                if (minData > it.price.toFloat()) {
+                                    minData = it.price.toFloat()
                                 }
                             }
 
                             val pointsMean = arrayListOf<Float>()
                             // Calculate mean over 5 point and add that value to the list
-                            for (i in 0 until marketChart.size - 5 step 5){
+                            for (i in 0 until it.graphData.size - 5 step 5) {
                                 pointsMean.add(med(listOf(
-                                    marketChart[i][1].toFloat(),
-                                    marketChart[i + 1][1].toFloat(),
-                                    marketChart[i + 2][1].toFloat(),
-                                    marketChart[i + 3][1].toFloat(),
-                                    marketChart[i + 4][1].toFloat(),
+                                    it.graphData[i].price.toFloat(),
+                                    it.graphData[i + 1].price.toFloat(),
+                                    it.graphData[i + 2].price.toFloat(),
+                                    it.graphData[i + 3].price.toFloat(),
+                                    it.graphData[i + 4].price.toFloat(),
                                 )))
                             }
 
@@ -298,8 +229,12 @@ fun ShowStatsCoins(
                             path.moveTo(points.first().x, points.first().y)
                             for (i in 1 until points.size) {
                                 path.cubicTo(
-                                    pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
-                                    points[i].x, points[i].y
+                                    pointsCon1[i - 1].x,
+                                    pointsCon1[i - 1].y,
+                                    pointsCon2[i - 1].x,
+                                    pointsCon2[i - 1].y,
+                                    points[i].x,
+                                    points[i].y
                                 )
                             }
 
@@ -310,7 +245,7 @@ fun ShowStatsCoins(
                             )
                         }
 
-                        val textData = v[sharedPreference.Currency?.lowercase()]
+                        val textData = it.currentPrice
                         Text(text = buildString {
                             append(currencyObject?.nameFull?.get(1))
                                 .append(" ")
@@ -377,7 +312,7 @@ private fun addIconFavorite(): Map<String, InlineTextContent> {
                     placeholderVerticalAlign = PlaceholderVerticalAlign.Center
                 )
             ) {
-                    Icon(Icons.Filled.Star, "", tint = MaterialTheme.colors.secondaryVariant)
+                Icon(Icons.Filled.Star, "", tint = MaterialTheme.colors.secondaryVariant)
             }
         )
     )
