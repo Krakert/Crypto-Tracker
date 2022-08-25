@@ -4,7 +4,7 @@ import android.util.Log
 import com.krakert.tracker.api.CoinGeckoDataSource
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.database.CryptoCacheDao
-import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +48,11 @@ class CachedCryptoRepository
         return Resource.Success(response)
     }
 
-    override fun getPriceCoins(idCoins: String, currency: String): Flow<Resource<MutableMap<String, MutableMap<String, Any>>>> {
+    override fun getPriceCoins(
+        idCoins: String,
+        currency: String
+    ): Flow<Resource<MutableMap<String, MutableMap<String, Any>>>> {
         return flow {
-//            emit(fetchTrendingMoviesCached())
             emit(Resource.Loading())
             val result = coinGeckoDataSource.fetchCoinsPriceById(idCoins, currency)
 
@@ -73,53 +75,44 @@ class CachedCryptoRepository
 
     override suspend fun getDetailsCoinByCoinId(
         coinId: String,
-        localization: String,
-        tickers: Boolean,
-        markerData: Boolean,
-        communityData: Boolean,
-        developerData: Boolean,
-        sparkline: Boolean,
-    ): Resource<CoinFullData> {
-        val response = try {
-            withTimeout(10_000) {
-                coinGeckoDataSource.getDetailsCoinByCoinId(
-                    id = coinId,
-                    localization = localization,
-                    tickers = tickers,
-                    markerData = markerData,
-                    communityData = communityData,
-                    developerData = developerData,
-                    sparkline = sparkline
-                )
+    ): Flow<Resource<CoinFullData>> {
+        return flow {
+            emit(Resource.Loading())
+            val result = coinGeckoDataSource.fetchDetailsCoinByCoinId(coinId = coinId)
+
+            if (result is Resource.Success) {
+//                result.data.let { it ->
+//                    cryptoCacheDao.deleteAll(it)
+//                    cryptoCacheDao.insertAll(it)
+//                }
             }
-        } catch (e: HttpException) {
-            Log.e("CryptoApiRepository",
-                "Retrieval of details of the coin was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
-            return Resource.Error(e.code().toString())
-        }
-        return Resource.Success(response)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getHistoryByCoinId(
         coinId: String,
         currency: String,
         days: String,
-    ): Resource<MarketChart> {
-        val response = try {
-            withTimeout(10_000) {
-                coinGeckoDataSource.getHistoryByCoinId(
-                    id = coinId,
-                    currency = currency,
-                    days = days
-                )
+    ): Flow<Resource<MarketChart>> {
+        return flow {
+            emit(Resource.Loading())
+            val result = coinGeckoDataSource.fetchHistoryByCoinId(
+                coinId = coinId,
+                currency = currency,
+                days = days
+            )
+
+            if (result is Resource.Success) {
+//                result.data.let { it ->
+//                    cryptoCacheDao.deleteAll(it)
+//                    cryptoCacheDao.insertAll(it)
+//                }
             }
-        } catch (e: HttpException) {
-            Log.e("CryptoApiRepository",
-                "Retrieval of history data of coin was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
-            return Resource.Error(e.code().toString())
-        }
-        return Resource.Success(response)
+            emit(result)
+        }.flowOn(Dispatchers.IO)
     }
+
 
 
     class CoinGeckoExceptionError(message: String) : Exception(message)

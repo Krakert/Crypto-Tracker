@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.FavoriteCoin
-import com.krakert.tracker.repository.CachedCryptoRepository
-import com.krakert.tracker.ui.state.ViewStateDetailsCoins
+import com.krakert.tracker.api.Resource
+import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,31 +21,57 @@ import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import javax.inject.Inject
 
+sealed class ViewStateDetailsCoins {
+    object Empty : ViewStateDetailsCoins()
+    object Loading : ViewStateDetailsCoins()
+    data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
+    data class Error(val exception: String) : ViewStateDetailsCoins()
+}
+
+@Suppress("UnstableApiUsage")
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-    private val cachedCryptoRepository: CachedCryptoRepository,
+    private val CryptoRepository: CryptoRepository,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
 
     //TODO: set this one via setter
     lateinit var coinId: String
 
-
-    private val _viewStateDetailsCoin = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
-    val detailsCoin = _viewStateDetailsCoin.asStateFlow()
+    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Empty)
+    val detailsCoin = _viewState.asStateFlow()
 
     init {
         getDetailsCoinByCoinId(coinId)
     }
 
-
     fun getDetailsCoinByCoinId(coinId: String){
         viewModelScope.launch {
-            val response = cachedCryptoRepository.getDetailsCoinByCoinId(coinId )
-
-            _viewStateDetailsCoin.value = ViewStateDetailsCoins.Success(response)
-
-
+            val response = CryptoRepository.getDetailsCoinByCoinId(
+                coinId = coinId
+            ).collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _viewState.value = ViewStateDetailsCoins.Success(
+                            DetailsCoin(
+                                name = result.data?.name.toString(),
+                                image = result.data?.image,
+                                currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
+                                priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h ?: 0.0,
+                                priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
+                                circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
+                                high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
+                                marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+                            )
+                        )
+                    }
+                    is Resource.Error -> {
+                        _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
+                    }
+                }
+            }
         }
     }
 

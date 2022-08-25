@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,30 +35,34 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.models.Currency
-import com.krakert.tracker.models.responses.CoinFullData
-import com.krakert.tracker.ui.state.ViewStateDetailsCoins
+import com.krakert.tracker.models.ui.Currency
+import com.krakert.tracker.models.ui.DetailsCoin
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
+import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
 
-    when (val detailsCoins = viewModel.detailsCoin.collectAsState().value) {
+    val response by viewModel.detailsCoin.collectAsState()
+
+    when (response) {
         ViewStateDetailsCoins.Loading -> Loading()
         is ViewStateDetailsCoins.Error, is ViewStateDetailsCoins.Empty -> ShowIncorrectState(
             textIncorrectState = R.string.txt_toast_error,
             viewModel = viewModel,
             coinId = coinId
         )
-        is ViewStateDetailsCoins.Success -> ShowDetailsCoins(detailsCoins.details.data, viewModel, coinId, navController)
+        is ViewStateDetailsCoins.Success ->
+            ShowDetailsCoins(
+                detailsCoins = (response as ViewStateDetailsCoins.Success).details, viewModel, coinId, navController)
     }
 }
 
 @Composable
 fun ShowDetailsCoins(
-    detailsCoins: CoinFullData?,
+    detailsCoins: DetailsCoin,
     viewModel: DetailsViewModel,
     coinId: String,
     navController: NavHostController
@@ -84,14 +89,14 @@ fun ShowDetailsCoins(
         item {
             CenterElement {
                 CoilImage(
-                    imageModel = detailsCoins?.image?.large,
+                    imageModel = detailsCoins.image?.large,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .size(48.dp)
                         .wrapContentSize(align = Alignment.Center)
                     )
                 Text(
-                    text = detailsCoins?.name.toString(),
+                    text = detailsCoins.name,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colors.primary,
                     fontSize = 24.sp
@@ -122,20 +127,20 @@ fun ShowDetailsCoins(
             ) {
                 Text(
                     text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins?.marketData?.priceChangePercentage24h))
+                        append(String.format("%4.2f", detailsCoins.priceChangePercentage24h))
                         appendInlineContent("inlineContent", "[icon]")
                     },
                     fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins?.marketData?.priceChangePercentage24h)
+                    inlineContent = addIcon(detailsCoins.priceChangePercentage24h)
                 )
 
                 Text(
                     text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins?.marketData?.priceChangePercentage7d))
+                        append(String.format("%4.2f", detailsCoins.priceChangePercentage7d))
                         appendInlineContent("inlineContent", "[icon]")
                     },
                     fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins?.marketData?.priceChangePercentage7d)
+                    inlineContent = addIcon(detailsCoins.priceChangePercentage7d)
                 )
             }
         }
@@ -163,7 +168,7 @@ fun ShowDetailsCoins(
                         text = buildString {
                             append(currencyObject?.nameFull?.get(1))
                                 .append(" ")
-                                .append(detailsCoins?.marketData?.currentPrice?.get(sharedPreference.Currency.toString().lowercase()))
+                                .append(detailsCoins.currentPrice)
                         },
                         textAlign = TextAlign.Center,
                         fontSize = 28.sp,
@@ -194,7 +199,7 @@ fun ShowDetailsCoins(
             ) {
                 CenterElement {
                     Text(
-                        text = String.format("%,.0f", detailsCoins?.marketData?.circulatingSupply),
+                        text = String.format("%,.0f", detailsCoins.circulatingSupply),
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                     )
@@ -225,7 +230,7 @@ fun ShowDetailsCoins(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins?.marketData?.high24h?.get(sharedPreference.Currency.toString().lowercase()).toString())
+                            .append(detailsCoins.high24h)
                     },
                     fontSize = 16.sp,
                 )
@@ -233,7 +238,7 @@ fun ShowDetailsCoins(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins?.marketData?.low24h?.get(sharedPreference.Currency.toString().lowercase()).toString())
+                            .append(detailsCoins.low24h)
                     },
                     fontSize = 16.sp,
                 )
@@ -263,7 +268,7 @@ fun ShowDetailsCoins(
                         text = buildString {
                             append(currencyObject?.nameFull?.get(1))
                                 .append(" ")
-                                .append(String.format("%,.2f", detailsCoins?.marketData?.marketCap?.get(sharedPreference.Currency.toString().lowercase())))
+                                .append(String.format("%,.2f", detailsCoins.marketCap))
 
                         },
                         textAlign = TextAlign.Center,
@@ -282,13 +287,13 @@ fun ShowDetailsCoins(
                             append(
                                 String.format(
                                     "%4.2f",
-                                    detailsCoins?.marketData?.marketCapChangePercentage24h
+                                    detailsCoins.marketCapChangePercentage24h
                                 )
                             )
                             appendInlineContent("inlineContent", "[icon]")
                         },
                         fontSize = 20.sp,
-                        inlineContent = addIcon(detailsCoins?.marketData?.priceChangePercentage24h)
+                        inlineContent = addIcon(detailsCoins.marketCapChangePercentage24h)
                     )
                 }
             }
@@ -314,14 +319,16 @@ fun ShowDetailsCoins(
                 ) {
                     viewModel.removeCoinFromFavoriteCoins(coinId = coinId)
                     navController.popBackStack()
-                    Toast.makeText(context, context.getString(R.string.txt_toast_removed, detailsCoins?.name), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.txt_toast_removed,
+                        detailsCoins.name), Toast.LENGTH_SHORT).show()
                 }
                 IconButton(
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.Star
                 ) {
                     sharedPreference.FavoriteCoin = coinId
-                    Toast.makeText(context, context.getString(R.string.txt_toast_set_tile, detailsCoins?.name), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.txt_toast_set_tile,
+                        detailsCoins.name), Toast.LENGTH_SHORT).show()
                 }
             }
         }

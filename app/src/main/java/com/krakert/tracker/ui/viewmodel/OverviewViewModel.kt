@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.krakert.tracker.ui.viewmodel
 
 import android.content.ContentValues
@@ -11,9 +13,9 @@ import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.FavoriteCoin
-import com.krakert.tracker.models.GraphItem
-import com.krakert.tracker.models.OverviewMergedCoinData
+import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.GraphItem
+import com.krakert.tracker.models.ui.OverviewMergedCoinData
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +36,7 @@ sealed class ViewStateOverview {
 @HiltViewModel
 class OverviewViewModel
     @Inject constructor(
-        private val cachedCryptoRepository: CryptoRepository,
+        private val CryptoRepository: CryptoRepository,
         private val sharedPreferences : SharedPreferences
     ): ViewModel() {
 
@@ -68,11 +70,11 @@ class OverviewViewModel
         }
     }
 
-    fun getAllDataByListCoinIds(listCoins: ArrayList<FavoriteCoin>){
+    private fun getAllDataByListCoinIds(listCoins: ArrayList<FavoriteCoin>){
         viewModelScope.launch {
             val time = System.currentTimeMillis()
 
-            cachedCryptoRepository.getPriceCoins(
+            CryptoRepository.getPriceCoins(
                 idCoins = getCoinsIdString(listCoins),
                 currency = sharedPreferences.Currency.toString()
             ).collect { priceCoin ->
@@ -81,44 +83,42 @@ class OverviewViewModel
                         val overviewCoinList = arrayListOf<OverviewMergedCoinData>()
 
                         listCoins.forEach { item ->
-                            val historyCoinData = cachedCryptoRepository.getHistoryByCoinId(
+                            CryptoRepository.getHistoryByCoinId(
                                 coinId = item.id,
                                 currency = sharedPreferences.Currency.toString(),
                                 days = sharedPreferences.AmountDaysTracking.toString()
-                            )
+                            ).collect { graphData ->
+                                when (graphData) {
+                                    is Resource.Success -> {
+                                        graphData.data?.prices?.let { marketChart ->
+                                            priceCoin.data?.get(item.id)?.put("market_chart", marketChart)
+                                        }
+                                        priceCoin.data?.get(item.id)?.put("time_stamp", time)
 
-                            when (historyCoinData) {
-                                is Resource.Success -> {
-                                    historyCoinData.data?.prices?.let { marketChart ->
-                                        priceCoin.data?.get(item.id)?.put("market_chart", marketChart)
-                                    }
-                                    priceCoin.data?.get(item.id)?.put("time_stamp", time)
-
-                                    //TODO: Is this oke? Like this?
-                                    val graphData = arrayListOf<GraphItem>()
-                                    historyCoinData.data?.prices?.forEach { datapoint ->
-                                        graphData.add(
-                                            GraphItem(
-                                                price = datapoint[1],
-                                                timestamp = datapoint[0].toLong()
+                                        //TODO: Is this oke? Like this?
+                                        val dataChart = arrayListOf<GraphItem>()
+                                        graphData.data?.prices?.forEach { datapoint ->
+                                            dataChart.add(
+                                                GraphItem(
+                                                    price = datapoint[1],
+                                                    timestamp = datapoint[0].toLong()
+                                                )
                                             )
+
+                                        }
+                                        val currency = sharedPreferences.Currency
+                                        overviewCoinList.add(OverviewMergedCoinData(
+                                            id = item.id,
+                                            name = item.name,
+                                            priceCoin.data?.get(item.id)?.get(currency).toString(),
+                                            graphData = dataChart,
+                                            timestamp = time)
                                         )
-
                                     }
-
-                                    val currency = sharedPreferences.Currency?.lowercase()
-                                    overviewCoinList.add(OverviewMergedCoinData(
-                                        id = item.id,
-                                        name = item.name,
-                                        priceCoin.data?.get(item.id)?.get(currency).toString(),
-                                        graphData = graphData,
-                                        timestamp = time)
-                                    )
-
-                                }
-                                is Resource.Error -> {
-                                    _viewState.value = ViewStateOverview.Error("History for ${item} failed")
-
+                                    is Resource.Error -> {
+                                        _viewState.value = ViewStateOverview.Error("History for $item failed")
+                                    }
+                                    else -> {}
                                 }
                             }
                         }

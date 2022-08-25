@@ -1,7 +1,7 @@
 package com.krakert.tracker.repository
 
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
 import kotlinx.coroutines.flow.Flow
@@ -18,21 +18,17 @@ interface CryptoRepository {
 
     suspend fun getDetailsCoinByCoinId(
         coinId: String,
-        localization: String = "false",
-        tickers: Boolean = false,
-        markerData: Boolean = true,
-        communityData: Boolean = false,
-        developerData: Boolean = false,
-        sparkline: Boolean = false,
-    ): Resource<CoinFullData>
+    ): Flow<Resource<CoinFullData>>
 
     suspend fun getHistoryByCoinId(
         coinId: String,
         currency: String,
         days: String,
-    ): Resource<MarketChart>
+    ): Flow<Resource<MarketChart>>
 
-    fun getPriceCoins(idCoins: String, currency: String):
+    fun getPriceCoins(
+        idCoins: String, 
+        currency: String):
             Flow<Resource<MutableMap<String, MutableMap<String, Any>>>>
 
     fun shouldFetch() : Boolean

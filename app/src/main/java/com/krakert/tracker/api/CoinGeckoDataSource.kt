@@ -1,6 +1,6 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.models.ListCoins
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
 import retrofit2.Response
@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 /**
  * Middleware like class to handle http requests and it's exception
- * @author Pim Meijer
+ * @author Pim Meijer, Stefan de Kraker
  */
 class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     private val coinGeckoApiService: CoinGeckoApiService = retrofit.create(CoinGeckoApiService::class.java);
@@ -17,8 +17,15 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     suspend fun fetchCoinsPriceById(idCoins: String, currency: String): Resource<MutableMap<String, MutableMap<String, Any>>> {
         return getResponse(
             //TODO: this should be passed to this function in the form of a RequestBody model
-            request = { coinGeckoApiService.getPriceByListCoinIds(idCoins, currency, "", "", "", "") },
-            defaultErrorMessage = "Error fetching Movie list")
+            request = { coinGeckoApiService.getPriceByListCoinIds(
+                ids = idCoins,
+                currency = currency,
+                marketCap = "",
+                dayVol = "",
+                dayChange = "",
+                lastUpdated = ""
+            ) },
+            defaultErrorMessage = "Error fetching data pricing coins")
 
     }
     //TODO: this should be passed to this function in the form of a RequestBody model
@@ -27,21 +34,29 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     }
 
     //TODO: this should be passed to this function in the form of a RequestBody model
-    suspend fun getDetailsCoinByCoinId(
-        id: String,
-        localization: String,
-        tickers: Boolean,
-        markerData: Boolean,
-        communityData: Boolean,
-        developerData: Boolean,
-        sparkline: Boolean
-    ) : CoinFullData {
-        return coinGeckoApiService.getDetailsCoinByCoinId(id, localization, tickers, markerData, communityData, developerData, sparkline)
+    suspend fun fetchDetailsCoinByCoinId(coinId: String): Resource<CoinFullData> {
+        return getResponse(
+            request = { coinGeckoApiService.getDetailsCoinByCoinId(
+                coinId = coinId,
+                localization = "false",
+                tickers = false,
+                markerData = true,
+                communityData = false,
+                developerData = false,
+                sparkline = false
+            ) },
+            defaultErrorMessage = "Error fetching details coins")
+
     }
 
-    //TODO: this should be passed to this function in the form of a RequestBody model
-    suspend fun getHistoryByCoinId(id: String, currency: String, days: String): MarketChart {
-        return coinGeckoApiService.getHistoryByCoinId(id, currency, days)
+    suspend fun fetchHistoryByCoinId(coinId: String, currency: String, days: String): Resource<MarketChart> {
+        return getResponse(
+            request = { coinGeckoApiService.getHistoryByCoinId(
+                coinId = coinId,
+                currency = currency,
+                days = days
+            ) },
+            defaultErrorMessage = "Error fetching historical data coin")
     }
 
     /**

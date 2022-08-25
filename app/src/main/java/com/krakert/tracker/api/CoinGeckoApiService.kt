@@ -1,7 +1,7 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.models.*
 import com.krakert.tracker.models.responses.CoinFullData
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.MarketChart
 import retrofit2.Response
 import retrofit2.http.GET
@@ -30,19 +30,19 @@ interface CoinGeckoApiService {
 
     @GET("coins/{id}")
     suspend fun getDetailsCoinByCoinId(
-        @Path("id") id: String,
+        @Path("id") coinId: String,
         @Query("localization") localization: String,
         @Query("tickers") tickers: Boolean,
         @Query("market_data") markerData: Boolean,
         @Query("community_data") communityData: Boolean,
         @Query("developer_data") developerData: Boolean,
         @Query("sparkline") sparkline: Boolean
-    )  : CoinFullData
+    )  : Response<CoinFullData>
 
     @GET("coins/{id}/market_chart")
     suspend fun getHistoryByCoinId(
-        @Path("id") id: String,
+        @Path("id") coinId: String,
         @Query("vs_currency") currency: String,
         @Query("days") days: String
-    ) : MarketChart
+    ) : Response<MarketChart>
 }
