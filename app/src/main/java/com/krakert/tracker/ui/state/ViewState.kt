@@ -12,15 +12,6 @@ sealed class ViewStateAddCoin {
     data class Error(val exception: String) : ViewStateAddCoin()
 }
 
-
-
-sealed class ViewStateDataCoins {
-    // Represents different states for the data that is shown on the overview screen
-    object Loading : ViewStateDataCoins()
-    data class Success(val data: Resource<MutableMap<String, MutableMap<String, Any>>>) : ViewStateDataCoins()
-    data class Error(val exception: String) : ViewStateDataCoins()
-}
-
 sealed class ViewStateDetailsCoins {
     object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()

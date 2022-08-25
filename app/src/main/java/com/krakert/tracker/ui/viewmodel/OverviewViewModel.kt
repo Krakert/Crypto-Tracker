@@ -12,9 +12,14 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.FavoriteCoin
+<<<<<<< HEAD
 import com.krakert.tracker.models.OverviewMergedCoinData
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+=======
+import com.krakert.tracker.repository.CryptoApiRepository
+import com.krakert.tracker.ui.state.ViewStateOverview
+>>>>>>> State-flow-rework
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,9 +45,14 @@ class OverviewViewModel
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
     val overviewViewState = _viewState.asStateFlow()
 
+<<<<<<< HEAD
     init {
         fetchAllOverviewData()
     }
+=======
+    private val _viewStateOverview = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
+    val stateOverview = _viewStateOverview.asStateFlow()
+>>>>>>> State-flow-rework
 
     //TODO: is viewmodelscope really necessary here?
     fun fetchAllOverviewData() = viewModelScope.launch(Dispatchers.IO) {
@@ -52,15 +62,20 @@ class OverviewViewModel
 
             val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreference, typeOfT)
 
+<<<<<<< HEAD
             if(listFavoriteCoins.isEmpty()) {
                 //TODO: Extract to strings.xml
                 _viewState.value = ViewStateOverview.Error("Please add one or more favorite coins")
             } else {
                 getAllDataByListCoinIds()
+=======
+            if (listFavoriteCoins.isNotEmpty()) {
+                _viewStateOverview.value = ViewStateOverview.Loading(listFavoriteCoins)
+>>>>>>> State-flow-rework
             }
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving the list of coins")
-            _viewState.value = ViewStateOverview.Error(e.message.toString())
+            _viewStateOverview.value = ViewStateOverview.Error(e.message.toString())
         }
     }
 
@@ -99,9 +114,14 @@ class OverviewViewModel
                                 }
                             }
                         }
+<<<<<<< HEAD
 
                         //All out success
                         _viewState.value = ViewStateOverview.Success(priceCoin)
+=======
+                        mapData.data?.get(index.id)?.put("time_stamp", time)
+                        mapData.data?.get(index.id)?.put("name", index.name)
+>>>>>>> State-flow-rework
                     }
                     is Resource.Error -> {
                         _viewState.value = ViewStateOverview.Error("Cant get price coin data")
@@ -109,6 +129,7 @@ class OverviewViewModel
                     }
                     else -> {}
                 }
+<<<<<<< HEAD
 
             }
         }
@@ -129,3 +150,14 @@ class OverviewViewModel
 }
 
 
+=======
+            }
+            if (hadError){
+                _viewStateOverview.value = ViewStateOverview.Error(errorString)
+            } else {
+                _viewStateOverview.value = ViewStateOverview.Loaded(mapData)
+            }
+        }
+    }
+}
+>>>>>>> State-flow-rework
