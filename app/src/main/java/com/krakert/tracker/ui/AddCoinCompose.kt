@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
@@ -34,7 +33,7 @@ import com.skydoves.landscapist.palette.BitmapPalette
 import java.lang.reflect.Type
 
 @Composable
-fun ListAddCoin( viewModel: AddCoinViewModel = viewModel()) {
+fun ListAddCoin(viewModel: AddCoinViewModel) {
 
     LaunchedEffect(Unit){
         viewModel.getListCoins()
