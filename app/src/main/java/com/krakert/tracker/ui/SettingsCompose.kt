@@ -20,7 +20,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
-import com.krakert.tracker.models.Currency
+import com.krakert.tracker.models.ui.Currency
 
 @Composable
 fun ListSettings() {
@@ -159,7 +159,7 @@ fun ListSettings() {
                     },
                     label = {
                         Text(
-                            text = index.name,
+                            text = index.name.uppercase(),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -180,7 +180,7 @@ fun ListSettings() {
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.RestartAlt
                 ) {
-                    sharedPreference.Currency = "EUR"
+                    sharedPreference.Currency = "eur"
                     sharedPreference.FavoriteCoin = ""
                     sharedPreference.AmountDaysTracking = 7.0F
                     sharedPreference.FavoriteCoins = ""

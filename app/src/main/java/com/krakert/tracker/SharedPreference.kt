@@ -20,7 +20,7 @@ object SharedPreference {
     }
 
     var SharedPreferences.Currency
-        get() = getString(currency, "EUR")
+        get() = getString(currency, "eur")
         set(value) {
             editMe {
                 it.putString(currency, value)
