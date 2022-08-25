@@ -1,4 +1,4 @@
-package com.krakert.tracker.models
+package com.krakert.tracker.models.responses
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

@@ -11,8 +11,8 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.Coin
-import com.krakert.tracker.models.FavoriteCoin
+import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.repository.CachedCryptoRepository
 import com.krakert.tracker.ui.state.ViewStateAddCoin
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.krakert.tracker.models
+package com.krakert.tracker.models.ui
 
 data class OverviewMergedCoinData(
     val id: String,

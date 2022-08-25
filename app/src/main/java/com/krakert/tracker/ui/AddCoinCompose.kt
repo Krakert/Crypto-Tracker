@@ -25,7 +25,7 @@ import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.Coin
+import com.krakert.tracker.models.responses.Coin
 import com.krakert.tracker.ui.state.ViewStateAddCoin
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.skydoves.landscapist.coil.CoilImage

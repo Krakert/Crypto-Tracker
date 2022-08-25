@@ -33,9 +33,8 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.models.Currency
-import com.krakert.tracker.models.FavoriteCoin
-import com.krakert.tracker.models.OverviewMergedCoinData
+import com.krakert.tracker.models.ui.Currency
+import com.krakert.tracker.models.ui.OverviewMergedCoinData
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
@@ -72,6 +71,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
                     resultAPi = (response as ViewStateOverview.Success).data,
                     navController = navController
                 )
+            else -> {}
         }
     }
 }
