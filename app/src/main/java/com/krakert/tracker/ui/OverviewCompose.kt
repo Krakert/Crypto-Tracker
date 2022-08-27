@@ -67,7 +67,8 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
         val response by viewModel.overviewViewState.collectAsState()
 
         when (response) {
-            is ViewStateOverview.Error -> ShowEmptyState(R.string.txt_empty_overview, navController)
+            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
+            is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
             is ViewStateOverview.Loading -> Loading()
             is ViewStateOverview.Success ->
                 ShowStatsCoins(
@@ -75,7 +76,6 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
                     resultAPi = (response as ViewStateOverview.Success).data,
                     navController = navController
                 )
-            else -> {}
         }
     }
 }

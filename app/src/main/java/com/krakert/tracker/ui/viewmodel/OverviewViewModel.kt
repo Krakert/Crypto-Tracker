@@ -42,35 +42,38 @@ class OverviewViewModel
         private val sharedPreferences : SharedPreferences
     ): ViewModel() {
 
-    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
+    private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val overviewViewState = _viewState.asStateFlow()
 
     fun fetchAllOverviewData(){
         val favoriteCoinList = sharedPreferences.getFavoriteCoinList()
 
-        viewModelScope.launch {
-            cryptoRepository.getPriceCoins(
-                idCoins = getCoinsIdString(favoriteCoinList),
-                currency = sharedPreferences.Currency.toString()
-            ).collect { priceCoin ->
-                when(priceCoin) {
-                    is Resource.Success -> {
-                        val overviewCoinList = getHistoryForCoins(favoriteCoinList, priceCoin)
-
-                        //All out success
-                        _viewState.value = ViewStateOverview.Success(overviewCoinList)
-                    }
-                    is Resource.Error -> {
-                        _viewState.value = ViewStateOverview.Error("Cant get price coin data")
-                    }
-                    is Resource.Loading -> {
-                        _viewState.value = ViewStateOverview.Loading
-                    }
-                    else -> {
-                        Log.e("PriceCoin", "Not a valid resource state triggered")
+        if (favoriteCoinList.isNotEmpty()) {
+            viewModelScope.launch {
+                cryptoRepository.getPriceCoins(
+                    idCoins = getCoinsIdString(favoriteCoinList),
+                    currency = sharedPreferences.Currency.toString()
+                ).collect { priceCoin ->
+                    when (priceCoin) {
+                        is Resource.Success -> {
+                            val overviewCoinList = getHistoryForCoins(favoriteCoinList, priceCoin)
+                            //All out success
+                            _viewState.value = ViewStateOverview.Success(overviewCoinList)
+                        }
+                        is Resource.Error -> {
+                            _viewState.value = ViewStateOverview.Error("Cant get price coin data")
+                        }
+                        is Resource.Loading -> {
+                            _viewState.value = ViewStateOverview.Loading
+                        }
+                        else -> {
+                            Log.e("PriceCoin", "Not a valid resource state triggered")
+                        }
                     }
                 }
             }
+        } else {
+            _viewState.value = ViewStateOverview.Empty
         }
     }
 
