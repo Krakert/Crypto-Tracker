@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -44,15 +45,18 @@ import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
-
+    LaunchedEffect(key1 = Unit ) {
+        //pass coinID to viewModel, can be done cleaner but ok for now
+        viewModel.coinId = coinId
+        viewModel.getDetailsCoinByCoinId()
+    }
     val response by viewModel.detailsCoin.collectAsState()
 
     when (response) {
         ViewStateDetailsCoins.Loading -> Loading()
         is ViewStateDetailsCoins.Error, is ViewStateDetailsCoins.Empty -> ShowIncorrectState(
             textIncorrectState = R.string.txt_toast_error,
-            viewModel = viewModel,
-            coinId = coinId
+            viewModel = viewModel
         )
         is ViewStateDetailsCoins.Success ->
             ShowDetailsCoins(
@@ -357,8 +361,7 @@ fun Divider() {
 @Composable
 private fun ShowIncorrectState(
     @StringRes textIncorrectState: Int,
-    viewModel: DetailsViewModel,
-    coinId: String
+    viewModel: DetailsViewModel
 ) {
     val context = LocalContext.current
     CenterElement {
@@ -367,7 +370,7 @@ private fun ShowIncorrectState(
                 .size(ButtonDefaults.LargeButtonSize)
                 .padding(top = 8.dp), Icons.Rounded.Cached
         ) {
-            viewModel.getDetailsCoinByCoinId(coinId)
+            viewModel.getDetailsCoinByCoinId()
             Toast.makeText(context, textIncorrectState, Toast.LENGTH_SHORT).show()
         }
         Text(

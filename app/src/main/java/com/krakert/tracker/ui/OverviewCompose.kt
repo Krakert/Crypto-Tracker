@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -42,7 +43,6 @@ import com.krakert.tracker.ui.viewmodel.ViewStateOverview
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
-    viewModel.fetchAllOverviewData()
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -60,6 +60,10 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
+        LaunchedEffect(key1 = Unit) {
+            viewModel.fetchAllOverviewData()
+        }
+
         val response by viewModel.overviewViewState.collectAsState()
 
         when (response) {

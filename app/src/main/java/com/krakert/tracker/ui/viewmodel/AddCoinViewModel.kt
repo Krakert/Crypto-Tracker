@@ -11,16 +11,25 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.repository.CachedCryptoRepository
-import com.krakert.tracker.ui.state.ViewStateAddCoin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import javax.inject.Inject
+
+sealed class ViewStateAddCoin {
+    // Represents different states for the add coin screen
+    object Empty : ViewStateAddCoin()
+    object Loading : ViewStateAddCoin()
+    data class Success(val coins: ListCoins) : ViewStateAddCoin()
+    data class Error(val exception: String) : ViewStateAddCoin()
+}
 
 @HiltViewModel
 class AddCoinViewModel @Inject constructor(
@@ -36,7 +45,22 @@ class AddCoinViewModel @Inject constructor(
 
     fun getListCoins() {
         viewModelScope.launch {
-            _viewState.value = ViewStateAddCoin.Success(cachedCryptoRepository.getListCoins())
+            cachedCryptoRepository.getListCoins().collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+
+                        result.data?.let { listCoin ->
+                            _viewState.value = ViewStateAddCoin.Success(listCoin)
+                        } ?: _viewState
+                    }
+                    is Resource.Error -> {
+                        _viewState.value = ViewStateAddCoin.Error(result.message ?: "no error from network layer")
+
+                    }
+                    else -> _viewState.value = ViewStateAddCoin.Error("Unknown ViewStateAddCoin Error")
+
+                }
+            }
         }
     }
 
@@ -55,22 +79,34 @@ class AddCoinViewModel @Inject constructor(
             listFavoriteCoins.forEach {
                 if (it.name == coin.name) {
                     alreadyAdded = true
-                    Toast.makeText(context, context.getString(R.string.txt_toast_already_added), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.txt_toast_already_added),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
             if (!alreadyAdded) {
                 listFavoriteCoins.add(
                     FavoriteCoin(
-                    id = coin.id,
-                    name = coin.name)
+                        id = coin.id,
+                        name = coin.name
+                    )
                 )
                 sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
-                Toast.makeText(context, context.getString(R.string.txt_toast_added, coin.name), Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.txt_toast_added, coin.name),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
             }
         } catch (e: Exception) {
-            Log.e(TAG, e.message ?: "Something went wrong while saving the list of favorite coins")
+            Log.e(
+                TAG,
+                e.message ?: "Something went wrong while saving the list of favorite coins"
+            )
             _viewState.value = ViewStateAddCoin.Error(e.message.toString())
         }
     }

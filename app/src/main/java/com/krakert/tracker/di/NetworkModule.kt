@@ -19,10 +19,9 @@ object NetworkModule {
 
     @Provides
     fun provideHTTPLoggingInterceptor(): HttpLoggingInterceptor {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        return interceptor
+        return HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        }
     }
 
     @Provides
@@ -35,6 +34,7 @@ object NetworkModule {
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
         }.build()
+
         //you can use the AuthInterceptor if you need to do some form of auth
     }
 

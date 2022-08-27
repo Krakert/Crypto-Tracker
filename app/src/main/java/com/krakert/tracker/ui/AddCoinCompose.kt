@@ -26,8 +26,8 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.responses.Coin
-import com.krakert.tracker.ui.state.ViewStateAddCoin
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
+import com.krakert.tracker.ui.viewmodel.ViewStateAddCoin
 import com.skydoves.landscapist.coil.CoilImage
 import com.skydoves.landscapist.palette.BitmapPalette
 import java.lang.reflect.Type
@@ -68,7 +68,7 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
                 Loading()
             }
             is ViewStateAddCoin.Success -> {
-                ShowList(scrollState = scrollState, listResult = listResult.coins.data, viewModel = viewModel)
+                ShowList(scrollState = scrollState, listResult = listResult.coins, viewModel = viewModel)
             }
         }
 

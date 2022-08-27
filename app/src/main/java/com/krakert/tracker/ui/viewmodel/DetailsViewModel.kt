@@ -35,17 +35,12 @@ class DetailsViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
 
-    //TODO: set this one via setter
     lateinit var coinId: String
 
     private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Empty)
     val detailsCoin = _viewState.asStateFlow()
 
-    init {
-        getDetailsCoinByCoinId(coinId)
-    }
-
-    fun getDetailsCoinByCoinId(coinId: String){
+    fun getDetailsCoinByCoinId(){
         viewModelScope.launch {
             val response = CryptoRepository.getDetailsCoinByCoinId(
                 coinId = coinId

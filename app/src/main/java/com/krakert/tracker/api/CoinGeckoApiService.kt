@@ -16,7 +16,7 @@ interface CoinGeckoApiService {
         @Query("order") order: String,
         @Query("per_page") perPage: Int,
         @Query("page") page: Int,
-    ) : ListCoins
+    ) : Response<ListCoins>
 
     @GET("simple/price")
     suspend fun getPriceByListCoinIds(

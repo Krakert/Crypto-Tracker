@@ -14,7 +14,7 @@ interface CryptoRepository {
         order: String = "market_cap_desc",
         perPage: Int = 100,
         page: Int = 1,
-    ): Resource<ListCoins>
+    ): Flow<Resource<ListCoins>>
 
     suspend fun getDetailsCoinByCoinId(
         coinId: String,

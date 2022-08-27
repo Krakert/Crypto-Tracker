@@ -21,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
 import javax.inject.Inject
@@ -43,9 +44,6 @@ class OverviewViewModel
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Empty)
     val overviewViewState = _viewState.asStateFlow()
 
-    init {
-        fetchAllOverviewData()
-    }
 
     //TODO: is viewmodelscope really necessary here?
     fun fetchAllOverviewData() = viewModelScope.launch(Dispatchers.IO) {
@@ -127,7 +125,6 @@ class OverviewViewModel
                     }
                     is Resource.Error -> {
                         _viewState.value = ViewStateOverview.Error("Cant get price coin data")
-
                     }
                     else -> {}
                 }

@@ -16,11 +16,11 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 class CachedCryptoRepository
-    @Inject
-    constructor(
-        private val coinGeckoDataSource: CoinGeckoDataSource,
-        private val cryptoCacheDao: CryptoCacheDao
-    ) : CryptoRepository {
+@Inject
+constructor(
+    private val coinGeckoDataSource: CoinGeckoDataSource,
+    private val cryptoCacheDao: CryptoCacheDao
+) : CryptoRepository {
 
     override suspend fun getListCoins(
         currency: String,
@@ -28,24 +28,21 @@ class CachedCryptoRepository
         order: String,
         perPage: Int,
         page: Int,
-    ): Resource<ListCoins> {
-        val response = try {
-            withTimeout(10_000) {
-                coinGeckoDataSource.getListCoins(
-                    currency = currency,
-                    ids = ids,
-                    order = order,
-                    perPage = perPage,
-                    page = page
-                )
-            }
-        } catch (e: HttpException) {
-            Log.e("CryptoApiRepository",
-                "Retrieval of a list of coins was unsuccessful -> got code: ${e.code()}, details: ${e.message}")
-            return Resource.Error(e.code().toString())
-        }
+    ): Flow<Resource<ListCoins>> {
+        return flow {
+            emit(Resource.Loading())
 
-        return Resource.Success(response)
+            val result = coinGeckoDataSource.getListCoins(
+                currency = currency,
+                ids = ids,
+                order = order,
+                perPage = perPage,
+                page = page
+            )
+
+            emit(result)
+
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun getPriceCoins(
@@ -112,7 +109,6 @@ class CachedCryptoRepository
             emit(result)
         }.flowOn(Dispatchers.IO)
     }
-
 
 
     class CoinGeckoExceptionError(message: String) : Exception(message)
