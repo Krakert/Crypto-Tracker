@@ -120,9 +120,4 @@ constructor(
     }
 
 
-    class CoinGeckoExceptionError(message: String) : Exception(message)
-
-    override fun shouldFetch(): Boolean {
-        TODO("Not yet implemented")
-    }
 }

@@ -3,6 +3,11 @@ package com.krakert.tracker
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
+import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.models.ui.FavoriteCoin
+import java.lang.reflect.Type
 
 object SharedPreference {
     private const val currency = "CURRENCY"
@@ -43,6 +48,19 @@ object SharedPreference {
             }
         }
 
+    fun SharedPreferences.getFavoriteCoinList() : ArrayList<FavoriteCoin> {
+        val dataSharedPreference = FavoriteCoins.toString()
+        val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
+        var listFavoriteCoins = arrayListOf<FavoriteCoin>()
+
+        if (dataSharedPreference.isNotEmpty()){
+            listFavoriteCoins = Gson().fromJson(dataSharedPreference, typeOfT)
+        }
+
+        return listFavoriteCoins
+
+    }
+
     var SharedPreferences.FavoriteCoins
         get() = getString(favoriteCoins, "")
         set(value) {
@@ -58,15 +76,5 @@ object SharedPreference {
                 it.putInt(minutesCache, value)
             }
         }
-
-    @Suppress("UNUSED_PARAMETER")
-    var SharedPreferences.ClearValues
-        get() = { }
-        set(value) {
-            editMe {
-                it.clear()
-            }
-        }
-
 
 }

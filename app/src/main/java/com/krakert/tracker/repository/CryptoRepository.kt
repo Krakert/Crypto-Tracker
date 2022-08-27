@@ -31,5 +31,4 @@ interface CryptoRepository {
         currency: String):
             Flow<Resource<Map<String, MutableMap<String, Any>>>>
 
-    fun shouldFetch() : Boolean
 }
