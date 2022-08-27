@@ -63,6 +63,9 @@ class OverviewViewModel
                     is Resource.Error -> {
                         _viewState.value = ViewStateOverview.Error("Cant get price coin data")
                     }
+                    is Resource.Loading -> {
+                        _viewState.value = ViewStateOverview.Loading
+                    }
                     else -> {
                         Log.e("PriceCoin", "Not a valid resource state triggered")
                     }

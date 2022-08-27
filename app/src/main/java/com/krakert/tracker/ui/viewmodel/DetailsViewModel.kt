@@ -64,6 +64,9 @@ class DetailsViewModel @Inject constructor(
                     is Resource.Error -> {
                         _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
                     }
+                    is Resource.Loading -> {
+                        _viewState.value = ViewStateDetailsCoins.Loading
+                    }
                     else -> _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
                 }
             }

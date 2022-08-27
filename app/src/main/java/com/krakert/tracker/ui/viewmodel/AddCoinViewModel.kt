@@ -57,6 +57,9 @@ class AddCoinViewModel @Inject constructor(
                         _viewState.value = ViewStateAddCoin.Error(result.message ?: "no error from network layer")
 
                     }
+                    is Resource.Loading -> {
+                        _viewState.value = ViewStateAddCoin.Loading
+                    }
                     else -> _viewState.value = ViewStateAddCoin.Error("Unknown ViewStateAddCoin Error")
 
                 }
