@@ -1,10 +1,9 @@
 package com.krakert.tracker.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.models.responses.ListCoins
 
 @Dao
 interface CryptoCacheDao {
@@ -13,7 +12,10 @@ interface CryptoCacheDao {
     suspend fun getListCoins(): List<Coin>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun setListCoins(coins: List<Coin>)
+    suspend fun insertAll(coins: List<Coin>)
+
+    @Delete
+    suspend fun deleteAll(it: List<Coin>)
 
 
 //    @Query ("SELECT * FROM dataCoinTable")

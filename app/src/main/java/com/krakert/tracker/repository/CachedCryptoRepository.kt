@@ -1,6 +1,7 @@
 package com.krakert.tracker.repository
 
 import android.content.SharedPreferences
+import android.util.Log
 import com.krakert.tracker.api.CacheRateLimiter
 import com.krakert.tracker.api.CoinGeckoDataSource
 import com.krakert.tracker.api.Resource
@@ -22,9 +23,12 @@ constructor(
     private val cryptoCacheDao: CryptoCacheDao,
     private val sharedPreferences: SharedPreferences,
 ) : CryptoRepository {
+    // Setup of the limits for the different data in the DB
     private val cacheRateLimit = CacheRateLimiter<String>(1, TimeUnit.MINUTES)
+    private val cacheRateLimitListCoins = CacheRateLimiter<String>(10, TimeUnit.MINUTES)
 
     private val cacheKeyOverview = "cache_key_overview_data"
+    private val cacheKeyListCoins = "cache_key_list_data"
 
     override suspend fun getListCoins(
         currency: String,
@@ -36,6 +40,18 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
+            if(!cacheRateLimitListCoins.shouldFetch(cacheKeyListCoins, sharedPreferences)) {
+                Log.i("cacheRateLimit", "data should be fetched")
+                val dbResult = cryptoCacheDao.getListCoins()
+                val listFlow = ListCoins()
+
+                dbResult.forEach {
+                    listFlow.add(it)
+                }
+
+                emit(Resource.Success(listFlow))
+            }
+
             val result = coinGeckoDataSource.getListCoins(
                 currency = currency,
                 ids = ids,
@@ -43,6 +59,17 @@ constructor(
                 perPage = perPage,
                 page = page
             )
+
+            if (result is Resource.Success){
+                result.data.let {
+                    if (it != null) {
+                        Log.i("cacheRateLimit", "data is being stored")
+                        cryptoCacheDao.deleteAll(it)
+                        cryptoCacheDao.insertAll(it)
+                    }
+
+                }
+            }
 
             emit(result)
 

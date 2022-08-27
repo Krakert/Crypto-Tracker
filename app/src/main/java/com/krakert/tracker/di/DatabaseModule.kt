@@ -26,7 +26,7 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideMovieDao(appDatabase: CryptoDatabase): CryptoCacheDao {
+    fun provideCryptoDao(appDatabase: CryptoDatabase): CryptoCacheDao {
         return appDatabase.cryptoCacheDao()
     }
 }

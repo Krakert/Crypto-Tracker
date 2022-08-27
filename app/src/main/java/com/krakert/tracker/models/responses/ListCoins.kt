@@ -28,8 +28,6 @@ data class Coin(
     @SerializedName("name")
     val name: String,
 
-    @ColumnInfo(name = "timeStamp")
-    var timeStamp: Long = 0
 ) : Parcelable {
     fun getIcon() = image
 }
