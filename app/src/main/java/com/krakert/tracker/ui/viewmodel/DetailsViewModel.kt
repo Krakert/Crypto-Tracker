@@ -28,7 +28,6 @@ sealed class ViewStateDetailsCoins {
     data class Error(val exception: String) : ViewStateDetailsCoins()
 }
 
-@Suppress("UnstableApiUsage")
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val CryptoRepository: CryptoRepository,
@@ -42,7 +41,7 @@ class DetailsViewModel @Inject constructor(
 
     fun getDetailsCoinByCoinId(){
         viewModelScope.launch {
-            val response = CryptoRepository.getDetailsCoinByCoinId(
+            CryptoRepository.getDetailsCoinByCoinId(
                 coinId = coinId
             ).collect{ result ->
                 when (result) {
@@ -65,6 +64,7 @@ class DetailsViewModel @Inject constructor(
                     is Resource.Error -> {
                         _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
                     }
+                    else -> _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
                 }
             }
         }

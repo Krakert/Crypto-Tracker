@@ -18,7 +18,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     suspend fun fetchCoinsPriceById(
         idCoins: String,
         currency: String
-    ): Resource<MutableMap<String, MutableMap<String, Any>>> {
+    ): Resource<Map<String, MutableMap<String, Any>>> {
         return getResponse(
             //TODO: this should be passed to this function in the form of a RequestBody model
             request = {

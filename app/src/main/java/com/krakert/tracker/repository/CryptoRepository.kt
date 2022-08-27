@@ -29,7 +29,7 @@ interface CryptoRepository {
     fun getPriceCoins(
         idCoins: String, 
         currency: String):
-            Flow<Resource<MutableMap<String, MutableMap<String, Any>>>>
+            Flow<Resource<Map<String, MutableMap<String, Any>>>>
 
     fun shouldFetch() : Boolean
 }

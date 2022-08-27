@@ -15,6 +15,7 @@ interface CryptoCacheDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setListCoins(coins: List<Coin>)
 
+
 //    @Query ("SELECT * FROM dataCoinTable")
 //    suspend fun getListDataCoins(): List<DataCoinChart>
 //

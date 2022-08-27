@@ -1,6 +1,7 @@
 package com.krakert.tracker.repository
 
-import android.util.Log
+import android.content.SharedPreferences
+import com.krakert.tracker.api.CacheRateLimiter
 import com.krakert.tracker.api.CoinGeckoDataSource
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.database.CryptoCacheDao
@@ -11,16 +12,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withTimeout
-import retrofit2.HttpException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CachedCryptoRepository
 @Inject
 constructor(
     private val coinGeckoDataSource: CoinGeckoDataSource,
-    private val cryptoCacheDao: CryptoCacheDao
+    private val cryptoCacheDao: CryptoCacheDao,
+    private val sharedPreferences: SharedPreferences,
 ) : CryptoRepository {
+    private val cacheRateLimit = CacheRateLimiter<String>(1, TimeUnit.MINUTES)
+
+    private val cacheKeyOverview = "cache_key_overview_data"
 
     override suspend fun getListCoins(
         currency: String,
@@ -48,13 +52,23 @@ constructor(
     override fun getPriceCoins(
         idCoins: String,
         currency: String
-    ): Flow<Resource<MutableMap<String, MutableMap<String, Any>>>> {
+    ): Flow<Resource<Map<String, MutableMap<String, Any>>>> {
         return flow {
             emit(Resource.Loading())
+
+            if(!cacheRateLimit.shouldFetch(cacheKeyOverview, sharedPreferences)) {
+                //TODO: return here flow with DAO response
+
+                // return ..
+            }
+
+            //else we fetch data and store it in cachedb
+
             val result = coinGeckoDataSource.fetchCoinsPriceById(idCoins, currency)
 
             //Cache to database if response is successful
             if (result is Resource.Success) {
+                //TODO: create db that allows String, MutableMap<String, Any> - to be stored
 //                result.data.let { it ->
 //                    cryptoCacheDao.deleteAll(it)
 //                    cryptoCacheDao.insertAll(it)
@@ -63,11 +77,6 @@ constructor(
             emit(result)
         }.flowOn(Dispatchers.IO)
     }
-
-//    private fun fetchCachedListPrice(): Result<TrendingMovieResponse>? =
-//        cryptoCacheDao.getListCoins()?.let {
-//            Result.success(TrendingMovieResponse(it))
-//        }
 
 
     override suspend fun getDetailsCoinByCoinId(

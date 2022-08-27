@@ -26,7 +26,7 @@ interface CoinGeckoApiService {
         @Query("include_24hr_vol") dayVol: String,
         @Query("include_24hr_change") dayChange: String,
         @Query("include_last_updated_at") lastUpdated: String
-    ) : Response<MutableMap<String, MutableMap<String, Any>>>
+    ) : Response<Map<String, MutableMap<String, Any>>>
 
     @GET("coins/{id}")
     suspend fun getDetailsCoinByCoinId(
