@@ -54,13 +54,15 @@ fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavH
 
     when (response) {
         ViewStateDetailsCoins.Loading -> Loading()
-        is ViewStateDetailsCoins.Error, is ViewStateDetailsCoins.Empty -> ShowIncorrectState(
+        is ViewStateDetailsCoins.Error -> ShowIncorrectState(
             textIncorrectState = R.string.txt_toast_error,
-            viewModel = viewModel
+            viewModel = viewModel,
+            coinId = coinId
         )
         is ViewStateDetailsCoins.Success ->
             ShowDetailsCoins(
                 detailsCoins = (response as ViewStateDetailsCoins.Success).details, viewModel, coinId, navController)
+        else -> {}
     }
 }
 
@@ -361,7 +363,8 @@ fun Divider() {
 @Composable
 private fun ShowIncorrectState(
     @StringRes textIncorrectState: Int,
-    viewModel: DetailsViewModel
+    viewModel: DetailsViewModel,
+    coinId: String
 ) {
     val context = LocalContext.current
     CenterElement {
@@ -370,6 +373,7 @@ private fun ShowIncorrectState(
                 .size(ButtonDefaults.LargeButtonSize)
                 .padding(top = 8.dp), Icons.Rounded.Cached
         ) {
+            viewModel.coinId = coinId
             viewModel.getDetailsCoinByCoinId()
             Toast.makeText(context, textIncorrectState, Toast.LENGTH_SHORT).show()
         }
