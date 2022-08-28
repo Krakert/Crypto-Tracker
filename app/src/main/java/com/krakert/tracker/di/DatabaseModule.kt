@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.krakert.tracker.database.CryptoCacheDao
 import com.krakert.tracker.database.CryptoDatabase
+import com.krakert.tracker.database.DataConverters
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,7 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@InstallIn(SingletonComponent ::class)
+@InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
 
@@ -22,7 +23,7 @@ object DatabaseModule {
             appContext,
             CryptoDatabase::class.java,
             "app.db"
-        ).build()
+        ).addTypeConverter(DataConverters()).build()
     }
 
     @Provides
