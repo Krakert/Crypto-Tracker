@@ -2,10 +2,13 @@ package com.krakert.tracker.repository
 
 import android.content.SharedPreferences
 import android.util.Log
+import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.api.CacheRateLimiter
 import com.krakert.tracker.api.CoinGeckoDataSource
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.database.CryptoCacheDao
+import com.krakert.tracker.models.database.DataGraph
+import com.krakert.tracker.models.database.PriceCoins
 import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
 import com.krakert.tracker.models.responses.MarketChart
@@ -24,11 +27,13 @@ constructor(
     private val sharedPreferences: SharedPreferences,
 ) : CryptoRepository {
     // Setup of the limits for the different data in the DB
-    private val cacheRateLimit = CacheRateLimiter<String>(1, TimeUnit.MINUTES)
-    private val cacheRateLimitListCoins = CacheRateLimiter<String>(10, TimeUnit.MINUTES)
+    private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
+    private val cacheRateLimitList = CacheRateLimiter<String>(1, TimeUnit.DAYS)
 
-    private val cacheKeyOverview = "cache_key_overview_data"
-    private val cacheKeyListCoins = "cache_key_list_data"
+    private val cacheKeyPricesCoins = "cache_key_prices_coins_data"
+    private val cacheKeyListCoins   = "cache_key_list_coins_data"
+    private val cacheKeyDetailsCoin = "cache_key_details_coin_data"
+    private val cacheKeyMarketChart = "cache_ket_market_chart_data"
 
     override suspend fun getListCoins(
         currency: String,
@@ -40,8 +45,8 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if(!cacheRateLimitListCoins.shouldFetch(cacheKeyListCoins, sharedPreferences)) {
-                Log.i("cacheRateLimit", "data should be fetched")
+            if(!cacheRateLimitList.shouldFetch(cacheKeyListCoins, sharedPreferences)) {
+                Log.i("cacheRateLimit: getListCoins", "data should be fetched")
                 val dbResult = cryptoCacheDao.getListCoins()
                 val listFlow = ListCoins()
 
@@ -50,29 +55,28 @@ constructor(
                 }
 
                 emit(Resource.Success(listFlow))
-            }
+            } else {
 
-            val result = coinGeckoDataSource.getListCoins(
-                currency = currency,
-                ids = ids,
-                order = order,
-                perPage = perPage,
-                page = page
-            )
+                val result = coinGeckoDataSource.getListCoins(
+                    currency = currency,
+                    ids = ids,
+                    order = order,
+                    perPage = perPage,
+                    page = page
+                )
 
-            if (result is Resource.Success){
-                result.data.let {
-                    if (it != null) {
-                        Log.i("cacheRateLimit", "data is being stored")
-                        cryptoCacheDao.deleteAll(it)
-                        cryptoCacheDao.insertAll(it)
+                if (result is Resource.Success) {
+                    result.data.let {
+                        if (it != null) {
+                            Log.i("cacheRateLimit: getListCoins", "data is being stored")
+                            cryptoCacheDao.deleteListCoins(it)
+                            cryptoCacheDao.insertListCoins(it)
+                        }
+
                     }
-
+                    emit(result)
                 }
             }
-
-            emit(result)
-
         }.flowOn(Dispatchers.IO)
     }
 
@@ -83,25 +87,28 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if(!cacheRateLimit.shouldFetch(cacheKeyOverview, sharedPreferences)) {
-                //TODO: return here flow with DAO response
+            if(!cacheRateLimit.shouldFetch(cacheKeyPricesCoins, sharedPreferences)) {
+                Log.i("cacheRateLimit: getPriceCoins", "data should be fetched")
+                val dbResult = cryptoCacheDao.getPriceCoins()?.data
+                if (dbResult != null) {
+                    if(dbResult.isNotEmpty()){
+                        emit(Resource.Success(dbResult))
+                    }
+                }
+            } else {
 
-                // return ..
+                val result = coinGeckoDataSource.fetchCoinsPriceById(idCoins, currency)
+
+                //Cache to database if response is successful
+                if (result is Resource.Success) {
+                    if (result.data?.isNotEmpty() == true) {
+                        Log.i("cacheRateLimit: getPriceCoins", "data is being stored")
+                        cryptoCacheDao.deletePriceCoins()
+                        cryptoCacheDao.insertPriceCoins(PriceCoins(result.data))
+                    }
+                    emit(result)
+                }
             }
-
-            //else we fetch data and store it in cachedb
-
-            val result = coinGeckoDataSource.fetchCoinsPriceById(idCoins, currency)
-
-            //Cache to database if response is successful
-            if (result is Resource.Success) {
-                //TODO: create db that allows String, MutableMap<String, Any> - to be stored
-//                result.data.let { it ->
-//                    cryptoCacheDao.deleteAll(it)
-//                    cryptoCacheDao.insertAll(it)
-//                }
-            }
-            emit(result)
         }.flowOn(Dispatchers.IO)
     }
 
@@ -111,15 +118,28 @@ constructor(
     ): Flow<Resource<CoinFullData>> {
         return flow {
             emit(Resource.Loading())
-            val result = coinGeckoDataSource.fetchDetailsCoinByCoinId(coinId = coinId)
 
-            if (result is Resource.Success) {
-//                result.data.let { it ->
-//                    cryptoCacheDao.deleteAll(it)
-//                    cryptoCacheDao.insertAll(it)
-//                }
+            if(!cacheRateLimit.shouldFetch(cacheKeyDetailsCoin, sharedPreferences)) {
+                Log.i("cacheRateLimit: getDetailsCoinByCoinId", "data should be fetched")
+                val dbResult = cryptoCacheDao.getDetailsCoin(coinId)
+                if (dbResult != null){
+                    emit(Resource.Success(dbResult))
+                }
+
+            } else {
+                val result = coinGeckoDataSource.fetchDetailsCoinByCoinId(coinId = coinId)
+
+                if (result is Resource.Success) {
+                    result.data.let {
+                        if (it != null) {
+                            Log.i("cacheRateLimit: getDetailsCoinByCoinId", "data is being stored")
+                            cryptoCacheDao.deleteDetailsCoin(it)
+                            cryptoCacheDao.insertDetailsCoin(it)
+                        }
+                    }
+                    emit(result)
+                }
             }
-            emit(result)
         }.flowOn(Dispatchers.IO)
     }
 
@@ -130,19 +150,32 @@ constructor(
     ): Flow<Resource<MarketChart>> {
         return flow {
             emit(Resource.Loading())
-            val result = coinGeckoDataSource.fetchHistoryByCoinId(
-                coinId = coinId,
-                currency = currency,
-                days = days
-            )
 
-            if (result is Resource.Success) {
-//                result.data.let { it ->
-//                    cryptoCacheDao.deleteAll(it)
-//                    cryptoCacheDao.insertAll(it)
-//                }
+            if (!cacheRateLimit.shouldFetch(cacheKeyMarketChart, sharedPreferences)) {
+                Log.i("cacheRateLimit: getHistoryByCoinId", "data should be fetched")
+                val dbResult = cryptoCacheDao.getMarketChartCoin(coinId = coinId)?.data
+                if (dbResult != null){
+                    if (dbResult.prices.isNotEmpty()) {
+                        emit(Resource.Success(dbResult))
+                    }
+                }
+            } else {
+                val result = coinGeckoDataSource.fetchHistoryByCoinId(
+                    coinId = coinId,
+                    currency = currency,
+                    days = days
+                )
+
+                if (result is Resource.Success) {
+                    result.data.let {
+                        if (it != null) {
+                            cryptoCacheDao.deleteMarketChartCoin(DataGraph(coinId, it))
+                            cryptoCacheDao.insertMarketChartCoin(DataGraph(coinId, it))
+                        }
+                    }
+                    emit(result)
+                }
             }
-            emit(result)
         }.flowOn(Dispatchers.IO)
     }
 
