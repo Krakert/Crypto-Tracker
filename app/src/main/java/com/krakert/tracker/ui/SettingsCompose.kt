@@ -16,14 +16,13 @@ import androidx.wear.compose.material.*
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
 import com.krakert.tracker.models.ui.Currency
+import com.krakert.tracker.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun ListSettings() {
+fun ListSettings(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val sharedPreference = sharedPreference(context = context)
     var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking.toInt()) }
@@ -180,10 +179,7 @@ fun ListSettings() {
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.RestartAlt
                 ) {
-                    sharedPreference.Currency = "eur"
-                    sharedPreference.FavoriteCoin = ""
-                    sharedPreference.AmountDaysTracking = 7.0F
-                    sharedPreference.FavoriteCoins = ""
+                    viewModel.resetSettings()
                     Toast.makeText(context, context.getString(R.string.txt_toast_reset), Toast.LENGTH_SHORT).show()
                 }
             }

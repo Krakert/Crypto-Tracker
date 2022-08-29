@@ -44,7 +44,9 @@ fun NavGraph() {
                 }
             }
             composable(Screen.Settings.route) {
-                ListSettings()
+                ListSettings(
+                    viewModel = hiltViewModel()
+                )
             }
 
         }
