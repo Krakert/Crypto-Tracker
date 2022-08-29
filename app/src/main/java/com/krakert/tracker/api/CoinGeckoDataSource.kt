@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     private val coinGeckoApiService: CoinGeckoApiService =
-        retrofit.create(CoinGeckoApiService::class.java);
+        retrofit.create(CoinGeckoApiService::class.java)
 
     suspend fun fetchCoinsPriceById(
         idCoins: String,
@@ -37,7 +37,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
     }
 
     //TODO: this should be passed to this function in the form of a RequestBody model
-    suspend fun getListCoins(
+    suspend fun fetchListCoins(
         currency: String,
         ids: String?,
         order: String,

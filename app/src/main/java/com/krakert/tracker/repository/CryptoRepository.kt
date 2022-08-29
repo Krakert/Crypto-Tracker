@@ -26,7 +26,7 @@ interface CryptoRepository {
         days: String,
     ): Flow<Resource<MarketChart>>
 
-    fun getPriceCoins(
+    suspend fun getPriceCoins(
         idCoins: String, 
         currency: String):
             Flow<Resource<Map<String, MutableMap<String, Any>>>>
