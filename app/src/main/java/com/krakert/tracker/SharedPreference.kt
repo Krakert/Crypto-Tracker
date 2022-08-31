@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.ui.FavoriteCoin
 import java.lang.reflect.Type
 
@@ -33,10 +32,10 @@ object SharedPreference {
         }
 
     var SharedPreferences.AmountDaysTracking
-        get() = getFloat(amountDaysTracking, 7.0F)
+        get() = getInt(amountDaysTracking, 7)
         set(value) {
             editMe {
-                it.putFloat(amountDaysTracking, value)
+                it.putInt(amountDaysTracking, value)
             }
         }
 

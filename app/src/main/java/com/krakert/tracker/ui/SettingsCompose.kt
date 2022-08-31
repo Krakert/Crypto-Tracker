@@ -25,7 +25,7 @@ import com.krakert.tracker.ui.viewmodel.SettingsViewModel
 fun ListSettings(viewModel: SettingsViewModel) {
     val context = LocalContext.current
     val sharedPreference = sharedPreference(context = context)
-    var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking.toInt()) }
+    var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking) }
     var minutesCache by remember { mutableStateOf(sharedPreference.MinutesCache)}
     val scrollState = rememberScalingLazyListState()
     var checked by remember { mutableStateOf(sharedPreference.Currency) }
@@ -63,7 +63,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                         } else {
                             it
                         }
-                        sharedPreference.AmountDaysTracking = amountDaysTracking.toFloat()
+                        viewModel.setAmountDaysTracking(amountDaysTracking)
                     },
                     valueProgression = 0..14,
                     increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
@@ -103,7 +103,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                         } else {
                             it
                         }
-                        sharedPreference.MinutesCache = minutesCache
+                        viewModel.setCacheRate(minutesCache)
                     },
                     valueProgression = 1..10,
                     increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
@@ -153,7 +153,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                     },
                     onCheckedChange = {
                         checked = index.name
-                        println(checked)
+                        viewModel.setCurrency(index.name)
                         sharedPreference.Currency = checked
                     },
                     label = {
