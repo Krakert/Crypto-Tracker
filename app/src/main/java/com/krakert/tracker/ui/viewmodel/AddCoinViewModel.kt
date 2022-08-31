@@ -11,16 +11,20 @@ import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.SharedPreference.MinutesCache
+import com.krakert.tracker.api.CacheRateLimiter
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.responses.Coin
 import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.repository.CACHE_KEY_PRICE_COINS
 import com.krakert.tracker.repository.CachedCryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 sealed class ViewStateAddCoin {
@@ -36,6 +40,8 @@ class AddCoinViewModel @Inject constructor(
     private val cachedCryptoRepository: CachedCryptoRepository,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
+
+    private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
 
     // backing property to avoid state updates from other classes
     private val _viewState = MutableStateFlow<ViewStateAddCoin>(ViewStateAddCoin.Loading)
@@ -105,6 +111,7 @@ class AddCoinViewModel @Inject constructor(
                 )
                     .show()
             }
+            cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
         } catch (e: Exception) {
             Log.e(
                 TAG,

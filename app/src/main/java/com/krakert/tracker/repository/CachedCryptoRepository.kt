@@ -19,6 +19,11 @@ import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+const val CACHE_KEY_PRICE_COINS  = "cache_key_prices_coins_data"
+const val CACHE_KEY_LIST_COINS   = "cache_key_list_coins_data"
+const val CACHE_KEY_DETAILS_COIN = "cache_key_details_coin_data"
+const val BASE_CACHE_KET_MARKET_CHART = "cache_key_market_chart_data_"
+
 class CachedCryptoRepository
 @Inject
 constructor(
@@ -30,11 +35,6 @@ constructor(
     private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
     private val cacheRateLimitList = CacheRateLimiter<String>(1, TimeUnit.DAYS)
 
-    private val cacheKeyPricesCoins = "cache_key_prices_coins_data"
-    private val cacheKeyListCoins = "cache_key_list_coins_data"
-    private val cacheKeyDetailsCoin = "cache_key_details_coin_data"
-    private val cacheKeyMarketChart = "cache_ket_market_chart_data"
-
     override suspend fun getListCoins(
         currency: String,
         ids: String?,
@@ -45,8 +45,8 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if (!cacheRateLimitList.shouldFetch(cacheKeyListCoins, sharedPreferences)) {
-                Log.i("cacheRateLimit: getListCoins", "data should be fetched")
+            if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {
+                Log.i("cacheRateLimiter: getListCoins", "getting data for: $ids out the DB")
                 val dbResult = cryptoCacheDao.getListCoins()
                 if (dbResult.isNotEmpty()) {
                     val listFlow = ListCoins()
@@ -69,8 +69,8 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if (!cacheRateLimit.shouldFetch(cacheKeyPricesCoins, sharedPreferences)) {
-                Log.i("cacheRateLimit: getPriceCoins", "data should be fetched")
+            if (!cacheRateLimit.shouldFetch(CACHE_KEY_PRICE_COINS, sharedPreferences)) {
+                Log.i("cacheRateLimiter: getPriceCoins", "getting data for: $idCoins out the DB")
                 val dbResult = cryptoCacheDao.getPriceCoins()?.data
                 if (dbResult != null) {
                     // Emit data form the DB
@@ -90,8 +90,8 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if (!cacheRateLimit.shouldFetch(cacheKeyDetailsCoin, sharedPreferences)) {
-                Log.i("cacheRateLimit: getDetailsCoinByCoinId", "data should be fetched for: $coinId")
+            if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
+                Log.i("cacheRateLimiter: getDetailsCoinByCoinId", "getting data for: $coinId out the DB")
                 val dbResult = cryptoCacheDao.getDetailsCoin(coinId)
                 // Emit data form the DB
                 if (dbResult != null) emit(Resource.Success(dbResult))
@@ -110,8 +110,8 @@ constructor(
         return flow {
             emit(Resource.Loading())
 
-            if (!cacheRateLimit.shouldFetch(cacheKeyMarketChart, sharedPreferences)) {
-                Log.i("cacheRateLimit: getHistoryByCoinId", "data should be fetched for: $coinId")
+            if (!cacheRateLimit.shouldFetch(BASE_CACHE_KET_MARKET_CHART + coinId, sharedPreferences)) {
+                Log.i("cacheRateLimiter: getHistoryByCoinId", "getting data for: $coinId out the DB")
                 val dbResult = cryptoCacheDao.getMarketChartCoin(coinId = coinId)?.data
                 if (dbResult != null) {
                     // Emit data form the DB
@@ -133,7 +133,7 @@ constructor(
         if (result is Resource.Success) {
             result.data.let {
                 if (it != null) {
-                    Log.i("cacheRateLimit: fetchHistoryByCoinId", "data is being stored for: $coinId")
+                    Log.i("cacheRateLimiter: fetchHistoryByCoinId", "data is being stored for: $coinId")
                     cryptoCacheDao.deleteMarketChartCoin(DataGraph(coinId, it))
                     cryptoCacheDao.insertMarketChartCoin(DataGraph(coinId, it))
                 }
@@ -155,7 +155,7 @@ constructor(
         if (result is Resource.Success) {
             result.data.let {
                 if (it != null) {
-                    Log.i("cacheRateLimit: FetchListCoins", "data is being stored")
+                    Log.i("cacheRateLimiter: fetchListCoins", "data is being stored for: $ids")
                     cryptoCacheDao.deleteListCoins(it)
                     cryptoCacheDao.insertListCoins(it)
                 }
@@ -172,7 +172,7 @@ constructor(
 
         if (result is Resource.Success) {
             if (result.data?.isNotEmpty() == true) {
-                Log.i("cacheRateLimit: getPriceCoins", "data is being stored for: $idCoins")
+                Log.i("cacheRateLimiter: fetchCoinsPriceById", "data is being stored for: $idCoins")
                 cryptoCacheDao.deletePriceCoins()
                 cryptoCacheDao.insertPriceCoins(PriceCoins(result.data))
             }
@@ -186,7 +186,7 @@ constructor(
         if (result is Resource.Success) {
             result.data.let {
                 if (it != null) {
-                    Log.i("cacheRateLimit: getDetailsCoinByCoinId", "data is being stored for: $coinId")
+                    Log.i("cacheRateLimiter: fetchDetailsCoinByCoinId", "data is being stored for: $coinId")
                     cryptoCacheDao.deleteDetailsCoin(it)
                     cryptoCacheDao.insertDetailsCoin(it)
                 }
