@@ -1,8 +1,6 @@
 package com.krakert.tracker.ui
 
 import android.widget.Toast
-import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -16,10 +14,8 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -38,9 +34,10 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
-import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins
+import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
@@ -50,18 +47,19 @@ fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavH
         viewModel.coinId = coinId
         viewModel.getDetailsCoinByCoinId()
     }
-    val response by viewModel.detailsCoin.collectAsState()
 
-    when (response) {
-        ViewStateDetailsCoins.Loading -> Loading()
-        is ViewStateDetailsCoins.Error -> ShowIncorrectState(
-            textIncorrectState = R.string.txt_toast_error,
+    when (val response = viewModel.detailsCoin.collectAsState().value) {
+        Loading -> Loading()
+        is Problem -> ShowProblem(
+            text = R.string.txt_toast_error,
+            icon = Icons.Rounded.Cached){
+            viewModel.getDetailsCoinByCoinId()
+        }
+        is Success -> ShowDetailsCoins(
+            detailsCoins = response.details,
             viewModel = viewModel,
-            coinId = coinId
-        )
-        is ViewStateDetailsCoins.Success ->
-            ShowDetailsCoins(
-                detailsCoins = (response as ViewStateDetailsCoins.Success).details, viewModel, coinId, navController)
+            coinId = coinId,
+            navController = navController)
         else -> {}
     }
 }
@@ -338,50 +336,6 @@ fun ShowDetailsCoins(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Divider() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp)
-    ) {
-        CenterElement {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = Color.Gray)
-            )
-        }
-    }
-}
-
-
-@Composable
-private fun ShowIncorrectState(
-    @StringRes textIncorrectState: Int,
-    viewModel: DetailsViewModel,
-    coinId: String
-) {
-    val context = LocalContext.current
-    CenterElement {
-        IconButton(
-            Modifier
-                .size(ButtonDefaults.LargeButtonSize)
-                .padding(top = 8.dp), Icons.Rounded.Cached
-        ) {
-            viewModel.coinId = coinId
-            viewModel.getDetailsCoinByCoinId()
-            Toast.makeText(context, textIncorrectState, Toast.LENGTH_SHORT).show()
-        }
-        Text(
-            text = stringResource(textIncorrectState),
-            modifier = Modifier.padding(top = 8.dp),
-            textAlign = TextAlign.Center,
-        )
     }
 }
 

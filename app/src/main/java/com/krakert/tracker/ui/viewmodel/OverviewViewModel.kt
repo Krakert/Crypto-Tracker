@@ -2,16 +2,12 @@
 
 package com.krakert.tracker.ui.viewmodel
 
-import android.content.ContentValues
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.common.reflect.TypeToken
-import com.google.gson.Gson
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
-import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.SharedPreference.getFavoriteCoinList
 import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.responses.MarketChart
@@ -20,11 +16,9 @@ import com.krakert.tracker.models.ui.GraphItem
 import com.krakert.tracker.models.ui.OverviewMergedCoinData
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.lang.reflect.Type
 import javax.inject.Inject
 
 sealed class ViewStateOverview {
@@ -32,7 +26,7 @@ sealed class ViewStateOverview {
     object Empty : ViewStateOverview()
     object Loading : ViewStateOverview()
     data class Success(val data: List<OverviewMergedCoinData>) : ViewStateOverview()
-    data class Error(val exception: String) : ViewStateOverview()
+    data class Problem(val exception: String) : ViewStateOverview()
 }
 
 @HiltViewModel
@@ -61,7 +55,7 @@ class OverviewViewModel
                             _viewState.value = ViewStateOverview.Success(overviewCoinList)
                         }
                         is Resource.Error -> {
-                            _viewState.value = ViewStateOverview.Error("Cant get price coin data")
+                            _viewState.value = ViewStateOverview.Problem("Cant get price coin data")
                         }
                         is Resource.Loading -> {
                             _viewState.value = ViewStateOverview.Loading

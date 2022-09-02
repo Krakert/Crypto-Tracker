@@ -32,7 +32,7 @@ sealed class ViewStateAddCoin {
     object Empty : ViewStateAddCoin()
     object Loading : ViewStateAddCoin()
     data class Success(val coins: ListCoins) : ViewStateAddCoin()
-    data class Error(val exception: String) : ViewStateAddCoin()
+    data class Problem(val exception: String) : ViewStateAddCoin()
 }
 
 @HiltViewModel
@@ -60,13 +60,13 @@ class AddCoinViewModel @Inject constructor(
                         } ?: _viewState
                     }
                     is Resource.Error -> {
-                        _viewState.value = ViewStateAddCoin.Error(result.message ?: "no error from network layer")
+                        _viewState.value = ViewStateAddCoin.Problem(result.message ?: "no error from network layer")
 
                     }
                     is Resource.Loading -> {
                         _viewState.value = ViewStateAddCoin.Loading
                     }
-                    else -> _viewState.value = ViewStateAddCoin.Error("Unknown ViewStateAddCoin Error")
+                    else -> _viewState.value = ViewStateAddCoin.Problem("Unknown ViewStateAddCoin Problem")
 
                 }
             }
@@ -117,7 +117,7 @@ class AddCoinViewModel @Inject constructor(
                 TAG,
                 e.message ?: "Something went wrong while saving the list of favorite coins"
             )
-            _viewState.value = ViewStateAddCoin.Error(e.message.toString())
+            _viewState.value = ViewStateAddCoin.Problem(e.message.toString())
         }
     }
 }

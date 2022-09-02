@@ -4,7 +4,8 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cached
+import androidx.compose.material.icons.rounded.PlusOne
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,9 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.ui.shared.IconButton
+import com.krakert.tracker.ui.shared.Loading
+import com.krakert.tracker.ui.shared.ShowProblem
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateAddCoin
 import com.skydoves.landscapist.coil.CoilImage
@@ -35,7 +39,7 @@ import java.lang.reflect.Type
 @Composable
 fun ListAddCoin(viewModel: AddCoinViewModel) {
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.getListCoins()
     }
 
@@ -47,8 +51,6 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
             }
         },
         vignette = {
-            // Only show a Vignette for scrollable screens. This code lab only has one screen,
-            // which is scrollable, so we show it all the time.
             Vignette(vignettePosition = VignettePosition.TopAndBottom)
         },
         positionIndicator = {
@@ -58,22 +60,23 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
         }
     ) {
         when (val listResult = viewModel.listCoins.collectAsState().value) {
-            ViewStateAddCoin.Empty -> {
-                ShowIncorrectState(R.string.txt_toast_reload, viewModel)
-            }
-            is ViewStateAddCoin.Error -> {
-                ShowIncorrectState(R.string.txt_toast_error, viewModel)
+            is ViewStateAddCoin.Problem, is ViewStateAddCoin.Empty -> {
+                ShowProblem(
+                    text = R.string.txt_toast_error,
+                    icon = Icons.Rounded.PlusOne
+                ) {
+                    viewModel.getListCoins()
+                }
             }
             ViewStateAddCoin.Loading -> {
                 Loading()
             }
             is ViewStateAddCoin.Success -> {
-                ShowList(scrollState = scrollState, listResult = listResult.coins, viewModel = viewModel)
+                ShowList(scrollState = scrollState,
+                    listResult = listResult.coins,
+                    viewModel = viewModel)
             }
         }
-
-    }
-}
 
 @Composable
 private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel) {
@@ -93,7 +96,11 @@ private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel
 }
 
 @Composable
-private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?, viewModel: AddCoinViewModel) {
+private fun ShowList(
+    scrollState: ScalingLazyListState,
+    listResult: List<Coin>?,
+    viewModel: AddCoinViewModel,
+) {
     val context = LocalContext.current
     var listFavoriteCoins = ArrayList<Coin>()
     val sharedPreference = SharedPreference.sharedPreference(context)
@@ -122,7 +129,7 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
                 Row(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AddChipCoin(listResult[index]){
+                    AddChipCoin(listResult[index]) {
                         viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
                     }
                 }
@@ -132,7 +139,7 @@ private fun ShowList(scrollState: ScalingLazyListState, listResult: List<Coin>?,
 }
 
 @Composable
-fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
+private fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
     var palette by remember { mutableStateOf<Palette?>(null) }
 
     Chip(
@@ -160,7 +167,7 @@ fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
 
 
 @Composable
-fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
+private fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit) {
     CoilImage(
         imageModel = url,
         contentScale = ContentScale.Fit,
@@ -173,43 +180,6 @@ fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit){
     )
 }
 
-@Composable
-fun Loading() {
-    CenterElement {
-        CircularProgressIndicator(modifier = Modifier.size(55.dp))
-    }
-}
-
-@Composable
-fun CenterElement(content: @Composable () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        content()
-    }
-}
-
-@Composable
-fun IconButton(modifier: Modifier, imageVector: ImageVector, onClick: () -> Unit) {
-    // Button
-    Button(
-        modifier = modifier,
-        onClick = onClick,
-    ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = null,
-            modifier = Modifier
-                .size(24.dp)
-                .wrapContentSize(align = Alignment.Center)
-        )
-    }
-}
 //@Preview(
 //    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
 //    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,

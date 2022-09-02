@@ -19,6 +19,9 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
 import com.krakert.tracker.models.ui.Currency
+import com.krakert.tracker.ui.shared.CenterElement
+import com.krakert.tracker.ui.shared.Divider
+import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.viewmodel.SettingsViewModel
 
 @Composable

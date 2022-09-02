@@ -1,8 +1,6 @@
 package com.krakert.tracker.ui
 
 import android.graphics.PointF
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,13 +8,12 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -37,6 +34,7 @@ import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.OverviewMergedCoinData
 import com.krakert.tracker.navigation.Screen
+import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateOverview
@@ -64,57 +62,33 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             viewModel.fetchAllOverviewData()
         }
 
-        val response by viewModel.overviewViewState.collectAsState()
-
-        when (response) {
-            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
-            is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
+        when (val response = viewModel.overviewViewState.collectAsState().value) {
+            is ViewStateOverview.Empty -> {
+                ShowProblem(
+                    text = R.string.txt_empty_overview,
+                    icon = Icons.Rounded.Refresh
+                ) {
+                    navController.navigate(Screen.Add.route)
+                }
+            }
+            is ViewStateOverview.Problem -> {
+                ShowProblem(
+                    text = R.string.txt_toast_error,
+                    icon = Icons.Rounded.Refresh
+                ) {
+                    viewModel.fetchAllOverviewData()
+                }
+            }
             is ViewStateOverview.Loading -> Loading()
             is ViewStateOverview.Success ->
                 ShowStatsCoins(
                     scrollState = scrollState,
-                    resultAPi = (response as ViewStateOverview.Success).data,
+                    resultAPi = response.data,
                     navController = navController
                 )
         }
     }
 }
-
-@Composable
-fun ShowEmptyState(@StringRes text: Int, navController: NavHostController) {
-    CenterElement {
-        Text(
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-            text = stringResource(text),
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-
-        )
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.PlusOne) {
-            navController.navigate(Screen.Add.route)
-        }
-    }
-}
-
-@Composable
-private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel) {
-    val context = LocalContext.current
-    CenterElement {
-        IconButton(
-            Modifier
-                .size(ButtonDefaults.LargeButtonSize)
-                .padding(top = 8.dp), Icons.Rounded.Cached) {
-            viewModel.fetchAllOverviewData()
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-        }
-        Text(
-            text = stringResource(text),
-            modifier = Modifier.padding(top = 8.dp),
-            textAlign = TextAlign.Center,
-        )
-    }
-}
-
 
 @Composable
 fun ShowStatsCoins(

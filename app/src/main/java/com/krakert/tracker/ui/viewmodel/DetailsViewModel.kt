@@ -25,7 +25,7 @@ sealed class ViewStateDetailsCoins {
     object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()
     data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
-    data class Error(val exception: String) : ViewStateDetailsCoins()
+    data class Problem(val exception: String) : ViewStateDetailsCoins()
 }
 
 @HiltViewModel
@@ -62,12 +62,12 @@ class DetailsViewModel @Inject constructor(
                         )
                     }
                     is Resource.Error -> {
-                        _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
+                        _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
                     }
                     is Resource.Loading -> {
                         _viewState.value = ViewStateDetailsCoins.Loading
                     }
-                    else -> _viewState.value = ViewStateDetailsCoins.Error("Cant get details coin")
+                    else -> _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
                 }
             }
         }
