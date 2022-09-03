@@ -107,7 +107,7 @@ fun PreviewLoading() {
 }
 
 @Preview (
-    widthDp = WEAR_PREVIEW_ROW_WIDTH_DP,
+    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
     heightDp = WEAR_PREVIEW_ROW_HEIGHT_DP,
     uiMode = WEAR_PREVIEW_UI_MODE,
     backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,

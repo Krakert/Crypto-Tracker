@@ -73,7 +73,7 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             }
             is ViewStateOverview.Problem -> {
                 ShowProblem(
-                    text = R.string.txt_toast_error,
+                    text = R.string.txt_could_not_load,
                     icon = Icons.Rounded.Refresh
                 ) {
                     viewModel.fetchAllOverviewData()

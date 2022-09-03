@@ -51,7 +51,7 @@ fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavH
     when (val response = viewModel.detailsCoin.collectAsState().value) {
         Loading -> Loading()
         is Problem -> ShowProblem(
-            text = R.string.txt_toast_error,
+            text = R.string.txt_could_not_load,
             icon = Icons.Rounded.Cached){
             viewModel.getDetailsCoinByCoinId()
         }
