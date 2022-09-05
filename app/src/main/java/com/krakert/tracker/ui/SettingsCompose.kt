@@ -10,14 +10,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.*
+import com.krakert.tracker.BuildConfig
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.SharedPreference.sharedPreference
+import com.krakert.tracker.models.*
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.ui.shared.CenterElement
 import com.krakert.tracker.ui.shared.Divider
@@ -25,7 +28,7 @@ import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.viewmodel.SettingsViewModel
 
 @Composable
-fun ListSettings(viewModel: SettingsViewModel) {
+fun ListSettings(viewModel: SettingsViewModel?) {
     val context = LocalContext.current
     val sharedPreference = sharedPreference(context = context)
     var amountDaysTracking by remember { mutableStateOf(sharedPreference.AmountDaysTracking) }
@@ -66,7 +69,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                         } else {
                             it
                         }
-                        viewModel.setAmountDaysTracking(amountDaysTracking)
+                        viewModel?.setAmountDaysTracking(amountDaysTracking)
                     },
                     valueProgression = 0..14,
                     increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
@@ -106,7 +109,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                         } else {
                             it
                         }
-                        viewModel.setCacheRate(minutesCache)
+                            viewModel?.setCacheRate(minutesCache)
                     },
                     valueProgression = 1..10,
                     increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
@@ -156,7 +159,7 @@ fun ListSettings(viewModel: SettingsViewModel) {
                     },
                     onCheckedChange = {
                         checked = index.name
-                        viewModel.setCurrency(index.name)
+                        viewModel?.setCurrency(index.name)
                         sharedPreference.Currency = checked
                     },
                     label = {
@@ -182,11 +185,34 @@ fun ListSettings(viewModel: SettingsViewModel) {
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.RestartAlt
                 ) {
-                    viewModel.resetSettings()
+                    viewModel?.resetSettings()
                     Toast.makeText(context, context.getString(R.string.txt_toast_reset), Toast.LENGTH_SHORT).show()
                 }
             }
         }
+        item {
+            Text(text = buildString {
+                append("Version name: ")
+                    .append(BuildConfig.VERSION_NAME)
+                    .append("\n Version ID: ")
+                    .append(BuildConfig.VERSION_CODE)
+            },
+                textAlign = TextAlign.Center,
+                fontSize = 10.sp,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
     }
+}
 
+@Preview (
+    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
+    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,
+    uiMode = WEAR_PREVIEW_UI_MODE,
+    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
+    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
+)
+@Composable
+fun PreviewSettings(){
+    ListSettings(null)
 }
