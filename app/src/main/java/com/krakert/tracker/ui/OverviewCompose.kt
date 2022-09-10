@@ -9,15 +9,15 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.rounded.PlusOne
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -25,6 +25,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
@@ -33,14 +36,15 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.OverviewMergedCoinData
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.navigation.Screen
 import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
-import com.krakert.tracker.ui.viewmodel.ViewStateOverview
+import com.krakert.tracker.ui.viewmodel.ViewStateOverview.*
 
 @Composable
-fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
+fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController, lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -63,24 +67,18 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
         }
 
         when (val response = viewModel.overviewViewState.collectAsState().value) {
-            is ViewStateOverview.Empty -> {
-                ShowProblem(
-                    text = R.string.txt_empty_overview,
-                    icon = Icons.Rounded.Refresh
-                ) {
-                    navController.navigate(Screen.Add.route)
+            is Loading -> Loading()
+            is Problem -> {
+                ShowProblem(response.exception){
+                    when (response.exception) {
+                        ProblemState.SSL -> viewModel.openSettings()
+                        ProblemState.EMPTY -> navController.navigate(Screen.Add.route)
+                        else -> viewModel.getAllOverviewData()
+                    }
                 }
             }
-            is ViewStateOverview.Problem -> {
-                ShowProblem(
-                    text = R.string.txt_could_not_load,
-                    icon = Icons.Rounded.Refresh
-                ) {
-                    viewModel.fetchAllOverviewData()
-                }
-            }
-            is ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success ->
+
+            is Success ->
                 ShowStatsCoins(
                     scrollState = scrollState,
                     resultAPi = response.data,

@@ -1,5 +1,7 @@
 package com.krakert.tracker.di
 
+import android.app.Application
+import android.content.Context
 import com.krakert.tracker.api.Config
 import dagger.Module
 import dagger.Provides
@@ -10,6 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent ::class)
@@ -30,7 +33,7 @@ object NetworkModule {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient.Builder().apply {
-            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+//            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             readTimeout(10, TimeUnit.SECONDS)
             writeTimeout(10, TimeUnit.SECONDS)
         }.build()
@@ -45,5 +48,15 @@ object NetworkModule {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build()
+    }
+
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    class AppModule {
+
+        @Singleton
+        @Provides
+        fun provideContext(application: Application): Context = application.applicationContext
     }
 }

@@ -1,7 +1,10 @@
 package com.krakert.tracker.ui.viewmodel
 
+import android.app.Application
 import android.content.ContentValues
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +14,9 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,16 +26,16 @@ import java.lang.reflect.Type
 import javax.inject.Inject
 
 sealed class ViewStateDetailsCoins {
-    object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()
     data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
-    data class Problem(val exception: String) : ViewStateDetailsCoins()
+    data class Problem(val exception: ProblemState?) : ViewStateDetailsCoins()
 }
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val CryptoRepository: CryptoRepository,
     private val sharedPreferences: SharedPreferences,
+    private val application: Application,
 ) : ViewModel() {
 
     lateinit var coinId: String
@@ -70,7 +74,6 @@ class DetailsViewModel @Inject constructor(
                         is Resource.Loading -> {
                             _viewState.value = ViewStateDetailsCoins.Loading
                         }
-                        else -> _viewState.value = ViewStateDetailsCoins.Problem(ProblemState.UNKNOWN)
                     }
                 }
             }
@@ -94,12 +97,18 @@ class DetailsViewModel @Inject constructor(
 
             sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
 
-            if (favoriteCoin == coinId){
+            if (favoriteCoin == coinId) {
                 sharedPreferences.FavoriteCoin = ""
             }
 
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while deleting a coins")
         }
+    }
+
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
     }
 }
