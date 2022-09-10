@@ -44,24 +44,32 @@ class OverviewViewModel
 
         if (favoriteCoinList.isNotEmpty()) {
             viewModelScope.launch {
-                cryptoRepository.getPriceCoins(
-                    idCoins = getCoinsIdString(favoriteCoinList),
-                    currency = sharedPreferences.Currency.toString()
-                ).collect { priceCoin ->
-                    when (priceCoin) {
-                        is Resource.Success -> {
-                            val overviewCoinList = getHistoryForCoins(favoriteCoinList, priceCoin)
-                            //All out success
-                            _viewState.value = ViewStateOverview.Success(overviewCoinList)
-                        }
-                        is Resource.Error -> {
-                            _viewState.value = ViewStateOverview.Problem("Cant get price coin data")
-                        }
-                        is Resource.Loading -> {
-                            _viewState.value = ViewStateOverview.Loading
-                        }
-                        else -> {
-                            Log.e("PriceCoin", "Not a valid resource state triggered")
+                if (!cryptoRepository.isOnline()) {
+                    _viewState.value = ViewStateOverview.Problem(ProblemState.NO_CONNECTION)
+                } else {
+                    cryptoRepository.getPriceCoins(
+                        idCoins = getCoinsIdString(favoriteCoinList),
+                        currency = sharedPreferences.Currency.toString()
+                    ).collect { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                //All out success
+                                val overviewMergedCoinData = getHistoryForCoins(favoriteCoinList, result)
+                                _viewState.value = if (overviewMergedCoinData.isNotEmpty()){
+                                    ViewStateOverview.Success(overviewMergedCoinData)
+                                } else {
+                                    ViewStateOverview.Problem(ProblemState.COULD_NOT_LOAD)
+                                }
+                            }
+                            is Resource.Error -> {
+                                _viewState.value = ViewStateOverview.Problem(result.state)
+                            }
+                            is Resource.Loading -> {
+                                _viewState.value = ViewStateOverview.Loading
+                            }
+                            else -> {
+                                Log.e("PriceCoin", "Not a valid resource state triggered")
+                            }
                         }
                     }
                 }

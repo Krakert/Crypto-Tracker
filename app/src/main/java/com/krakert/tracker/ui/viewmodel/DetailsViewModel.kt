@@ -36,38 +36,42 @@ class DetailsViewModel @Inject constructor(
 
     lateinit var coinId: String
 
-    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Empty)
+    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
     val detailsCoin = _viewState.asStateFlow()
 
-    fun getDetailsCoinByCoinId(){
+    fun getDetailsCoinByCoinId() {
         viewModelScope.launch {
-            CryptoRepository.getDetailsCoinByCoinId(
-                coinId = coinId
-            ).collect{ result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _viewState.value = ViewStateDetailsCoins.Success(
-                            DetailsCoin(
-                                name = result.data?.name.toString(),
-                                image = result.data?.image,
-                                currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
-                                priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h ?: 0.0,
-                                priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
-                                circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
-                                high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
-                                low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
-                                marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
-                                marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+            if (!CryptoRepository.isOnline()) {
+                _viewState.value = ViewStateDetailsCoins.Problem(ProblemState.NO_CONNECTION)
+            } else {
+                CryptoRepository.getDetailsCoinByCoinId(
+                    coinId = coinId
+                ).collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _viewState.value = ViewStateDetailsCoins.Success(
+                                DetailsCoin(
+                                    name = result.data?.name.toString(),
+                                    image = result.data?.image,
+                                    currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
+                                    priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h?: 0.0,
+                                    priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
+                                    circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
+                                    high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                    low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                    marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
+                                    marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+                                )
                             )
-                        )
+                        }
+                        is Resource.Error -> {
+                            _viewState.value = ViewStateDetailsCoins.Problem(result.state)
+                        }
+                        is Resource.Loading -> {
+                            _viewState.value = ViewStateDetailsCoins.Loading
+                        }
+                        else -> _viewState.value = ViewStateDetailsCoins.Problem(ProblemState.UNKNOWN)
                     }
-                    is Resource.Error -> {
-                        _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
-                    }
-                    is Resource.Loading -> {
-                        _viewState.value = ViewStateDetailsCoins.Loading
-                    }
-                    else -> _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
                 }
             }
         }

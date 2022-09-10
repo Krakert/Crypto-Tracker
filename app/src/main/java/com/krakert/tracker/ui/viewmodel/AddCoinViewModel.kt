@@ -51,23 +51,27 @@ class AddCoinViewModel @Inject constructor(
 
     fun getListCoins() {
         viewModelScope.launch {
-            cachedCryptoRepository.getListCoins().collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-
-                        result.data?.let { listCoin ->
-                            _viewState.value = ViewStateAddCoin.Success(listCoin)
-                        } ?: _viewState
+            if (!cachedCryptoRepository.isOnline()) {
+                _viewState.value = ViewStateAddCoin.Problem(ProblemState.NO_CONNECTION)
+            } else {
+                cachedCryptoRepository.getListCoins().collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            if (result.data?.isEmpty() == false) {
+                                _viewState.value = ViewStateAddCoin.Success(result.data)
+                            } else {
+                                _viewState.value = ViewStateAddCoin.Problem(ProblemState.COULD_NOT_LOAD)
+                            }
+                        }
+                        is Resource.Error -> {
+                            _viewState.value = ViewStateAddCoin.Problem(result.state)
+                        }
+                        is Resource.Loading -> {
+                            _viewState.value = ViewStateAddCoin.Loading
+                        }
+                        else -> _viewState.value =
+                            ViewStateAddCoin.Problem(ProblemState.UNKNOWN)
                     }
-                    is Resource.Error -> {
-                        _viewState.value = ViewStateAddCoin.Problem(result.message ?: "no error from network layer")
-
-                    }
-                    is Resource.Loading -> {
-                        _viewState.value = ViewStateAddCoin.Loading
-                    }
-                    else -> _viewState.value = ViewStateAddCoin.Problem("Unknown ViewStateAddCoin Problem")
-
                 }
             }
         }
