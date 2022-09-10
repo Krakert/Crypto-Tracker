@@ -45,11 +45,25 @@ import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
-    LaunchedEffect(key1 = Unit ) {
-        //pass coinID to viewModel, can be done cleaner but ok for now
-        viewModel.coinId = coinId
-        viewModel.getDetailsCoinByCoinId()
+fun ShowDetails(
+    coinId: String,
+    viewModel: DetailsViewModel,
+    navController: NavHostController,
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+) {
+
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.coinId = coinId
+                viewModel.getDetailsCoinByCoinId()
+            }
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     when (val response = viewModel.detailsCoin.collectAsState().value) {

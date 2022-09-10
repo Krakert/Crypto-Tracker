@@ -62,8 +62,18 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController,
             )
         }
     ) {
-        LaunchedEffect(key1 = Unit) {
-            viewModel.fetchAllOverviewData()
+        DisposableEffect(lifeCycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME){
+                    println("App RESUME")
+                    viewModel.getAllOverviewData()
+                }
+            }
+            lifeCycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifeCycleOwner.lifecycle.removeObserver(observer)
+            }
         }
 
         when (val response = viewModel.overviewViewState.collectAsState().value) {
