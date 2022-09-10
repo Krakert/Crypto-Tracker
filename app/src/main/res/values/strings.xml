@@ -4,8 +4,10 @@
 
     <string name="txt_could_not_load">Unable to load data, please try again</string>
     <string name="txt_empty_overview">your list is empty, let\'s add a coin</string>
-    <string name="txt_no_connection">No connection, check network settings</string>
-    <string name="txt_limit">Please come back after 1 minute</string>
+    <string name="txt_no_connection">No connection available, check network settings</string>
+    <string name="txt_limit">API limit reached, please retry after 1 minute</string>
+    <string name="txt_unknown">Unknown problem, please try again</string>
+    <string name="txt_set_time">SSL handshake failed, make sure the date and time are set correctly</string>
 
     <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
     <string name="txt_details_circulation">Circulation</string>
