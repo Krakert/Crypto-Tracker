@@ -1,8 +1,6 @@
 package com.krakert.tracker.ui
 
 import android.graphics.PointF
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,12 +8,12 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -33,18 +31,16 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
-import com.krakert.tracker.models.Currency
-import com.krakert.tracker.models.FavoriteCoin
+import com.krakert.tracker.models.ui.Currency
+import com.krakert.tracker.models.ui.OverviewMergedCoinData
 import com.krakert.tracker.navigation.Screen
-import com.krakert.tracker.ui.state.ViewStateDataCoins
-import com.krakert.tracker.ui.state.ViewStateOverview
+import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.OverviewViewModel
-
+import com.krakert.tracker.ui.viewmodel.ViewStateOverview
 
 @Composable
 fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController) {
-    viewModel.getFavoriteCoins()
 
     val scrollState = rememberScalingLazyListState()
     Scaffold(
@@ -62,60 +58,43 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController)
             )
         }
     ) {
-        val response by viewModel.favoriteCoins.collectAsState()
+        LaunchedEffect(key1 = Unit) {
+            viewModel.fetchAllOverviewData()
+        }
 
-        when (response) {
-            is ViewStateOverview.Empty -> ShowEmptyState(R.string.txt_empty_overview, navController)
-            is ViewStateOverview.Error -> ShowIncorrectState(R.string.txt_toast_error, viewModel)
+        when (val response = viewModel.overviewViewState.collectAsState().value) {
+            is ViewStateOverview.Empty -> {
+                ShowProblem(
+                    text = R.string.txt_empty_overview,
+                    icon = Icons.Rounded.Refresh
+                ) {
+                    navController.navigate(Screen.Add.route)
+                }
+            }
+            is ViewStateOverview.Problem -> {
+                ShowProblem(
+                    text = R.string.txt_toast_error,
+                    icon = Icons.Rounded.Refresh
+                ) {
+                    viewModel.fetchAllOverviewData()
+                }
+            }
             is ViewStateOverview.Loading -> Loading()
-            is ViewStateOverview.Success -> ShowStatsCoins(scrollState = scrollState,
-                listFavoriteCoins = (response as ViewStateOverview.Success).favorite, viewModel = viewModel, navController = navController)
+            is ViewStateOverview.Success ->
+                ShowStatsCoins(
+                    scrollState = scrollState,
+                    resultAPi = response.data,
+                    navController = navController
+                )
         }
-
-    }
-}
-
-@Composable
-fun ShowEmptyState(@StringRes text: Int, navController: NavHostController) {
-    CenterElement {
-        Text(
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-            text = stringResource(text),
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center
-
-        )
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.PlusOne){
-            navController.navigate(Screen.Add.route)
-        }
-    }
-}
-
-@Composable
-private fun ShowIncorrectState(@StringRes text: Int, viewModel: OverviewViewModel){
-    val context = LocalContext.current
-    CenterElement {
-        IconButton(
-            Modifier
-                .size(ButtonDefaults.LargeButtonSize)
-                .padding(top = 8.dp), Icons.Rounded.Cached) {
-            viewModel.getFavoriteCoins()
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-        }
-        Text(
-            text = stringResource(text),
-            modifier = Modifier.padding(top = 8.dp),
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    listFavoriteCoins: ArrayList<FavoriteCoin>,
-    viewModel: OverviewViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    navController: NavHostController
+    resultAPi: List<OverviewMergedCoinData>,
+    navController: NavHostController,
 ) {
 
     val path = Path()
@@ -124,145 +103,133 @@ fun ShowStatsCoins(
     val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
     val favoriteCoin = sharedPreference.FavoriteCoin
 
-    //removed launchedeffect
-    viewModel.getAllDataByListCoinIds(listFavoriteCoins)
-
 
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(
             top = 8.dp,
-//            start = 8.dp,
-//            end = 8.dp,
             bottom = 32.dp
         ),
         verticalArrangement = Arrangement.Center,
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        // For each index in my favorites
-        items(listFavoriteCoins.size) { index ->
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        onClick = {
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                key = "Coin",
-                                value = listFavoriteCoins[index].id
+        resultAPi.forEach {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            onClick = {
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    key = "Coin",
+                                    value = it.id
+                                )
+                                navController.navigate(Screen.Details.route)
+                            }
+                        )
+                ) {
+                    CenterElement {
+                        if (favoriteCoin == it.id) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    append(it.name.replaceFirstChar { it.uppercase() })
+                                    appendInlineContent("inlineContent", "[icon]")
+                                },
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 20.sp,
+                                inlineContent = addIconFavorite()
                             )
-                            navController.navigate(Screen.Details.route)
+                        } else {
+                            Text(
+                                text = it.name.replaceFirstChar { it.uppercase() },
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 20.sp,
+                            )
                         }
-                    )
-            ) {
-                CenterElement {
-                    if (favoriteCoin == listFavoriteCoins[index].id) {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()})
-                                appendInlineContent("inlineContent", "[icon]")
-                            },
-                            fontSize = 20.sp,
-                            inlineContent = addIconFavorite()
-                        )
-                    } else {
-                        Text(
-                            text = listFavoriteCoins[index].name.replaceFirstChar{it.uppercase()},
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                        )
-                    }
-                    // Here I load the data needed for the graph
-                    val dataCoins by viewModel.dataCoin.collectAsState()
-                    when (dataCoins) {
-                        is ViewStateDataCoins.Error -> {
-                            Text(text = "Could not load the data")
-                        }
-                        is ViewStateDataCoins.Loading -> {
-                            Loading()
-                        }
-                        is ViewStateDataCoins.Success -> {
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(105.dp)
-                                    .padding(bottom = 8.dp)
-                            ) {
-                                val points = arrayListOf<PointF>()
-                                val pointsCon1 = arrayListOf<PointF>()
-                                val pointsCon2 = arrayListOf<PointF>()
-                                @Suppress("UNCHECKED_CAST")
-                                val marketChart = (dataCoins as ViewStateDataCoins.Success).data.data?.get(listFavoriteCoins[index].id)?.get("market_chart") as List<List<Double>>
 
-                                var maxData = marketChart[0][1].toFloat()
-                                var minData = marketChart[0][1].toFloat()
+                        Canvas(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(105.dp)
+                                .padding(bottom = 8.dp)
+                        ) {
+                            val points = arrayListOf<PointF>()
+                            val pointsCon1 = arrayListOf<PointF>()
+                            val pointsCon2 = arrayListOf<PointF>()
 
-                                marketChart.forEachIndexed { _, index ->
-                                    if (maxData < index[1].toFloat()) {
-                                        maxData = index[1].toFloat()
-                                    }
-                                    if (minData > index[1].toFloat()){
-                                        minData = index[1].toFloat()
-                                    }
+                            var maxData = it.graphData[0].price.toFloat()
+                            var minData = it.graphData[0].price.toFloat()
+//
+                            it.graphData.forEach {
+                                if (maxData < it.price.toFloat()) {
+                                    maxData = it.price.toFloat()
                                 }
-
-                                val pointsMean = arrayListOf<Float>()
-                                // Calculate mean over 5 point and add that value to the list
-                                for (i in 0 until marketChart.size - 5 step 5){
-                                    pointsMean.add(med(listOf(
-                                        marketChart[i][1].toFloat(),
-                                        marketChart[i + 1][1].toFloat(),
-                                        marketChart[i + 2][1].toFloat(),
-                                        marketChart[i + 3][1].toFloat(),
-                                        marketChart[i + 4][1].toFloat(),
-                                    )))
+                                if (minData > it.price.toFloat()) {
+                                    minData = it.price.toFloat()
                                 }
+                            }
 
-                                val distance = size.width / (pointsMean.size + 1)
-                                var currentX = 0F
+                            val pointsMean = arrayListOf<Float>()
+                            // Calculate mean over 5 point and add that value to the list
+                            for (i in 0 until it.graphData.size - 5 step 5) {
+                                pointsMean.add(med(listOf(
+                                    it.graphData[i].price.toFloat(),
+                                    it.graphData[i + 1].price.toFloat(),
+                                    it.graphData[i + 2].price.toFloat(),
+                                    it.graphData[i + 3].price.toFloat(),
+                                    it.graphData[i + 4].price.toFloat(),
+                                )))
+                            }
 
-                                pointsMean.forEach { point ->
-                                    val y = (point - maxData) / (minData - maxData) * size.height
-                                    val x = currentX + distance
-                                    points.add(PointF(x, y))
-                                    currentX += distance
-                                }
+                            val distance = size.width / (pointsMean.size + 1)
+                            var currentX = 0F
 
-                                for (i in 1 until points.size) {
-                                    pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
-                                    pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
-                                }
+                            pointsMean.forEach { point ->
+                                val y = (point - maxData) / (minData - maxData) * size.height
+                                val x = currentX + distance
+                                points.add(PointF(x, y))
+                                currentX += distance
+                            }
+
+                            for (i in 1 until points.size) {
+                                pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
+                                pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
+                            }
 
 
-                                path.reset()
-                                path.moveTo(points.first().x, points.first().y)
-                                for (i in 1 until points.size) {
-                                    path.cubicTo(
-                                        pointsCon1[i - 1].x, pointsCon1[i - 1].y, pointsCon2[i - 1].x, pointsCon2[i - 1].y,
-                                        points[i].x, points[i].y
-                                    )
-                                }
-
-                                drawPath(
-                                    path = path,
-                                    color = themeValues[3].colors.secondary,
-                                    style = Stroke(width = 6f)
+                            path.reset()
+                            path.moveTo(points.first().x, points.first().y)
+                            for (i in 1 until points.size) {
+                                path.cubicTo(
+                                    pointsCon1[i - 1].x,
+                                    pointsCon1[i - 1].y,
+                                    pointsCon2[i - 1].x,
+                                    pointsCon2[i - 1].y,
+                                    points[i].x,
+                                    points[i].y
                                 )
                             }
 
-                            //retrieving this value is a little bit messy..
-                            val textData = (dataCoins as ViewStateDataCoins.Success).data.data?.get(
-                                listFavoriteCoins[index].id
-                            )?.get(sharedPreference.Currency?.lowercase())
-                            Text(text = buildString {
-                                append(currencyObject?.nameFull?.get(1))
-                                    .append(" ")
-                                    .append(textData)
-                            })
-                            Divider()
+                            drawPath(
+                                path = path,
+                                color = themeValues[3].colors.secondary,
+                                style = Stroke(width = 6f)
+                            )
                         }
+
+                        val textData = it.currentPrice
+                        Text(text = buildString {
+                            append(currencyObject?.nameFull?.get(1))
+                                .append(" ")
+                                .append(textData)
+                        })
+                        Divider()
                     }
                 }
             }
@@ -323,7 +290,7 @@ private fun addIconFavorite(): Map<String, InlineTextContent> {
                     placeholderVerticalAlign = PlaceholderVerticalAlign.Center
                 )
             ) {
-                    Icon(Icons.Filled.Star, "", tint = MaterialTheme.colors.secondaryVariant)
+                Icon(Icons.Filled.Star, "", tint = MaterialTheme.colors.secondaryVariant)
             }
         )
     )

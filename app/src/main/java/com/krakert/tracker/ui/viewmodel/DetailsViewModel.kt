@@ -1,57 +1,82 @@
 package com.krakert.tracker.ui.viewmodel
 
 import android.content.ContentValues
-import android.content.Context
+import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.SharedPreference
+import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.FavoriteCoin
-import com.krakert.tracker.repository.CryptoApiRepository
-import com.krakert.tracker.repository.CryptoApiRepository.CoinGeckoExceptionError
-import com.krakert.tracker.ui.state.ViewStateDetailsCoins
+import com.krakert.tracker.api.Resource
+import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.repository.CryptoRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type
+import javax.inject.Inject
 
-class DetailsViewModel(context: Context, coinId: String) : ViewModel() {
-    private val cryptoApiRepository: CryptoApiRepository = CryptoApiRepository()
-    private val sharedPreference = SharedPreference.sharedPreference(context)
+sealed class ViewStateDetailsCoins {
+    object Empty : ViewStateDetailsCoins()
+    object Loading : ViewStateDetailsCoins()
+    data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
+    data class Problem(val exception: String) : ViewStateDetailsCoins()
+}
 
+@HiltViewModel
+class DetailsViewModel @Inject constructor(
+    private val CryptoRepository: CryptoRepository,
+    private val sharedPreferences: SharedPreferences,
+) : ViewModel() {
 
-    private val _viewStateDetailsCoin = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
-    val detailsCoin = _viewStateDetailsCoin.asStateFlow()
+    lateinit var coinId: String
 
-    init {
-        getDetailsCoinByCoinId(coinId)
-    }
+    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Empty)
+    val detailsCoin = _viewState.asStateFlow()
 
-
-    fun getDetailsCoinByCoinId(coinId: String){
+    fun getDetailsCoinByCoinId(){
         viewModelScope.launch {
-            val response = cryptoApiRepository.getDetailsCoinByCoinId(coinId)
-            try {
-                if (response.data == null) {
-                    _viewStateDetailsCoin.value = ViewStateDetailsCoins.Empty
-                } else {
-                    _viewStateDetailsCoin.value = ViewStateDetailsCoins.Success(response)
+            CryptoRepository.getDetailsCoinByCoinId(
+                coinId = coinId
+            ).collect{ result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _viewState.value = ViewStateDetailsCoins.Success(
+                            DetailsCoin(
+                                name = result.data?.name.toString(),
+                                image = result.data?.image,
+                                currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
+                                priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h ?: 0.0,
+                                priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
+                                circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
+                                high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
+                                marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+                            )
+                        )
+                    }
+                    is Resource.Error -> {
+                        _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
+                    }
+                    is Resource.Loading -> {
+                        _viewState.value = ViewStateDetailsCoins.Loading
+                    }
+                    else -> _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
                 }
-            } catch (e: CoinGeckoExceptionError) {
-                Log.e(ContentValues.TAG, e.message ?: "Something went wrong while retrieving data")
-                _viewStateDetailsCoin.value = ViewStateDetailsCoins.Error(e.message.toString())
             }
         }
     }
 
     fun removeCoinFromFavoriteCoins(coinId: String) {
         try {
-            val dataSharedPreferences = sharedPreference.FavoriteCoins.toString()
-            val favoriteCoin = sharedPreference.FavoriteCoin
+            val dataSharedPreferences = sharedPreferences.FavoriteCoins.toString()
+            val favoriteCoin = sharedPreferences.FavoriteCoin
             val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
             val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreferences, typeOfT)
 
@@ -63,10 +88,10 @@ class DetailsViewModel(context: Context, coinId: String) : ViewModel() {
 
             indexToRemove?.let { listFavoriteCoins.removeAt(it) }
 
-            sharedPreference.FavoriteCoins = Gson().toJson(listFavoriteCoins)
+            sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
 
             if (favoriteCoin == coinId){
-                sharedPreference.FavoriteCoin = ""
+                sharedPreferences.FavoriteCoin = ""
             }
 
         } catch (e: Exception) {

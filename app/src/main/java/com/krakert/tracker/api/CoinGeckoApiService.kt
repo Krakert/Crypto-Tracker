@@ -1,8 +1,9 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.models.*
 import com.krakert.tracker.models.responses.CoinFullData
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.MarketChart
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -15,7 +16,7 @@ interface CoinGeckoApiService {
         @Query("order") order: String,
         @Query("per_page") perPage: Int,
         @Query("page") page: Int,
-    ) : ListCoins
+    ) : Response<ListCoins>
 
     @GET("simple/price")
     suspend fun getPriceByListCoinIds(
@@ -25,23 +26,23 @@ interface CoinGeckoApiService {
         @Query("include_24hr_vol") dayVol: String,
         @Query("include_24hr_change") dayChange: String,
         @Query("include_last_updated_at") lastUpdated: String
-    ) : MutableMap<String, MutableMap<String, Any>>
+    ) : Response<Map<String, MutableMap<String, Any>>>
 
     @GET("coins/{id}")
     suspend fun getDetailsCoinByCoinId(
-        @Path("id") id: String,
+        @Path("id") coinId: String,
         @Query("localization") localization: String,
         @Query("tickers") tickers: Boolean,
         @Query("market_data") markerData: Boolean,
         @Query("community_data") communityData: Boolean,
         @Query("developer_data") developerData: Boolean,
         @Query("sparkline") sparkline: Boolean
-    )  : CoinFullData
+    )  : Response<CoinFullData>
 
     @GET("coins/{id}/market_chart")
     suspend fun getHistoryByCoinId(
-        @Path("id") id: String,
+        @Path("id") coinId: String,
         @Query("vs_currency") currency: String,
         @Query("days") days: String
-    ) : MarketChart
+    ) : Response<MarketChart>
 }

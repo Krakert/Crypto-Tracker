@@ -1,4 +1,4 @@
-package com.krakert.tracker.models
+package com.krakert.tracker.models.ui
 
 /**
  * This class is used to store all the coins the app needs to keep track of
