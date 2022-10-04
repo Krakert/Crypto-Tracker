@@ -1,17 +1,19 @@
 package com.krakert.tracker.api
 
-import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.MarketChart
+import com.krakert.tracker.models.ui.ProblemState
 import retrofit2.Response
 import retrofit2.Retrofit
 import javax.inject.Inject
+import javax.net.ssl.SSLHandshakeException
 
 /**
  * Middleware like class to handle http requests and it's exception
  * @author Pim Meijer, Stefan de Kraker
  */
-class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
+class CoinGeckoDataSource @Inject constructor(retrofit: Retrofit) {
     private val coinGeckoApiService: CoinGeckoApiService =
         retrofit.create(CoinGeckoApiService::class.java)
 
@@ -30,8 +32,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
                     dayChange = "",
                     lastUpdated = ""
                 )
-            },
-            defaultErrorMessage = "Error fetching data pricing coins"
+            }
         )
 
     }
@@ -47,7 +48,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
         return getResponse(
             request = {
                 coinGeckoApiService.getListCoins(currency, ids, order, perPage, page)
-            } , defaultErrorMessage = "Error fetching coin market data"
+            }
         )
     }
 
@@ -64,8 +65,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
                     developerData = false,
                     sparkline = false
                 )
-            },
-            defaultErrorMessage = "Error fetching details coins"
+            }
         )
 
     }
@@ -82,8 +82,7 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
                     currency = currency,
                     days = days
                 )
-            },
-            defaultErrorMessage = "Error fetching historical data coin"
+            }
         )
     }
 
@@ -91,27 +90,29 @@ class CoinGeckoDataSource @Inject constructor(private val retrofit: Retrofit) {
      * You can expand this function with more specific error handling - like no internet
      */
     private suspend fun <T> getResponse(
-        request: suspend () -> Response<T>,
-        defaultErrorMessage: String
+        request: suspend () -> Response<T>
     ): Resource<T> {
         return try {
             val result = request.invoke()
             if (result.isSuccessful) {
                 return result.body()?.let {
                     Resource.Success(it)
-                } ?: Resource.Error("Empty body in retrofit response")
+                } ?: Resource.Error(ProblemState.UNKNOWN)
             } else {
                 val errorMsg = when (result.code()) {
-                    429 -> "Try again in 1 minute"
-                    404 -> "Not found"
+                    429 -> ProblemState.API_LIMIT
+                    404 -> ProblemState.COULD_NOT_LOAD
                     else -> {
-                        ErrorUtils.parseError(result, retrofit)?.status_message
+                       ProblemState.UNKNOWN
                     }
                 }
-                Resource.Error(errorMsg ?: defaultErrorMessage)
+                Resource.Error(errorMsg)
             }
         } catch (e: Throwable) {
-            Resource.Error(e.toString())
+            when(e) {
+                is SSLHandshakeException -> Resource.Error(ProblemState.SSL)
+                else -> Resource.Error(ProblemState.UNKNOWN)
+            }
         }
     }
 }

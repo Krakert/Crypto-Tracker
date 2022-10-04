@@ -8,8 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Cached
-import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,9 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
@@ -33,9 +29,8 @@ import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
-import com.krakert.tracker.models.*
 import com.krakert.tracker.models.responses.Coin
-import com.krakert.tracker.ui.shared.CenterElement
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.shared.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
@@ -68,13 +63,13 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
             )
         }
     ) {
-        when (val listResult = viewModel.listCoins.collectAsState().value) {
-            is ViewStateAddCoin.Problem, is ViewStateAddCoin.Empty -> {
-                ShowProblem(
-                    text = R.string.txt_toast_error,
-                    icon = Icons.Rounded.PlusOne
-                ) {
-                    viewModel.getListCoins()
+        when (val result = viewModel.listCoins.collectAsState().value) {
+            is ViewStateAddCoin.Problem -> {
+                ShowProblem(result.exception){
+                    when (result.exception) {
+                        ProblemState.SSL -> viewModel.openSettings()
+                        else -> viewModel.getListCoins()
+                    }
                 }
             }
             ViewStateAddCoin.Loading -> {
@@ -82,10 +77,11 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
             }
             is ViewStateAddCoin.Success -> {
                 ShowList(scrollState = scrollState,
-                    listResult = listResult.coins,
+                    listResult = result.coins,
                     viewModel = viewModel)
             }
         }
+
     }
 }
 
@@ -105,22 +101,6 @@ private fun ShowList(
         listFavoriteCoins = Gson().fromJson(dataSharedPreferences, typeOfT)
     }
 
-    var textForUserInput by remember { mutableStateOf("") }
-//    var textForVoiceInput by remember { mutableStateOf("") }
-
-    val inputTextKey = "input_text"
-
-    val launcher =
-        rememberLauncherForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            it.data?.let { data ->
-                val results: Bundle = RemoteInput.getResultsFromIntent(data)
-                val newInputText: CharSequence? = results.getCharSequence(inputTextKey)
-                textForUserInput = newInputText as String
-            }
-        }
-
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -134,28 +114,6 @@ private fun ShowList(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-
-        item {
-            val intent: Intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
-            val remoteInputs: List<RemoteInput> = listOf(
-                RemoteInput.Builder(inputTextKey)
-                    .setLabel("Search for a coin")
-                    .wearableExtender {
-                        setEmojisAllowed(false)
-                        setInputActionType(EditorInfo.IME_ACTION_DONE)
-                    }.build()
-            )
-
-            RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
-
-            IconButton(
-                modifier = Modifier
-                    .size(ButtonDefaults.SmallButtonSize)
-                    .padding(bottom = 8.dp),
-                imageVector = Icons.Rounded.Search) {
-                launcher.launch(intent)
-            }
-        }
         listResult?.size?.let {
             items(it) { index ->
                 Row(

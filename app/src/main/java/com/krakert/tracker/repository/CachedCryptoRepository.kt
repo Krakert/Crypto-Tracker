@@ -1,6 +1,8 @@
 package com.krakert.tracker.repository
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import android.util.Log
 import com.krakert.tracker.SharedPreference.MinutesCache
 import com.krakert.tracker.api.CacheRateLimiter
@@ -30,6 +32,7 @@ constructor(
     private val coinGeckoDataSource: CoinGeckoDataSource,
     private val cryptoCacheDao: CryptoCacheDao,
     private val sharedPreferences: SharedPreferences,
+    private val context: Context
 ) : CryptoRepository {
     // Setup of the limits for the different data in the DB
     private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
@@ -83,7 +86,6 @@ constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-
     override suspend fun getDetailsCoinByCoinId(
         coinId: String,
     ): Flow<Resource<CoinFullData>> {
@@ -121,6 +123,12 @@ constructor(
                 // Data needs to be fetched, to old!
             } else emit(fetchHistoryByCoinId(coinId, currency, days))
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun isOnline(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        return capabilities !== null
     }
 
     private suspend fun fetchHistoryByCoinId(

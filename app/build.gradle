@@ -13,7 +13,6 @@ plugins {
 
 android {
     compileSdk 33
-    buildToolsVersion = "33"
 
     defaultConfig {
         applicationId "com.krakert.tracker"
@@ -79,10 +78,10 @@ dependencies {
     // Livedata
     implementation 'androidx.compose.runtime:runtime-livedata:1.2.1'
     // ViewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
     // Retrofit and OKHTTP
-    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
     implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.13'
@@ -95,7 +94,7 @@ dependencies {
     // Gson
     implementation 'com.google.code.gson:gson:2.9.1'
 
-    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.core:core-ktx:1.9.0'
     // General Wear functionality
     implementation 'androidx.wear:wear:1.2.0'
     // Tiles functionality
