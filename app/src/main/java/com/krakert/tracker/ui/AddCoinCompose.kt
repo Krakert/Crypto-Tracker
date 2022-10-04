@@ -1,32 +1,41 @@
 package com.krakert.tracker.ui
 
-import android.widget.Toast
-import androidx.annotation.StringRes
+import android.app.RemoteInput
+import android.content.Intent
+import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
+import androidx.wear.input.RemoteInputIntentHelper
+import androidx.wear.input.wearableExtender
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
+import com.krakert.tracker.models.*
 import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.ui.shared.CenterElement
 import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.shared.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
@@ -77,21 +86,6 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
                     viewModel = viewModel)
             }
         }
-
-@Composable
-private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel) {
-    val context = LocalContext.current
-    CenterElement {
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.Cached) {
-            viewModel.getListCoins()
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-        }
-        Text(
-            text = stringResource(text),
-            modifier = Modifier.padding(top = 8.dp),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.primary,
-        )
     }
 }
 
@@ -111,6 +105,22 @@ private fun ShowList(
         listFavoriteCoins = Gson().fromJson(dataSharedPreferences, typeOfT)
     }
 
+    var textForUserInput by remember { mutableStateOf("") }
+//    var textForVoiceInput by remember { mutableStateOf("") }
+
+    val inputTextKey = "input_text"
+
+    val launcher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            it.data?.let { data ->
+                val results: Bundle = RemoteInput.getResultsFromIntent(data)
+                val newInputText: CharSequence? = results.getCharSequence(inputTextKey)
+                textForUserInput = newInputText as String
+            }
+        }
+
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -124,6 +134,28 @@ private fun ShowList(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
+
+        item {
+            val intent: Intent = RemoteInputIntentHelper.createActionRemoteInputIntent()
+            val remoteInputs: List<RemoteInput> = listOf(
+                RemoteInput.Builder(inputTextKey)
+                    .setLabel("Search for a coin")
+                    .wearableExtender {
+                        setEmojisAllowed(false)
+                        setInputActionType(EditorInfo.IME_ACTION_DONE)
+                    }.build()
+            )
+
+            RemoteInputIntentHelper.putRemoteInputsExtra(intent, remoteInputs)
+
+            IconButton(
+                modifier = Modifier
+                    .size(ButtonDefaults.SmallButtonSize)
+                    .padding(bottom = 8.dp),
+                imageVector = Icons.Rounded.Search) {
+                launcher.launch(intent)
+            }
+        }
         listResult?.size?.let {
             items(it) { index ->
                 Row(
