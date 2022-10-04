@@ -1,32 +1,36 @@
 package com.krakert.tracker.ui
 
-import android.widget.Toast
-import androidx.annotation.StringRes
+import android.app.RemoteInput
+import android.content.Intent
+import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
+import androidx.wear.input.RemoteInputIntentHelper
+import androidx.wear.input.wearableExtender
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.responses.Coin
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.shared.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
@@ -59,13 +63,13 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
             )
         }
     ) {
-        when (val listResult = viewModel.listCoins.collectAsState().value) {
-            is ViewStateAddCoin.Problem, is ViewStateAddCoin.Empty -> {
-                ShowProblem(
-                    text = R.string.txt_toast_error,
-                    icon = Icons.Rounded.PlusOne
-                ) {
-                    viewModel.getListCoins()
+        when (val result = viewModel.listCoins.collectAsState().value) {
+            is ViewStateAddCoin.Problem -> {
+                ShowProblem(result.exception){
+                    when (result.exception) {
+                        ProblemState.SSL -> viewModel.openSettings()
+                        else -> viewModel.getListCoins()
+                    }
                 }
             }
             ViewStateAddCoin.Loading -> {
@@ -73,25 +77,11 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
             }
             is ViewStateAddCoin.Success -> {
                 ShowList(scrollState = scrollState,
-                    listResult = listResult.coins,
+                    listResult = result.coins,
                     viewModel = viewModel)
             }
         }
 
-@Composable
-private fun ShowIncorrectState(@StringRes text: Int, viewModel: AddCoinViewModel) {
-    val context = LocalContext.current
-    CenterElement {
-        IconButton(Modifier.size(ButtonDefaults.LargeButtonSize), Icons.Rounded.Cached) {
-            viewModel.getListCoins()
-            Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
-        }
-        Text(
-            text = stringResource(text),
-            modifier = Modifier.padding(top = 8.dp),
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.primary,
-        )
     }
 }
 

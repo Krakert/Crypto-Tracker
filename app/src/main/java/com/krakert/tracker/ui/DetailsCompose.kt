@@ -8,16 +8,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.rounded.Cached
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -26,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.*
 import com.krakert.tracker.R
@@ -34,6 +37,7 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
@@ -41,35 +45,51 @@ import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
-fun ShowDetails(coinId: String, viewModel: DetailsViewModel, navController: NavHostController) {
-    LaunchedEffect(key1 = Unit ) {
-        //pass coinID to viewModel, can be done cleaner but ok for now
-        viewModel.coinId = coinId
-        viewModel.getDetailsCoinByCoinId()
+fun ShowDetails(
+    coinId: String,
+    viewModel: DetailsViewModel,
+    navController: NavHostController,
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+) {
+
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.coinId = coinId
+                viewModel.getDetailsCoinByCoinId()
+            }
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     when (val response = viewModel.detailsCoin.collectAsState().value) {
-        Loading -> Loading()
-        is Problem -> ShowProblem(
-            text = R.string.txt_toast_error,
-            icon = Icons.Rounded.Cached){
-            viewModel.getDetailsCoinByCoinId()
+        is Loading -> Loading()
+        is Problem -> {
+            ShowProblem(response.exception){
+                when (response.exception) {
+                    ProblemState.SSL -> viewModel.openSettings()
+                    else -> viewModel.getDetailsCoinByCoinId()
+                }
+            }
         }
-        is Success -> ShowDetailsCoins(
+        is Success -> ShowDetailsCoin(
             detailsCoins = response.details,
             viewModel = viewModel,
             coinId = coinId,
             navController = navController)
-        else -> {}
     }
 }
 
 @Composable
-fun ShowDetailsCoins(
+fun ShowDetailsCoin(
     detailsCoins: DetailsCoin,
     viewModel: DetailsViewModel,
     coinId: String,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
 
     val context = LocalContext.current
@@ -98,7 +118,7 @@ fun ShowDetailsCoins(
                     modifier = Modifier
                         .size(48.dp)
                         .wrapContentSize(align = Alignment.Center)
-                    )
+                )
                 Text(
                     text = detailsCoins.name,
                     textAlign = TextAlign.Center,

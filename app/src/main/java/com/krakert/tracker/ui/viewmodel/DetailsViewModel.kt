@@ -1,7 +1,10 @@
 package com.krakert.tracker.ui.viewmodel
 
+import android.app.Application
 import android.content.ContentValues
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +14,9 @@ import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.models.ui.DetailsCoin
+import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,52 +26,55 @@ import java.lang.reflect.Type
 import javax.inject.Inject
 
 sealed class ViewStateDetailsCoins {
-    object Empty : ViewStateDetailsCoins()
     object Loading : ViewStateDetailsCoins()
     data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
-    data class Problem(val exception: String) : ViewStateDetailsCoins()
+    data class Problem(val exception: ProblemState?) : ViewStateDetailsCoins()
 }
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val CryptoRepository: CryptoRepository,
     private val sharedPreferences: SharedPreferences,
+    private val application: Application,
 ) : ViewModel() {
 
     lateinit var coinId: String
 
-    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Empty)
+    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
     val detailsCoin = _viewState.asStateFlow()
 
-    fun getDetailsCoinByCoinId(){
+    fun getDetailsCoinByCoinId() {
         viewModelScope.launch {
-            CryptoRepository.getDetailsCoinByCoinId(
-                coinId = coinId
-            ).collect{ result ->
-                when (result) {
-                    is Resource.Success -> {
-                        _viewState.value = ViewStateDetailsCoins.Success(
-                            DetailsCoin(
-                                name = result.data?.name.toString(),
-                                image = result.data?.image,
-                                currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
-                                priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h ?: 0.0,
-                                priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
-                                circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
-                                high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
-                                low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
-                                marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
-                                marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+            if (!CryptoRepository.isOnline()) {
+                _viewState.value = ViewStateDetailsCoins.Problem(ProblemState.NO_CONNECTION)
+            } else {
+                CryptoRepository.getDetailsCoinByCoinId(
+                    coinId = coinId
+                ).collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _viewState.value = ViewStateDetailsCoins.Success(
+                                DetailsCoin(
+                                    name = result.data?.name.toString(),
+                                    image = result.data?.image,
+                                    currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
+                                    priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h?: 0.0,
+                                    priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
+                                    circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
+                                    high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                    low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
+                                    marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
+                                    marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
+                                )
                             )
-                        )
+                        }
+                        is Resource.Error -> {
+                            _viewState.value = ViewStateDetailsCoins.Problem(result.state)
+                        }
+                        is Resource.Loading -> {
+                            _viewState.value = ViewStateDetailsCoins.Loading
+                        }
                     }
-                    is Resource.Error -> {
-                        _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
-                    }
-                    is Resource.Loading -> {
-                        _viewState.value = ViewStateDetailsCoins.Loading
-                    }
-                    else -> _viewState.value = ViewStateDetailsCoins.Problem("Cant get details coin")
                 }
             }
         }
@@ -90,12 +97,18 @@ class DetailsViewModel @Inject constructor(
 
             sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
 
-            if (favoriteCoin == coinId){
+            if (favoriteCoin == coinId) {
                 sharedPreferences.FavoriteCoin = ""
             }
 
         } catch (e: Exception) {
             Log.e(ContentValues.TAG, e.message ?: "Something went wrong while deleting a coins")
         }
+    }
+
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
     }
 }

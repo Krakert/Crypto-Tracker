@@ -1,8 +1,11 @@
 package com.krakert.tracker.ui.viewmodel
 
+import android.app.Application
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -17,6 +20,7 @@ import com.krakert.tracker.api.Resource
 import com.krakert.tracker.models.responses.Coin
 import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.ui.FavoriteCoin
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.repository.CACHE_KEY_PRICE_COINS
 import com.krakert.tracker.repository.CachedCryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,16 +33,16 @@ import javax.inject.Inject
 
 sealed class ViewStateAddCoin {
     // Represents different states for the add coin screen
-    object Empty : ViewStateAddCoin()
     object Loading : ViewStateAddCoin()
     data class Success(val coins: ListCoins) : ViewStateAddCoin()
-    data class Problem(val exception: String) : ViewStateAddCoin()
+    data class Problem(val exception: ProblemState?) : ViewStateAddCoin()
 }
 
 @HiltViewModel
 class AddCoinViewModel @Inject constructor(
     private val cachedCryptoRepository: CachedCryptoRepository,
     private val sharedPreferences: SharedPreferences,
+    private val application: Application
 ) : ViewModel() {
 
     private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
@@ -51,23 +55,25 @@ class AddCoinViewModel @Inject constructor(
 
     fun getListCoins() {
         viewModelScope.launch {
-            cachedCryptoRepository.getListCoins().collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-
-                        result.data?.let { listCoin ->
-                            _viewState.value = ViewStateAddCoin.Success(listCoin)
-                        } ?: _viewState
+            if (!cachedCryptoRepository.isOnline()) {
+                _viewState.value = ViewStateAddCoin.Problem(ProblemState.NO_CONNECTION)
+            } else {
+                cachedCryptoRepository.getListCoins().collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            if (result.data?.isEmpty() == false) {
+                                _viewState.value = ViewStateAddCoin.Success(result.data)
+                            } else {
+                                _viewState.value = ViewStateAddCoin.Problem(ProblemState.COULD_NOT_LOAD)
+                            }
+                        }
+                        is Resource.Error -> {
+                            _viewState.value = ViewStateAddCoin.Problem(result.state)
+                        }
+                        is Resource.Loading -> {
+                            _viewState.value = ViewStateAddCoin.Loading
+                        }
                     }
-                    is Resource.Error -> {
-                        _viewState.value = ViewStateAddCoin.Problem(result.message ?: "no error from network layer")
-
-                    }
-                    is Resource.Loading -> {
-                        _viewState.value = ViewStateAddCoin.Loading
-                    }
-                    else -> _viewState.value = ViewStateAddCoin.Problem("Unknown ViewStateAddCoin Problem")
-
                 }
             }
         }
@@ -117,7 +123,13 @@ class AddCoinViewModel @Inject constructor(
                 TAG,
                 e.message ?: "Something went wrong while saving the list of favorite coins"
             )
-            _viewState.value = ViewStateAddCoin.Problem(e.message.toString())
+//            _viewState.value = ViewStateAddCoin.Problem(ProblemState.)
         }
+    }
+
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
     }
 }

@@ -2,7 +2,10 @@
 
 package com.krakert.tracker.ui.viewmodel
 
+import android.app.Application
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +17,7 @@ import com.krakert.tracker.models.responses.MarketChart
 import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.models.ui.GraphItem
 import com.krakert.tracker.models.ui.OverviewMergedCoinData
+import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,51 +27,56 @@ import javax.inject.Inject
 
 sealed class ViewStateOverview {
     // Represents different states for the overview screen
-    object Empty : ViewStateOverview()
     object Loading : ViewStateOverview()
     data class Success(val data: List<OverviewMergedCoinData>) : ViewStateOverview()
-    data class Problem(val exception: String) : ViewStateOverview()
+    data class Problem(val exception: ProblemState?) : ViewStateOverview()
 }
 
 @HiltViewModel
 class OverviewViewModel
     @Inject constructor(
         private val cryptoRepository: CryptoRepository,
-        private val sharedPreferences : SharedPreferences
+        private val sharedPreferences : SharedPreferences,
+        private val application: Application
     ): ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewStateOverview>(ViewStateOverview.Loading)
     val overviewViewState = _viewState.asStateFlow()
 
-    fun fetchAllOverviewData(){
+    fun getAllOverviewData(){
         val favoriteCoinList = sharedPreferences.getFavoriteCoinList()
 
         if (favoriteCoinList.isNotEmpty()) {
             viewModelScope.launch {
-                cryptoRepository.getPriceCoins(
-                    idCoins = getCoinsIdString(favoriteCoinList),
-                    currency = sharedPreferences.Currency.toString()
-                ).collect { priceCoin ->
-                    when (priceCoin) {
-                        is Resource.Success -> {
-                            val overviewCoinList = getHistoryForCoins(favoriteCoinList, priceCoin)
-                            //All out success
-                            _viewState.value = ViewStateOverview.Success(overviewCoinList)
-                        }
-                        is Resource.Error -> {
-                            _viewState.value = ViewStateOverview.Problem("Cant get price coin data")
-                        }
-                        is Resource.Loading -> {
-                            _viewState.value = ViewStateOverview.Loading
-                        }
-                        else -> {
-                            Log.e("PriceCoin", "Not a valid resource state triggered")
+                if (!cryptoRepository.isOnline()) {
+                    _viewState.value = ViewStateOverview.Problem(ProblemState.NO_CONNECTION)
+                } else {
+                    cryptoRepository.getPriceCoins(
+                        idCoins = getCoinsIdString(favoriteCoinList),
+                        currency = sharedPreferences.Currency.toString()
+                    ).collect { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                //All out success
+                                val overviewMergedCoinData = getHistoryForCoins(favoriteCoinList, result)
+                                _viewState.value = if (overviewMergedCoinData.isNotEmpty()){
+                                    ViewStateOverview.Success(overviewMergedCoinData)
+                                } else {
+                                    ViewStateOverview.Problem(ProblemState.COULD_NOT_LOAD)
+                                }
+                            }
+                            is Resource.Error -> {
+                                _viewState.value = ViewStateOverview.Problem(result.state)
+                            }
+                            is Resource.Loading -> {
+                                _viewState.value = ViewStateOverview.Loading
+                            }
                         }
                     }
                 }
             }
         } else {
-            _viewState.value = ViewStateOverview.Empty
+            _viewState.value = ViewStateOverview.Problem(ProblemState.EMPTY)
         }
     }
 
@@ -143,5 +152,11 @@ class OverviewViewModel
         }
 
         return idCoins.joinToString(",")
+    }
+
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
     }
 }
