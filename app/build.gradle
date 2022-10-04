@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
@@ -26,7 +28,32 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "true"]
+            versionNameSuffix = ".stable"
+            buildConfigField("String", "BUILD_TIME", "\"${buildTime()}\"")
+        }
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = ".debug"
+            debuggable true
+            manifestPlaceholders = [crashlyticsCollectionEnabled: "false"]
+            buildConfigField("String", "BUILD_TIME", "\"${buildTime()}\"")
+
+        }
+    }
+    flavorDimensions "version"
+    productFlavors {
+        lite {
+            dimension "version"
+            applicationIdSuffix ".lite"
+            versionNameSuffix ".lite"
+        }
+        full {
+            dimension "version"
+            applicationIdSuffix ".full"
+            versionNameSuffix ".full"
         }
     }
 
@@ -40,9 +67,13 @@ android {
     kapt {
         correctErrorTypes = true
     }
+    namespace 'com.krakert.tracker'
 }
 
 dependencies {
+    // Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
     // Use of the input types WearOS has
     implementation 'androidx.wear:wear-input:1.2.0-alpha02'
     // Livedata
@@ -54,15 +85,15 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
-    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.12'
-    implementation 'com.google.firebase:firebase-analytics-ktx:21.1.0'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.2.13'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.1.1'
     // Room
     kapt 'androidx.room:room-compiler:2.4.3'
     implementation 'androidx.room:room-runtime:2.4.3'
     // Kotlin Extensions and Coroutines support for Room
     implementation 'androidx.room:room-ktx:2.4.3'
     // Gson
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     implementation 'androidx.core:core-ktx:1.8.0'
     // General Wear functionality
@@ -75,7 +106,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4'
 
     // Compose implementation to load images via coil
-    implementation "com.github.skydoves:landscapist-coil:1.5.2"
+    implementation "com.github.skydoves:landscapist-coil:1.6.1"
     // Share preference
     implementation 'androidx.preference:preference:1.2.0'
     // Compose Navigation
@@ -85,7 +116,6 @@ dependencies {
 
     // Compose preview
     implementation("androidx.compose.ui:ui-tooling:$compose_version")
-
 
     implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
@@ -107,4 +137,9 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.wear.tiles:tiles-renderer:1.1.0"
 
+}
+
+static def buildTime() {
+    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm") // you can change it
+    return df.format(new Date())
 }
