@@ -1,4 +1,4 @@
-![](design/Play Store/Crypto-Tracker-Banner.jpg)<br><br>
+![Banner](https://github.com/Krakert/Crypto-Tracker/blob/main/design/Play%20Store/Crypto-Tracker-Banner.jpg)<br><br>
 
 <p align="center">
 Crypto tracker is a free app build for wearable and allows users to quickly check the latest information about their favorite crypto.
