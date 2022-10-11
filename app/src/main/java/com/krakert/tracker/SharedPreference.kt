@@ -47,17 +47,15 @@ object SharedPreference {
             }
         }
 
-    fun SharedPreferences.getFavoriteCoinList() : ArrayList<FavoriteCoin> {
+    fun SharedPreferences.getFavoriteCoinList(): ArrayList<FavoriteCoin> {
         val dataSharedPreference = FavoriteCoins.toString()
         val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
         var listFavoriteCoins = arrayListOf<FavoriteCoin>()
 
-        if (dataSharedPreference.isNotEmpty()){
+        if (dataSharedPreference.isNotEmpty()) {
             listFavoriteCoins = Gson().fromJson(dataSharedPreference, typeOfT)
         }
-
         return listFavoriteCoins
-
     }
 
     var SharedPreferences.FavoriteCoins

@@ -22,7 +22,7 @@ import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.ui.FavoriteCoin
 import com.krakert.tracker.models.ui.ProblemState
 import com.krakert.tracker.repository.CACHE_KEY_PRICE_COINS
-import com.krakert.tracker.repository.CachedCryptoRepository
+import com.krakert.tracker.repository.CryptoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,7 +40,7 @@ sealed class ViewStateAddCoin {
 
 @HiltViewModel
 class AddCoinViewModel @Inject constructor(
-    private val cachedCryptoRepository: CachedCryptoRepository,
+    private val CryptoRepository: CryptoRepository,
     private val sharedPreferences: SharedPreferences,
     private val application: Application
 ) : ViewModel() {
@@ -55,10 +55,10 @@ class AddCoinViewModel @Inject constructor(
 
     fun getListCoins() {
         viewModelScope.launch {
-            if (!cachedCryptoRepository.isOnline()) {
+            if (!CryptoRepository.isOnline()) {
                 _viewState.value = ViewStateAddCoin.Problem(ProblemState.NO_CONNECTION)
             } else {
-                cachedCryptoRepository.getListCoins().collect { result ->
+                CryptoRepository.getListCoins().collect { result ->
                     when (result) {
                         is Resource.Success -> {
                             if (result.data?.isEmpty() == false) {
