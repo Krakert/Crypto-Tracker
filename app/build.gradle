@@ -15,7 +15,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.krakert.tracker"
+        applicationId "com.stakt.tracker"
         minSdk 26
         targetSdk 32
         versionCode 3
@@ -66,7 +66,7 @@ android {
     kapt {
         correctErrorTypes = true
     }
-    namespace 'com.krakert.tracker'
+    namespace 'com.stakt.tracker'
 }
 
 dependencies {

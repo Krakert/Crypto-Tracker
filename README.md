@@ -50,7 +50,7 @@ customize the app according to your preference, and change the currency and the 
 # 📦 Package Structure
 
  ```
-com.krakert.tracker
+com.stakt.tracker
 ├── api                         # Retrofit API calls and cacheratelimiter
 ├── database                    # Contains DAO for ROOM database with data converters
 ├── di                          # Package tha holds all the HILT dependency injection files
