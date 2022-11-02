@@ -7,96 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:578076934373:android:ca5a64011c874e586ad40c",
+        "mobilesdk_app_id": "1:578076934373:android:f13bed7666c870126ad40c",
         "android_client_info": {
-          "package_name": "com.stakt.tracker.full"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCirQXIrNN5qJSfrWK7EaOJMehwf7mfHgQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:578076934373:android:ace2e65b54a46b426ad40c",
-        "android_client_info": {
-          "package_name": "com.stakt.tracker.full.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCirQXIrNN5qJSfrWK7EaOJMehwf7mfHgQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:578076934373:android:5c5e575efd2badb16ad40c",
-        "android_client_info": {
-          "package_name": "com.stakt.tracker.lite"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCirQXIrNN5qJSfrWK7EaOJMehwf7mfHgQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "578076934373-4tni7vjot4d0bq3qpcbg1g6fifmqh651.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:578076934373:android:f7d6d3ad812b67736ad40c",
-        "android_client_info": {
-          "package_name": "com.stakt.tracker.lite.debug"
+          "package_name": "com.krakert.tracker"
         }
       },
       "oauth_client": [

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.stakt.tracker">
+    package="com.krakert.tracker">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.type.watch" />
 
     <application
-        android:name="com.stakt.tracker.AppClass"
+        android:name=".AppClass"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.DeviceDefault">
         <!-- Tile -->
         <service
-            android:name="com.stakt.tracker.ui.tile.CoinTileService"
+            android:name="com.krakert.tracker.ui.tile.CoinTileService"
             android:label="@string/app_name"
             android:exported="true"
             android:permission="com.google.android.wearable.permission.BIND_TILE_PROVIDER">
@@ -33,7 +33,7 @@
             android:value="true" />
 
         <activity
-            android:name="com.stakt.tracker.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
