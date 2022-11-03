@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 /**
- * Wrapper class, is used to save the MAP from the [CoinGeckoApiService.getPriceByListCoinIds] call
+ * Wrapper class, is used to save the MAP from the `CoinGeckoApiService.getPriceByListCoinIds` call
  * so it can be stored in the DB.
  */
 

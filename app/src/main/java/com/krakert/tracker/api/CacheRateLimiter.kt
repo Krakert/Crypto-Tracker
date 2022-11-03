@@ -52,7 +52,7 @@ class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
         //get from shared prefs
         val arrayMap = getStoredTimestamps(sharedPreferences)
 
-        arrayMap?.let {
+        arrayMap.let {
             arrayMap[key] = time
 
             writeToPrefs(sharedPreferences, arrayMap)
@@ -69,13 +69,13 @@ class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
 
     private fun getTimeStampForKey(prefs: SharedPreferences, key: KEY): Long? {
         //get from shared prefs
-        val arrayMap: ArrayMap<KEY, Long> = getStoredTimestamps(prefs) ?: return null
+        val arrayMap: ArrayMap<KEY, Long> = getStoredTimestamps(prefs)
 
         return arrayMap[key]
     }
 
 
-    private fun getStoredTimestamps(sharedPreferences: SharedPreferences): ArrayMap<KEY, Long>? {
+    private fun getStoredTimestamps(sharedPreferences: SharedPreferences): ArrayMap<KEY, Long> {
         val storedTimeStamps = sharedPreferences.getString(KEY_CACHE_TIMESTAMPS, null)
                 ?: return ArrayMap()
 
@@ -86,7 +86,7 @@ class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
     }
 
     fun removeForKey(prefs: SharedPreferences, key: KEY) {
-        val timestamps: ArrayMap<KEY, Long> = getStoredTimestamps(prefs) ?: return
+        val timestamps: ArrayMap<KEY, Long> = getStoredTimestamps(prefs)
 
         timestamps.remove(key)
 

@@ -12,7 +12,6 @@ import kotlinx.parcelize.Parcelize
  */
 class ListCoins : ArrayList<Coin>()
 
-@Parcelize
 @Entity(tableName = "coinTable")
 data class Coin(
     @PrimaryKey(autoGenerate = false)
@@ -28,6 +27,4 @@ data class Coin(
     @SerializedName("name")
     val name: String,
 
-) : Parcelable {
-    fun getIcon() = image
-}
+)

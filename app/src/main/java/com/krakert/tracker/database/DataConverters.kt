@@ -4,7 +4,6 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.models.database.PriceCoins
 import com.krakert.tracker.models.responses.Image
 import com.krakert.tracker.models.responses.MarketChart
 import com.krakert.tracker.models.responses.MarketData

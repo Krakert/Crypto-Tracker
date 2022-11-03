@@ -1,9 +1,7 @@
 package com.krakert.tracker.models.responses
 
 import androidx.room.*
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
-import com.krakert.tracker.models.Links
 
 
 @Entity(tableName = "detailsCoinTable")

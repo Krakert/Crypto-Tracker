@@ -1,37 +1,24 @@
 package com.krakert.tracker.ui
 
-import android.app.RemoteInput
-import android.content.Intent
-import android.os.Bundle
-import android.view.inputmethod.EditorInfo
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.*
 import androidx.wear.compose.material.ChipDefaults.gradientBackgroundChipColors
-import androidx.wear.input.RemoteInputIntentHelper
-import androidx.wear.input.wearableExtender
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.FavoriteCoins
 import com.krakert.tracker.models.responses.Coin
 import com.krakert.tracker.models.ui.ProblemState
-import com.krakert.tracker.ui.shared.IconButton
 import com.krakert.tracker.ui.shared.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
@@ -142,7 +129,7 @@ private fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = coin.getIcon(), onPaletteAvailable = { palette = it })
+            LoadImage(url = coin.image, onPaletteAvailable = { palette = it })
         },
         onClick = { onClick() },
         label = {

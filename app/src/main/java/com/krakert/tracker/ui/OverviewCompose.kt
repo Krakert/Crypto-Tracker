@@ -65,7 +65,6 @@ fun ListOverview(viewModel: OverviewViewModel, navController: NavHostController,
         DisposableEffect(lifeCycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME){
-                    println("App RESUME")
                     viewModel.getAllOverviewData()
                 }
             }
