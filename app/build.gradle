@@ -16,14 +16,15 @@ android {
     defaultConfig {
         applicationId "com.krakert.tracker"
         minSdk 26
-        targetSdk 32
-        versionCode 4
+        targetSdk 33
+        versionCode 6
         versionName "Fresh engine"
         setProperty("archivesBaseName", applicationId + "-v" + versionCode + "(" + versionName + ")")
     }
 
     defaultConfig {
         buildConfigField ("String", "BUILD_TIME", "\"${buildTime()}\"")
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
@@ -32,7 +33,6 @@ android {
             shrinkResources true
             debuggable false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-            versionNameSuffix = ".stable"
         }
     }
 
@@ -63,7 +63,7 @@ dependencies {
     // Retrofit and OKHTTP
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.4.0'
 
     // Crashlytics
@@ -76,7 +76,7 @@ dependencies {
     // Kotlin Extensions and Coroutines support for Room
     implementation 'androidx.room:room-ktx:2.4.3'
     // Gson
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     // General Wear functionality
@@ -89,7 +89,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4'
 
     // Compose implementation to load images via coil
-    implementation "com.github.skydoves:landscapist-coil:1.6.1"
+    implementation 'com.github.skydoves:landscapist-coil:2.0.3'
+    implementation 'com.github.skydoves:landscapist-palette:2.0.3'
     // Share preference
     implementation 'androidx.preference:preference:1.2.0'
     // Compose Navigation
