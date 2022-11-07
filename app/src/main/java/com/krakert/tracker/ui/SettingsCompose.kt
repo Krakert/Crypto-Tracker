@@ -194,6 +194,8 @@ fun ListSettings(viewModel: SettingsViewModel?) {
             Text(text = buildString {
                 append("Version name: ")
                     .append(BuildConfig.VERSION_NAME)
+                    .append(".")
+                    .append(BuildConfig.BUILD_TYPE)
                     .append("\n Build date: ")
                     .append(BuildConfig.BUILD_TIME)
                     .append("\n Version ID: ")
