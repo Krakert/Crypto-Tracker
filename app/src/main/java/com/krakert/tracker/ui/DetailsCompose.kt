@@ -42,6 +42,7 @@ import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
@@ -69,7 +70,7 @@ fun ShowDetails(
     when (val response = viewModel.detailsCoin.collectAsState().value) {
         is Loading -> Loading()
         is Problem -> {
-            ShowProblem(response.exception){
+            ShowProblem(response.exception) {
                 when (response.exception) {
                     ProblemState.SSL -> viewModel.openSettings()
                     else -> viewModel.getDetailsCoinByCoinId()
@@ -113,11 +114,12 @@ fun ShowDetailsCoin(
         item {
             CenterElement {
                 CoilImage(
-                    imageModel = detailsCoins.image?.large,
-                    contentScale = ContentScale.Fit,
+                    imageModel = { detailsCoins.image?.large },
+                    imageOptions = ImageOptions(
+                        contentScale = ContentScale.Fit),
                     modifier = Modifier
-                        .size(48.dp)
-                        .wrapContentSize(align = Alignment.Center)
+                        .size(40.dp)
+                        .wrapContentSize(align = Alignment.Center),
                 )
                 Text(
                     text = detailsCoins.name,
@@ -374,9 +376,13 @@ private fun addIcon(value: Double?): Map<String, InlineTextContent> {
             ) {
                 if (value != null) {
                     if (value > 0.0) {
-                        Icon(Icons.Filled.ArrowDropUp, "", tint = MaterialTheme.colors.primaryVariant)
+                        Icon(Icons.Filled.ArrowDropUp,
+                            "",
+                            tint = MaterialTheme.colors.primaryVariant)
                     } else {
-                        Icon(Icons.Filled.ArrowDropDown, "", tint = MaterialTheme.colors.secondaryVariant)
+                        Icon(Icons.Filled.ArrowDropDown,
+                            "",
+                            tint = MaterialTheme.colors.secondaryVariant)
                     }
                 } else {
                     Icon(Icons.Filled.Remove, "", tint = MaterialTheme.colors.error)

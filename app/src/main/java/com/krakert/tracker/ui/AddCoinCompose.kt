@@ -23,8 +23,10 @@ import com.krakert.tracker.ui.shared.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateAddCoin
+import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
-import com.skydoves.landscapist.palette.BitmapPalette
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.palette.PalettePlugin
 import java.lang.reflect.Type
 
 @Composable
@@ -129,7 +131,17 @@ private fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
             gradientDirection = LayoutDirection.Ltr
         ),
         icon = {
-            LoadImage(url = coin.image, onPaletteAvailable = { palette = it })
+            CoilImage(
+                imageModel = { coin.image },
+                imageOptions = ImageOptions(
+                    contentScale = ContentScale.Fit),
+                modifier = Modifier
+                    .size(24.dp)
+                    .wrapContentSize(align = Alignment.Center),
+                component = rememberImageComponent {
+                    +PalettePlugin { palette = it }
+                }
+            )
         },
         onClick = { onClick() },
         label = {
@@ -143,19 +155,10 @@ private fun AddChipCoin(coin: Coin, onClick: () -> Unit) {
 }
 
 
-@Composable
-private fun LoadImage(url: String, onPaletteAvailable: (Palette) -> Unit) {
-    CoilImage(
-        imageModel = url,
-        contentScale = ContentScale.Fit,
-        modifier = Modifier
-            .size(24.dp)
-            .wrapContentSize(align = Alignment.Center),
-        bitmapPalette = BitmapPalette {
-            onPaletteAvailable(it)
-        }
-    )
-}
+//@Composable
+//private fun LoadImage(url: String, palette: Palette) {
+//
+//}
 
 //@Preview(
 //    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
