@@ -24,6 +24,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -35,6 +36,7 @@ import com.krakert.tracker.R
 import com.krakert.tracker.SharedPreference
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.FavoriteCoin
+import com.krakert.tracker.models.*
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.DetailsCoin
 import com.krakert.tracker.models.ui.ProblemState
@@ -44,6 +46,30 @@ import com.krakert.tracker.ui.viewmodel.DetailsViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
+
+@Preview(
+    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
+    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,
+    uiMode = WEAR_PREVIEW_UI_MODE,
+    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
+    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
+)
+@Composable
+fun PreviewShowDetails() {
+    ShowDetailsCoin(detailsCoins =
+    DetailsCoin(
+        name = "Bitcoin",
+        image = null,
+        currentPrice = "16.043,86",
+        priceChangePercentage24h = -2.12,
+        priceChangePercentage7d = -2.1,
+        circulatingSupply = 19214981.0,
+        high24h = 16609.39,
+        low24h = 15738.18,
+        marketCap = 317737907422.0,
+        marketCapChangePercentage24h = 2.1,
+    ), coinId = "bitcoin", navController = null, viewModel = null)
+}
 
 @Composable
 fun ShowDetails(
@@ -88,9 +114,9 @@ fun ShowDetails(
 @Composable
 fun ShowDetailsCoin(
     detailsCoins: DetailsCoin,
-    viewModel: DetailsViewModel,
+    viewModel: DetailsViewModel?,
     coinId: String,
-    navController: NavHostController,
+    navController: NavHostController?,
 ) {
 
     val context = LocalContext.current
@@ -134,40 +160,40 @@ fun ShowDetailsCoin(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = stringResource(R.string.txt_price_change_percentage_24h),
-                    fontSize = 20.sp,
-                    color = themeValues[0].colors.secondary
-                )
-                Text(
-                    text = stringResource(R.string.txt_price_change_percentage_7d),
-                    fontSize = 20.sp,
-                    color = themeValues[0].colors.secondary
-                )
-            }
-        }
-        item {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins.priceChangePercentage24h))
-                        appendInlineContent("inlineContent", "[icon]")
-                    },
-                    fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins.priceChangePercentage24h)
-                )
-
-                Text(
-                    text = buildAnnotatedString {
-                        append(String.format("%4.2f", detailsCoins.priceChangePercentage7d))
-                        appendInlineContent("inlineContent", "[icon]")
-                    },
-                    fontSize = 20.sp,
-                    inlineContent = addIcon(detailsCoins.priceChangePercentage7d)
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.txt_price_change_percentage_24h),
+                        fontSize = 20.sp,
+                        color = themeValues[0].colors.secondary
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            append(String.format("%4.2f", detailsCoins.priceChangePercentage24h))
+                            appendInlineContent("inlineContent", "[icon]")
+                        },
+                        fontSize = 20.sp,
+                        inlineContent = addIcon(detailsCoins.priceChangePercentage24h)
+                    )
+                }
+                Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(R.string.txt_price_change_percentage_7d),
+                        fontSize = 20.sp,
+                        color = themeValues[0].colors.secondary
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            append(String.format("%4.2f", detailsCoins.priceChangePercentage7d))
+                            appendInlineContent("inlineContent", "[icon]")
+                        },
+                        fontSize = 20.sp,
+                        inlineContent = addIcon(detailsCoins.priceChangePercentage7d)
+                    )
+                }
             }
         }
         item { Divider() }
@@ -343,8 +369,8 @@ fun ShowDetailsCoin(
                     Modifier.size(ButtonDefaults.LargeButtonSize),
                     Icons.Rounded.Delete
                 ) {
-                    viewModel.removeCoinFromFavoriteCoins(coinId = coinId)
-                    navController.popBackStack()
+                    viewModel?.removeCoinFromFavoriteCoins(coinId = coinId)
+                    navController?.popBackStack()
                     Toast.makeText(context, context.getString(R.string.txt_toast_removed,
                         detailsCoins.name), Toast.LENGTH_SHORT).show()
                 }
