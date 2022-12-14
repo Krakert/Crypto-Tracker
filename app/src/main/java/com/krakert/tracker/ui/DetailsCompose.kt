@@ -282,7 +282,7 @@ fun ShowDetailsCoin(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins.high24h)
+                            .append(detailsCoins.low24h)
                     },
                     fontSize = 16.sp,
                 )
@@ -290,7 +290,7 @@ fun ShowDetailsCoin(
                     text = buildString {
                         append(currencyObject?.nameFull?.get(1))
                             .append(" ")
-                            .append(detailsCoins.low24h)
+                            .append(detailsCoins.high24h)
                     },
                     fontSize = 16.sp,
                 )
@@ -342,6 +342,8 @@ fun ShowDetailsCoin(
                                     detailsCoins.marketCapChangePercentage24h
                                 )
                             )
+                            append(" %")
+
                             appendInlineContent("inlineContent", "[icon]")
                         },
                         fontSize = 20.sp,

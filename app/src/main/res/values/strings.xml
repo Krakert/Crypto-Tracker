@@ -11,7 +11,7 @@
 
     <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
     <string name="txt_details_circulation">Circulation</string>
-    <string name="txt_details_max_min">Max Min (24H)</string>
+    <string name="txt_details_max_min">Min | Max (24H)</string>
     <string name="txt_details_market_cap">Market Cap</string>
     <string name="txt_price_change_percentage_24h">24H %</string>
     <string name="txt_price_change_percentage_7d">7D %</string>
