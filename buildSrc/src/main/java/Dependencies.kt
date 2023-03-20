@@ -10,7 +10,7 @@ object Versions {
 }
 
 object Projects {
-    const val gradleTools = "com.android.tools.build:gradle:7.4.1"
+    const val gradleTools = "com.android.tools.build:gradle:7.4.2"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.8.0"
     const val daggerHilt = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"

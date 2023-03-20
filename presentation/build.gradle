@@ -41,7 +41,7 @@ dependencies {
     implementation Deps.composeActivity
     implementation Deps.composeMaterial
 //    implementation Deps.composeAnimations
-//    implementation Deps.composeTooling
+    implementation Deps.composePreview
 //    implementation Deps.composeViewModel
     implementation Deps.composeNavigation
     implementation Deps.composeLivedata

@@ -16,7 +16,7 @@ import com.krakert.tracker.ui.tracker.overview.TrackerOverviewScreen
 import com.krakert.tracker.ui.tracker.settings.TrackerSettingsScreen
 
 @Composable
-fun App() {
+fun NavGraph() {
     val navController: NavHostController = rememberSwipeDismissableNavController()
     LocalContext.current
     TrackerAppTheme {
