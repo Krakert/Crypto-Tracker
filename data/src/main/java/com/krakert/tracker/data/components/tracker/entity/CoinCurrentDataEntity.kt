@@ -1,29 +1,28 @@
-package com.krakert.tracker.models.responses
+package com.krakert.tracker.data.components.tracker.entity
 
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 
-
 @Entity(tableName = "detailsCoinTable")
-data class CoinFullData(
+data class CoinCurrentDataEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
     @SerializedName("id")
-    val id: String,
+    val id: String?,
 
     @ColumnInfo(name = "symbol")
     @SerializedName("symbol")
-    val symbol: String,
+    val symbol: String?,
 
     @ColumnInfo(name = "name")
     @SerializedName("name")
-    val name: String,
+    val name: String?,
 
     @ColumnInfo(name = "image")
     @SerializedName("image")
-    val image: Image,
+    val image: ImagesEntity?,
 
     @ColumnInfo(name = "market_data")
     @SerializedName("market_data")
-    val marketData: MarketData? = null,
+    val marketData: MarketDataEntity? = null,
 )
