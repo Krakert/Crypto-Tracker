@@ -1,0 +1,47 @@
+apply plugin: 'com.android.library'
+//apply plugin: 'jacoco'
+apply plugin: 'dagger.hilt.android.plugin'
+
+apply from: '../config-android.gradle'
+
+android {
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':common')
+
+    //Compile time dependencies
+    kapt Deps.daggerHiltCompiler
+
+    //Android dependencies
+//    implementation Deps.androidAnnotations
+
+    //Framework dependencies
+    implementation Deps.kotlin
+//    api Deps.moshi
+//    implementation Deps.moshiAdapters
+    implementation Deps.daggerHilt
+    api Deps.retrofit
+//    implementation Deps.retrofitMoshi
+    implementation Deps.okhttp
+    implementation Deps.okhttpLogging
+    implementation Deps.retrofitGson
+    implementation Deps.timber
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+
+    //Testing dependencies
+    testImplementation Deps.junit
+//    testImplementation Deps.mockk
+//    testImplementation Deps.mockkAndroid
+
+}

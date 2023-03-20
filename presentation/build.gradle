@@ -1,0 +1,61 @@
+apply plugin: 'com.android.library'
+apply plugin: 'dagger.hilt.android.plugin'
+
+apply from: '../config-android.gradle'
+
+android {
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.composeWear
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':common')
+
+    //Compile time dependencies
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
+
+
+    //Android dependencies
+//    implementation Deps.splashScreen
+    implementation Deps.appCompat
+//    implementation Deps.fragmentKtx
+//    implementation Deps.design
+//    implementation Deps.cardView
+//    implementation Deps.recyclerView
+//    implementation Deps.constraintLayout
+//    api Deps.architectureComponents
+
+    //Framework dependencies
+    implementation Deps.daggerHilt
+    implementation Deps.kotlin
+    implementation Deps.timber
+
+    // Compose
+    implementation Deps.composeActivity
+    implementation Deps.composeMaterial
+//    implementation Deps.composeAnimations
+//    implementation Deps.composeTooling
+//    implementation Deps.composeViewModel
+    implementation Deps.composeNavigation
+    implementation Deps.composeLivedata
+    implementation Deps.composeHiltNavigation
+    implementation Deps.composeCoil
+    implementation Deps.composeLottie
+//    implementation Deps.composeAccompanistSystemUi
+
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
+//    implementation Deps.liveDataKTX
+//    implementation Deps.architectureComponentsViewModel
+
+    //Firebase dependencies
+
+    //Project specific dependencies
+}
