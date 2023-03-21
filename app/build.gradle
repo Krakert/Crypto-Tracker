@@ -45,7 +45,7 @@ dependencies {
     kapt Deps.daggerHiltJetpackCompiler
 
     //Android dependencies
-//    implementation Deps.appCompat
+    implementation Deps.ktx
 
     //Framework dependencies
     implementation Deps.daggerHilt

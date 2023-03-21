@@ -27,6 +27,7 @@ dependencies {
 
     //Framework dependencies
     implementation Deps.kotlin
+    implementation Deps.ktx
     implementation Deps.daggerHilt
     api Deps.retrofit
     implementation Deps.roomKtx

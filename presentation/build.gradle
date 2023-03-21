@@ -33,6 +33,7 @@ dependencies {
 //    api Deps.architectureComponents
 
     //Framework dependencies
+    implementation Deps.ktx
     implementation Deps.daggerHilt
     implementation Deps.kotlin
     implementation Deps.timber
