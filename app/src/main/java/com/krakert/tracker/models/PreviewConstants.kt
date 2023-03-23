@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.krakert.tracker.models
 
 import android.content.res.Configuration
@@ -11,7 +13,7 @@ const val WEAR_PREVIEW_ROW_HEIGHT_DP = 100
 const val WEAR_PREVIEW_DEVICE_WIDTH_DP = 214
 const val WEAR_PREVIEW_DEVICE_HEIGHT_DP = 214
 
-const val WEAR_PREVIEW_API_LEVEL = 26
+const val WEAR_PREVIEW_API_LEVEL = 30
 
 const val WEAR_PREVIEW_UI_MODE = Configuration.UI_MODE_TYPE_WATCH
 

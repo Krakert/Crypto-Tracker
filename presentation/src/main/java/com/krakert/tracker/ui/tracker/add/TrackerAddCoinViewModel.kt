@@ -79,7 +79,7 @@ class AddCoinViewModel @Inject constructor(
         }
     }
 
-    fun addCoinToFavoriteCoins(coin: Coin, context: Context) {
+    fun toggleFavoriteCoin(coin: Coin, context: Context) {
         try {
             var listFavoriteCoins = ArrayList<FavoriteCoin>()
             var alreadyAdded = false
@@ -91,39 +91,45 @@ class AddCoinViewModel @Inject constructor(
             if (dataSharedPreferences.isNotEmpty()) {
                 listFavoriteCoins = Gson().fromJson(dataSharedPreferences, typeOfT)
             }
-            listFavoriteCoins.forEach {
-                if (it.name == coin.name) {
-                    alreadyAdded = true
+            if (coin.isFavorite){
+                listFavoriteCoins.forEach {
+                    if (it.name == coin.name) {
+                        alreadyAdded = true
+                    }
+                }
+                if (!alreadyAdded) {
+                    listFavoriteCoins.add(
+                        FavoriteCoin(
+                            id = coin.id,
+                            name = coin.name
+                        )
+                    )
                     Toast.makeText(
                         context,
-                        context.getString(R.string.txt_toast_already_added),
+                        context.getString(R.string.txt_toast_added, coin.name),
                         Toast.LENGTH_SHORT
-                    )
-                        .show()
+                    ).show()
                 }
-            }
-            if (!alreadyAdded) {
-                listFavoriteCoins.add(
-                    FavoriteCoin(
-                        id = coin.id,
-                        name = coin.name
-                    )
-                )
-                sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
+            } else {
+                listFavoriteCoins.forEach {
+                    if (it.name == coin.name) {
+                        listFavoriteCoins.remove(it)
+                    }
+                }
                 Toast.makeText(
                     context,
-                    context.getString(R.string.txt_toast_added, coin.name),
+                    context.getString(R.string.txt_toast_removed, coin.name),
                     Toast.LENGTH_SHORT
-                )
-                    .show()
+                ).show()
             }
+
+            sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
             cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
         } catch (e: Exception) {
             Log.e(
                 TAG,
                 e.message ?: "Something went wrong while saving the list of favorite coins"
             )
-//            _viewState.value = ViewStateAddCoin.Problem(ProblemState.)
         }
     }
 
