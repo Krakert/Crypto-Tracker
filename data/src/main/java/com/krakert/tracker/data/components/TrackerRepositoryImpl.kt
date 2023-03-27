@@ -2,6 +2,7 @@ package com.krakert.tracker.data.components
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
 import com.krakert.tracker.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.SharedPreference.Currency
 import com.krakert.tracker.SharedPreference.MinutesCache
@@ -106,10 +107,9 @@ class TrackerRepositoryImpl @Inject constructor(
 
 
     override fun isOnline(): Boolean {
-//        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-//        return capabilities !== null
-        return true
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        return capabilities !== null
     }
 
 
