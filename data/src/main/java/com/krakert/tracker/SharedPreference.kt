@@ -3,15 +3,15 @@ package com.krakert.tracker
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.models.ui.FavoriteCoin
+import com.google.gson.reflect.TypeToken
+import com.krakert.tracker.data.components.tracker.entity.FavoriteCoinEntity
 import java.lang.reflect.Type
 
 object SharedPreference {
     private const val currency = "CURRENCY"
     private const val amountDaysTracking = "DAY_TRACKING"
-    private const val favoriteCoin = "FAVORITE_COIN"
+    private const val tileCoin = "TILE_COIN"
     private const val favoriteCoins = "FAVORITE_COINS"
     private const val minutesCache = "MINUTES_CACHE"
 
@@ -24,7 +24,7 @@ object SharedPreference {
     }
 
     var SharedPreferences.Currency
-        get() = getString(currency, "eur")
+        get() = getString(currency, "eur").toString()
         set(value) {
             editMe {
                 it.putString(currency, value)
@@ -39,18 +39,18 @@ object SharedPreference {
             }
         }
 
-    var SharedPreferences.FavoriteCoin
-        get() = getString(favoriteCoin, "")
+    var SharedPreferences.TileCoin
+        get() = getString(tileCoin, "").toString()
         set(value) {
             editMe {
-                it.putString(favoriteCoin, value)
+                it.putString(tileCoin, value)
             }
         }
 
-    fun SharedPreferences.getFavoriteCoinList(): ArrayList<FavoriteCoin> {
+    fun SharedPreferences.getListFavoriteCoins(): List<FavoriteCoinEntity> {
         val dataSharedPreference = FavoriteCoins.toString()
-        val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
-        var listFavoriteCoins = arrayListOf<FavoriteCoin>()
+        val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoinEntity>>() {}.type
+        var listFavoriteCoins = arrayListOf<FavoriteCoinEntity>()
 
         if (dataSharedPreference.isNotEmpty()) {
             listFavoriteCoins = Gson().fromJson(dataSharedPreference, typeOfT)
@@ -58,8 +58,8 @@ object SharedPreference {
         return listFavoriteCoins
     }
 
-    var SharedPreferences.FavoriteCoins
-        get() = getString(favoriteCoins, "")
+    private var SharedPreferences.FavoriteCoins
+        get() = getString(favoriteCoins, "").toString()
         set(value) {
             editMe {
                 it.putString(favoriteCoins, value)

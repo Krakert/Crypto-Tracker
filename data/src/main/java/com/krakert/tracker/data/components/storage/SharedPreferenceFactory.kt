@@ -1,4 +1,4 @@
-package com.krakert.tracker.di
+package com.krakert.tracker.data.components.storage
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module

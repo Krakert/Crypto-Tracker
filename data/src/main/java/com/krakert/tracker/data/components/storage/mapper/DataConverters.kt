@@ -1,34 +1,34 @@
-package com.krakert.tracker.database
+package com.krakert.tracker.data.components.storage.mapper
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
-import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.krakert.tracker.models.responses.Image
-import com.krakert.tracker.models.responses.MarketChart
-import com.krakert.tracker.models.responses.MarketData
+import com.google.gson.reflect.TypeToken
+import com.krakert.tracker.data.components.tracker.entity.ImagesEntity
+import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.components.tracker.entity.MarketDataEntity
 
 @ProvidedTypeConverter
 class DataConverters {
-    /*---------------- Used for the CoinFullData ----------------*/
+    /*---------------- Used for the CoinCurrentDataEntity ----------------*/
     @TypeConverter
-    fun imageToJson(image: Image): String {
+    fun imageToJson(image: ImagesEntity): String {
         return Gson().toJson(image)
     }
 
     @TypeConverter
-    fun jsonToImage(string: String): Image {
-        return Gson().fromJson(string, Image::class.java)
+    fun jsonToImage(string: String): ImagesEntity {
+        return Gson().fromJson(string, ImagesEntity::class.java)
     }
 
     @TypeConverter
-    fun marketDataToJson(marketData: MarketData): String {
+    fun marketDataToJson(marketData: MarketDataEntity): String {
         return Gson().toJson(marketData)
     }
 
     @TypeConverter
-    fun jsonToMarketData(string: String): MarketData {
-        return Gson().fromJson(string, MarketData::class.java)
+    fun jsonToMarketData(string: String): MarketDataEntity {
+        return Gson().fromJson(string, MarketDataEntity::class.java)
     }
     /*-----------------------------------------------------------*/
 
@@ -46,13 +46,13 @@ class DataConverters {
 
     /*----------------- Used for the PriceCoins -----------------*/
     @TypeConverter
-    fun marketChartToJson(marketChart: MarketChart): String {
+    fun marketChartToJson(marketChart: MarketChartEntity): String {
         return Gson().toJson(marketChart)
     }
 
     @TypeConverter
-    fun jsonToMarketChart(json: String): MarketChart {
-        return Gson().fromJson(json, MarketChart::class.java)
+    fun jsonToMarketChart(json: String): MarketChartEntity {
+        return Gson().fromJson(json, MarketChartEntity::class.java)
     }
     /*-----------------------------------------------------------*/
 
