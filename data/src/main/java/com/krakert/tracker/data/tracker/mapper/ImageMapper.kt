@@ -1,8 +1,9 @@
-package com.krakert.tracker.data.components.tracker.mapper
+package com.krakert.tracker.data.tracker.mapper
 
-import com.krakert.tracker.data.components.extension.requireNotNull
+import com.krakert.tracker.data.extension.requireNotNull
 import com.krakert.tracker.data.components.tracker.entity.ImagesEntity
-import com.krakert.tracker.data.components.tracker.entity.database.DBImagesEntity
+import com.krakert.tracker.data.tracker.entity.database.DBImagesEntity
+import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.Images
 import javax.inject.Inject
 
@@ -25,11 +26,12 @@ class ImageMapper @Inject constructor(
         )
     }
 
-    fun mapDomainToDatabase(images: Images): DBImagesEntity {
+    fun mapDomainToDatabase(coinDetails: CoinDetails): DBImagesEntity {
         return DBImagesEntity(
-            small = images.small,
-            large = images.large,
-            thumb = images.thumb,
+            id = coinDetails.id,
+            small = coinDetails.images.small,
+            large = coinDetails.images.large,
+            thumb = coinDetails.images.thumb,
         )
     }
 

@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.tracker.api
+package com.krakert.tracker.data.tracker.api
 
 import com.krakert.tracker.data.components.tracker.entity.CoinCurrentDataEntity
 import com.krakert.tracker.data.components.tracker.entity.ListCoinsEntity

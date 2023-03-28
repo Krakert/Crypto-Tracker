@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.extension
+package com.krakert.tracker.data.extension
 
 fun <T> T?.requireNotNull(): T = requireNotNull(this)
 

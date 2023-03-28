@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.tracker.entity.database
+package com.krakert.tracker.data.tracker.entity.database
 
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName

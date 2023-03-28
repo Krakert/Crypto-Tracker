@@ -1,8 +1,8 @@
-package com.krakert.tracker.data.components.tracker.mapper
+package com.krakert.tracker.data.tracker.mapper
 
-import com.krakert.tracker.data.components.extension.requireNotNull
+import com.krakert.tracker.data.extension.requireNotNull
 import com.krakert.tracker.data.components.tracker.entity.ListCoinsItemEntity
-import com.krakert.tracker.data.components.tracker.entity.database.DBListCoinItemEntity
+import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 import com.krakert.tracker.domain.tracker.model.ListCoinsItem
 import javax.inject.Inject
 

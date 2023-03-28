@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.tracker.mapper
+package com.krakert.tracker.data.tracker.mapper
 
 import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
 import com.krakert.tracker.domain.tracker.model.MarketChart

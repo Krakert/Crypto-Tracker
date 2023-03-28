@@ -1,4 +1,4 @@
-package com.krakert.tracker
+package com.krakert.tracker.data
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -48,7 +48,7 @@ object SharedPreference {
         }
 
     fun SharedPreferences.getListFavoriteCoins(): List<FavoriteCoinEntity> {
-        val dataSharedPreference = FavoriteCoins.toString()
+        val dataSharedPreference = FavoriteCoins
         val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoinEntity>>() {}.type
         var listFavoriteCoins = arrayListOf<FavoriteCoinEntity>()
 

@@ -1,8 +1,8 @@
-package com.krakert.tracker.data.components.tracker.mapper
+package com.krakert.tracker.data.tracker.mapper
 
-import com.krakert.tracker.data.components.extension.requireNotNull
+import com.krakert.tracker.data.extension.requireNotNull
 import com.krakert.tracker.data.components.tracker.entity.CoinCurrentDataEntity
-import com.krakert.tracker.data.components.tracker.entity.database.DBCoinCurrentDataEntity
+import com.krakert.tracker.data.tracker.entity.database.DBCoinCurrentDataEntity
 import com.krakert.tracker.domain.tracker.model.CoinDetails
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class DetailCoinMapper @Inject constructor(
             id = coinDetails.id,
             symbol = coinDetails.symbol,
             name = coinDetails.name,
-            images = coinDetails.images.let { imageMapper.mapDomainToDatabase(it) }.requireNotNull(),
+            images = coinDetails.images.let { imageMapper.mapDomainToDatabase(coinDetails) }.requireNotNull(),
             marketData = coinDetails.marketData.let { marketDataMapper.mapDomainToDatabase(coinDetails) }
         )
     }
