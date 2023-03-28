@@ -40,8 +40,17 @@ import com.krakert.tracker.models.*
 import com.krakert.tracker.models.ui.Currency
 import com.krakert.tracker.models.ui.DetailsCoin
 import com.krakert.tracker.models.ui.ProblemState
+import com.krakert.tracker.ui.components.CenterElement
+import com.krakert.tracker.ui.components.Divider
+import com.krakert.tracker.ui.components.IconButton
+import com.krakert.tracker.ui.components.Loading
 import com.krakert.tracker.ui.shared.*
 import com.krakert.tracker.ui.theme.themeValues
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_HEIGHT_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_SHOW_BACKGROUND
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 import com.krakert.tracker.ui.viewmodel.DetailsViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateDetailsCoins.*
 import com.skydoves.landscapist.ImageOptions

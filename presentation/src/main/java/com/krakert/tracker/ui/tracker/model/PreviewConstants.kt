@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.krakert.tracker.models
+package com.krakert.tracker.ui.tracker.model
 
 import android.content.res.Configuration
 

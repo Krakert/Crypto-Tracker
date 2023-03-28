@@ -1,4 +1,4 @@
-package com.krakert.tracker.ui.shared
+package com.krakert.tracker.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
@@ -15,7 +15,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.*
-import com.krakert.tracker.models.*
+
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_API_LEVEL
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_HEIGHT_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_ROW_HEIGHT_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_SHOW_BACKGROUND
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 
 @Composable
 fun CenterElement(content: @Composable () -> Unit) {

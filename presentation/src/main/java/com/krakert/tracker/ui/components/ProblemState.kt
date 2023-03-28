@@ -1,4 +1,4 @@
-package com.krakert.tracker.ui.shared
+package com.krakert.tracker.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,8 +13,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
-import com.krakert.tracker.models.*
-import com.krakert.tracker.models.ui.ProblemState
+import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_API_LEVEL
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_HEIGHT_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_SHOW_BACKGROUND
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 
 
 @Composable

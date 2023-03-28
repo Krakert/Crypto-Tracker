@@ -47,12 +47,11 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
-import androidx.wear.compose.material.items
 import androidx.wear.compose.material.rememberScalingLazyListState
-import com.krakert.tracker.models.WEAR_PREVIEW_DEVICE_WIDTH_DP
+import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
 import com.krakert.tracker.models.responses.Coin
 import com.krakert.tracker.models.ui.ProblemState
-import com.krakert.tracker.ui.shared.Loading
+import com.krakert.tracker.ui.components.Loading
 import com.krakert.tracker.ui.shared.ShowProblem
 import com.krakert.tracker.ui.viewmodel.AddCoinViewModel
 import com.krakert.tracker.ui.viewmodel.ViewStateAddCoin
