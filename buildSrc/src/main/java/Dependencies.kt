@@ -86,7 +86,8 @@ object Deps {
 
     // Compose preview
     const val composePreview = "androidx.compose.ui:ui-tooling:${Versions.composeWear}"
-    const val composeIcons = "androidx.compose.material:material-icons-extended:${Versions.composeWear}"
+    const val composeIcons = "androidx.compose.material:material-icons-core:1.4.0"
+    const val composeIconsExtend = "androidx.compose.material:material-icons-extended:1.4.0"
 
     // Compose for Wear OS Dependencies
     const val composeMaterial = "androidx.wear.compose:compose-material:${Versions.composeWear}"

@@ -2,7 +2,6 @@ package com.krakert.tracker.ui.app
 
 import androidx.compose.runtime.Composable
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
@@ -16,9 +15,9 @@ import com.krakert.tracker.ui.tracker.overview.TrackerOverviewScreen
 import com.krakert.tracker.ui.tracker.settings.TrackerSettingsScreen
 
 @Composable
-fun NavGraph() {
+fun App() {
     val navController: NavHostController = rememberSwipeDismissableNavController()
-    LocalContext.current
+
     TrackerAppTheme {
         SwipeDismissableNavHost(
             navController = navController,

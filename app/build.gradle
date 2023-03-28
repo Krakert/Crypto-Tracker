@@ -57,6 +57,9 @@ dependencies {
     implementation Deps.timber
 
     //Firebase dependencies
+    implementation Deps.firebaseBom
+    implementation Deps.firebaseCrashlyitcs
+    implementation Deps.firebaseAnalytics
 
     //Project Specific dependencies
 
