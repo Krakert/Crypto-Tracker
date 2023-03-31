@@ -21,15 +21,13 @@ dependencies {
     kapt Deps.daggerHiltCompiler
 
     //Android dependencies
-//    implementation Deps.androidAnnotations
 
     //Framework dependencies
     implementation Deps.kotlin
-    implementation Deps.ktx
     implementation Deps.daggerHilt
     api Deps.retrofit
     implementation Deps.roomKtx
-    implementation Deps.roomCompiler
+    kapt Deps.roomCompiler
     implementation Deps.roomRuntime
     implementation Deps.okhttp
     implementation Deps.okhttpLogging

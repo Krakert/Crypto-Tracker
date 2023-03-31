@@ -2,7 +2,7 @@ package com.krakert.tracker.data.components.storage
 
 import androidx.room.*
 import com.krakert.tracker.data.tracker.entity.database.DBCoinCurrentDataEntity
-import com.krakert.tracker.data.components.tracker.entity.ListPricesCoinsEntity
+import com.krakert.tracker.data.tracker.entity.ListPricesCoinsEntity
 import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 
 @Dao

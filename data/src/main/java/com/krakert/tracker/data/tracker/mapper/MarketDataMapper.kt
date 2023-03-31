@@ -1,7 +1,7 @@
 package com.krakert.tracker.data.tracker.mapper
 
 import com.krakert.tracker.data.extension.requireNotNull
-import com.krakert.tracker.data.components.tracker.entity.MarketDataEntity
+import com.krakert.tracker.data.tracker.entity.MarketDataEntity
 import com.krakert.tracker.data.tracker.entity.database.DBMarketDataEntity
 import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.MarketData

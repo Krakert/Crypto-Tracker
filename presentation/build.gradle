@@ -9,34 +9,27 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Versions.composeWear
+        kotlinCompilerExtensionVersion = Versions.composeCompiler
     }
 }
 
 dependencies {
     implementation project(':domain')
     implementation project(':common')
+    implementation project(':data')
 
     //Compile time dependencies
     kapt Deps.daggerHiltCompiler
     kapt Deps.daggerHiltJetpackCompiler
-
+    kapt Deps.composeCompiler
 
     //Android dependencies
-//    implementation Deps.splashScreen
     implementation Deps.appCompat
-//    implementation Deps.fragmentKtx
-//    implementation Deps.design
-//    implementation Deps.cardView
-//    implementation Deps.recyclerView
-//    implementation Deps.constraintLayout
-//    api Deps.architectureComponents
 
     //Framework dependencies
-    implementation Deps.ktx
     implementation Deps.daggerHilt
-    implementation Deps.kotlin
     implementation Deps.timber
+    implementation Deps.gson
 
     // Compose
     implementation Deps.composeActivity
@@ -44,18 +37,14 @@ dependencies {
     implementation Deps.composeIcons
     implementation Deps.composeIconsExtend
     implementation Deps.composePreview
-//    implementation Deps.composeViewModel
+    implementation Deps.composeViewModel
     implementation Deps.composeNavigation
-    implementation Deps.composeLivedata
+    implementation Deps.liveDataKTX
     implementation Deps.composeHiltNavigation
     implementation Deps.composeCoil
     implementation Deps.composeLottie
-//    implementation Deps.composeAccompanistSystemUi
-
     implementation Deps.coroutinesCore
     implementation Deps.coroutinesAndroid
-//    implementation Deps.liveDataKTX
-//    implementation Deps.architectureComponentsViewModel
 
     //Firebase dependencies
 

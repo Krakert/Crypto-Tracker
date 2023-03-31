@@ -1,6 +1,6 @@
 package com.krakert.tracker.data.tracker.mapper
 
-import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.tracker.entity.MarketChartEntity
 import com.krakert.tracker.domain.tracker.model.CoinOverview
 import javax.inject.Inject
 

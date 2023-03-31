@@ -4,9 +4,9 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.krakert.tracker.data.components.tracker.entity.ImagesEntity
-import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
-import com.krakert.tracker.data.components.tracker.entity.MarketDataEntity
+import com.krakert.tracker.data.tracker.entity.ImagesEntity
+import com.krakert.tracker.data.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.tracker.entity.MarketDataEntity
 
 @ProvidedTypeConverter
 class DataConverters {

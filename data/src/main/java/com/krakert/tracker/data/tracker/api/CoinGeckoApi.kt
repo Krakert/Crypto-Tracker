@@ -1,8 +1,8 @@
 package com.krakert.tracker.data.tracker.api
 
-import com.krakert.tracker.data.components.tracker.entity.CoinCurrentDataEntity
-import com.krakert.tracker.data.components.tracker.entity.ListCoinsEntity
-import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.tracker.entity.CoinCurrentDataEntity
+import com.krakert.tracker.data.tracker.entity.ListCoinsEntity
+import com.krakert.tracker.data.tracker.entity.MarketChartEntity
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

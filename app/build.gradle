@@ -27,13 +27,19 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0"
+        kotlinCompilerExtensionVersion = Versions.composeCompiler
     }
     kapt {
         correctErrorTypes = true
     }
     namespace 'com.krakert.tracker'
 }
+
+configurations {
+    implementation.exclude group: 'com.intellij', module: 'annotations'
+    implementation.exclude group: 'org.jetbrains', module: 'annotations'
+}
+
 dependencies {
     implementation project(':presentation')
     implementation project(':domain')
@@ -45,15 +51,11 @@ dependencies {
     kapt Deps.daggerHiltJetpackCompiler
 
     //Android dependencies
-    implementation Deps.ktx
 
     //Framework dependencies
     implementation Deps.daggerHilt
-    implementation Deps.kotlin
 
     //Development dependencies
-//    debugImplementation Deps.leakCanary
-//
     implementation Deps.timber
 
     //Firebase dependencies

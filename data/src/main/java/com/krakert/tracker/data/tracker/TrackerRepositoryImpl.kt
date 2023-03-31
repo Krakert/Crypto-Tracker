@@ -12,7 +12,7 @@ import com.krakert.tracker.data.components.net.mapper.ResponseMapper
 import com.krakert.tracker.data.components.storage.CacheRateLimiter
 import com.krakert.tracker.data.components.storage.TrackerDao
 import com.krakert.tracker.data.tracker.api.CoinGeckoApi
-import com.krakert.tracker.data.components.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.tracker.entity.MarketChartEntity
 import com.krakert.tracker.data.tracker.mapper.DetailCoinMapper
 import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.OverviewMapper

@@ -4,11 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.krakert.tracker.data.components.storage.mapper.DataConverters
-import com.krakert.tracker.data.components.tracker.entity.CoinCurrentDataEntity
-import com.krakert.tracker.data.components.tracker.entity.ListCoinsEntity
+import com.krakert.tracker.data.tracker.entity.database.DBCoinCurrentDataEntity
+import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 
 @Database(
-    entities = [ListCoinsEntity::class, CoinCurrentDataEntity::class],
+    entities = [DBListCoinItemEntity::class, DBCoinCurrentDataEntity::class],
     version = 1,
     exportSchema = false)
 @TypeConverters(DataConverters::class)

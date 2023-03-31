@@ -2,8 +2,6 @@
     package="com.krakert.tracker.app">
 
 
-    <application
-        android:name=".application.App"
-        android:allowBackup="false" />
+    <application android:name=".application.App"/>
 
 </manifest>

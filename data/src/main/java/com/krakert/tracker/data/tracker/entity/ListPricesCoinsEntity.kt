@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.tracker.entity
+package com.krakert.tracker.data.tracker.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.tracker.entity
+package com.krakert.tracker.data.tracker.entity
 
 data class FavoriteCoinEntity(
     val id: String?,
