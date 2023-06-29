@@ -16,7 +16,7 @@ class DetailCoinMapper @Inject constructor(
             symbol = entity.symbol.requireNotNull(),
             name = entity.name.requireNotNull(),
             images = entity.images.requireNotNull().let { imageMapper.mapApiToDomain(it) },
-            marketData = entity.marketData.requireNotNull().let { marketDataMapper.mapApiToDomain(it) },
+//            marketData = entity.marketData.requireNotNull().let { marketDataMapper.mapApiToDomain(it) },
         )
     }
 
@@ -26,7 +26,7 @@ class DetailCoinMapper @Inject constructor(
             symbol = dbCoinCurrentDataEntity.symbol.requireNotNull(),
             name = dbCoinCurrentDataEntity.name.requireNotNull(),
             images = dbCoinCurrentDataEntity.images.requireNotNull().let { imageMapper.mapDatabaseToDomain(it) },
-            marketData = dbCoinCurrentDataEntity.marketData.requireNotNull().let { marketDataMapper.mapDatabaseToDomain(it) }
+//            marketData = dbCoinCurrentDataEntity.marketData.requireNotNull().let { marketDataMapper.mapDatabaseToDomain(it) }
         )
     }
 
@@ -35,8 +35,8 @@ class DetailCoinMapper @Inject constructor(
             id = coinDetails.id,
             symbol = coinDetails.symbol,
             name = coinDetails.name,
-            images = coinDetails.images.let { imageMapper.mapDomainToDatabase(coinDetails) }.requireNotNull(),
-            marketData = coinDetails.marketData.let { marketDataMapper.mapDomainToDatabase(coinDetails) }
+            images = coinDetails.images.let { imageMapper.mapDomainToDatabase(coinDetails.images) }.requireNotNull(),
+//            marketData = coinDetails.marketData.let { marketDataMapper.mapDomainToDatabase(coinDetails) }
         )
     }
 

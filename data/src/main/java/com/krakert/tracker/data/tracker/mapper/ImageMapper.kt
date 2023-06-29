@@ -26,12 +26,11 @@ class ImageMapper @Inject constructor(
         )
     }
 
-    fun mapDomainToDatabase(coinDetails: CoinDetails): DBImagesEntity {
+    fun mapDomainToDatabase(images: Images): DBImagesEntity {
         return DBImagesEntity(
-            id = coinDetails.id,
-            small = coinDetails.images.small,
-            large = coinDetails.images.large,
-            thumb = coinDetails.images.thumb,
+            small = images.small,
+            large = images.large,
+            thumb = images.thumb,
         )
     }
 

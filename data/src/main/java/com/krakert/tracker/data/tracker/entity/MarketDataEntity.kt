@@ -1,13 +1,14 @@
 package com.krakert.tracker.data.tracker.entity
 
 data class MarketDataEntity(
-    val currentPrice: Map<String, Double>?,
-    val marketCap: Map<String, Double>?,
-    val high24h: Map<String, Double>?,
-    val low24h: Map<String, Double>?,
-    val priceChange24h: Double?,
-    val priceChangePercentage24h: Double?,
-    val priceChangePercentage7d: Double?,
-    val marketCapChangePercentage24h: Double?,
-    val circulatingSupply: Double?,
+    val current_price: Map<String, Double>?,
+    val market_cap: Map<String, Double>?,
+    val high_24h: Map<String, Double>?,
+    val low_24h: Map<String, Double>?,
+    val price_change_24h_in_currency: Map<String, Double>?,
+    val price_change_percentage_24h: Double?,
+    val price_change_percentage_7d: Double?,
+    val market_cap_change_percentage_24h_in_currency: Map<String, Double>?,
+    val circulating_supply: Double?,
+    val last_updated: String?,
 )

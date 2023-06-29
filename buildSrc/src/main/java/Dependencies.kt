@@ -1,7 +1,7 @@
 @file:Suppress("unused", "SpellCheckingInspection")
 
 object Versions {
-    const val kotlin = "1.7.20"
+    const val kotlin = "1.8.10"
     const val gradle = "7.4.2"
 
     const val kotlinCoroutines = "1.6.4"
@@ -15,8 +15,8 @@ object Versions {
     const val androidAppcompat = "1.6.1"
     const val androidLifecycle = "2.6.1"
 
-    const val compose = "1.3.2"
-    const val composeCompiler = "1.3.2"
+    const val compose = "1.4.4"
+    const val composeCompiler = "1.4.4"
     const val composeRuntime = "1.4.0"
     const val composeActivity = "1.7.0"
     const val composeWear = "1.1.0"

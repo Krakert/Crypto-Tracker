@@ -21,23 +21,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
-
-    buildFeatures {
-        viewBinding true
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.composeCompiler
-    }
-    kapt {
-        correctErrorTypes = true
-    }
-    namespace 'com.krakert.tracker'
-}
-
-configurations {
-    implementation.exclude group: 'com.intellij', module: 'annotations'
-    implementation.exclude group: 'org.jetbrains', module: 'annotations'
+    namespace 'com.krakert.tracker.app'
 }
 
 dependencies {
@@ -68,6 +52,6 @@ dependencies {
 }
 
 static def buildTime() {
-    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm") // you can change it
+    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
     return df.format(new Date())
 }

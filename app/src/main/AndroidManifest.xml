@@ -1,7 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.krakert.tracker.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <application android:name=".application.App"/>
+    <application
+        android:name=".application.AppClass"
+        android:icon="@mipmap/ic_launcher">
+
+    <uses-library
+        android:name="com.google.android.wearable"
+        android:required="true" />
+
+    </application>
 
 </manifest>

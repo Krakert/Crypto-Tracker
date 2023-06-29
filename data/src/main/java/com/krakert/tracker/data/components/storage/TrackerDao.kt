@@ -9,7 +9,7 @@ import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 interface TrackerDao {
 
     /*---------------- Used for the AddCoinViewModel ----------------*/
-    @Query("SELECT * FROM coinsTable")
+    @Query("SELECT * FROM DBListCoinItemEntity")
     suspend fun getListCoins(): List<DBListCoinItemEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -20,7 +20,7 @@ interface TrackerDao {
     /*---------------------------------------------------------------*/
 
     /*---------------- Used for the DetailsViewModel ----------------*/
-    @Query("SELECT * FROM detailsCoinTable WHERE detailsCoinTable.id = :coinId")
+    @Query("SELECT * FROM coinCurrentData WHERE coinCurrentData.id = :coinId")
     suspend fun getDetailsCoin(coinId: String): DBCoinCurrentDataEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -31,14 +31,14 @@ interface TrackerDao {
     /*---------------------------------------------------------------*/
 
     /*---------------- Used for the OverviewViewModel ---------------*/
-    @Query("SELECT * FROM priceCoinsTable")
-    suspend fun getPriceCoins(): ListPricesCoinsEntity?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPriceCoins(listPricesCoinsEntity: ListPricesCoinsEntity)
-
-    @Query("DELETE FROM priceCoinsTable")
-    suspend fun deletePriceCoins()
+//    @Query("SELECT * FROM priceCoinsTable")
+//    suspend fun getPriceCoins(): ListPricesCoinsEntity?
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertPriceCoins(listPricesCoinsEntity: ListPricesCoinsEntity)
+//
+//    @Query("DELETE FROM priceCoinsTable")
+//    suspend fun deletePriceCoins()
 
     /*---------------------------------------------------------------*/
 

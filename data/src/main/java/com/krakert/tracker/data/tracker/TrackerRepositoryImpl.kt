@@ -35,11 +35,9 @@ class TrackerRepositoryImpl @Inject constructor(
 ) : TrackerRepository {
 
     companion object {
-        const val CACHE_KEY_PRICE_COINS = "cache_key_prices_coins_data"
         const val CACHE_KEY_OVERVIEW = "cache_key_overview_data"
         const val CACHE_KEY_LIST_COINS = "cache_key_list_coins_data"
         const val CACHE_KEY_DETAILS_COIN = "cache_key_details_coin_data"
-        const val BASE_CACHE_KET_MARKET_CHART = "cache_key_market_chart_data_"
     }
 
     // Setup of the limits for the different data in the DB
@@ -84,10 +82,10 @@ class TrackerRepositoryImpl @Inject constructor(
     override suspend fun getOverview(): Result<CoinOverview> {
         val responsePricesDatabase: Map<String, MutableMap<String, Any>?>?
         if (!cacheRateLimit.shouldFetch(CACHE_KEY_OVERVIEW, sharedPreferences)) {
-            responsePricesDatabase = cryptoCacheDao.getPriceCoins()?.data
-            if (responsePricesDatabase != null) {
-
-            }
+//            responsePricesDatabase = cryptoCacheDao.getPriceCoins()?.data
+//            if (responsePricesDatabase != null) {
+//
+//            }
         }
         val responsePriceCoins = Result.runCatching { coinGeckoApi.getPriceByListCoinIds(getCoinsIdString(), sharedPreferences.Currency) }.guard { return it }
         val entityPriceCoins = responseMapper.map(responsePriceCoins)

@@ -1,17 +1,34 @@
 package com.krakert.tracker.data.tracker.entity.database
 
-import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
 
+@Entity(
+    tableName = "market_data",
+    foreignKeys = [
+        ForeignKey(
+            entity = DBCurrentPriceEntity::class,
+            childColumns = ["current_price_id"],
+            parentColumns = ["id"]
+        ),
+        ForeignKey(
+            entity = DBMarkerCapEntity::class,
+            childColumns = ["market_cap_id"],
+            parentColumns = ["id"]
+        ),
+    ]
+)
 data class DBMarketDataEntity(
-    @PrimaryKey val id: String,
-    @SerializedName("current_price") val currentPrice: Map<String, Double>,
-    @SerializedName("market_cap") val marketCap: Map<String, Double>,
-    @SerializedName("high_24h") val high24h: Map<String, Double>,
-    @SerializedName("low_24h") val low24h: Map<String, Double>,
-    @SerializedName("price_change_24h") val priceChange24h: Double,
-    @SerializedName("price_change_percentage_24h") val priceChangePercentage24h: Double,
-    @SerializedName("price_change_percentage_7d") val priceChangePercentage7d: Double,
-    @SerializedName("market_cap_change_percentage_24h") val marketCapChangePercentage24h: Double,
-    @SerializedName("circulating_supply") val circulatingSupply: Double,
+    @ColumnInfo(name = "current_price_id") val current_price: Long?,
+    @ColumnInfo(name = "market_cap_id") val market_cap: Long?,
+    @ColumnInfo(name = "high_24h_id") val high_24h: Long?,
+    @ColumnInfo(name = "low_24h_id") val low_24h: Long?,
+    @ColumnInfo(name = "price_change_24h_id") val price_change_24h_in_currency: Long?,
+    @ColumnInfo(name = "price_change_percentage_24h") val price_change_percentage_24h: Double?,
+    @ColumnInfo(name = "price_change_percentage_7d") val price_change_percentage_7d: Double?,
+    @ColumnInfo(name = "market_cap_change_percentage_24h_id") val market_cap_change_percentage_24h_in_currency: Long?,
+    @ColumnInfo(name = "circulating_supply") val circulating_supply: Double?,
+    @ColumnInfo(name = "last_updated") val last_updated: String?,
 )

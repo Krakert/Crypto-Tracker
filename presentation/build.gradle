@@ -11,17 +11,17 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = Versions.composeCompiler
     }
+    namespace "com.krakert.tracker"
 }
 
 dependencies {
     implementation project(':domain')
     implementation project(':common')
-    implementation project(':data')
 
     //Compile time dependencies
+    kapt Deps.composeCompiler
     kapt Deps.daggerHiltCompiler
     kapt Deps.daggerHiltJetpackCompiler
-    kapt Deps.composeCompiler
 
     //Android dependencies
     implementation Deps.appCompat
@@ -32,6 +32,7 @@ dependencies {
     implementation Deps.gson
 
     // Compose
+    implementation Deps.composeRuntime
     implementation Deps.composeActivity
     implementation Deps.composeMaterial
     implementation Deps.composeIcons

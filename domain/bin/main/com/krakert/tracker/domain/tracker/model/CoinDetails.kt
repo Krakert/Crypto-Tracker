@@ -5,5 +5,5 @@ data class CoinDetails (
     val symbol: String,
     val name: String,
     val images: Images,
-//    val marketData: MarketData
+    val marketData: MarketData
     )
