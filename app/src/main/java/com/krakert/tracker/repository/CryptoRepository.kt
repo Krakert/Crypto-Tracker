@@ -1,8 +1,8 @@
 package com.krakert.tracker.repository
 
 import com.krakert.tracker.api.Resource
-import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.CoinFullData
+import com.krakert.tracker.models.responses.ListCoins
 import com.krakert.tracker.models.responses.MarketChart
 import kotlinx.coroutines.flow.Flow
 
@@ -27,9 +27,9 @@ interface CryptoRepository {
     ): Flow<Resource<MarketChart>>
 
     suspend fun getPriceCoins(
-        idCoins: String, 
-        currency: String):
-            Flow<Resource<Map<String, MutableMap<String, Any>>>>
+        idCoins: String,
+        currency: String,
+    ): Flow<Resource<Map<String, MutableMap<String, Any>>>>
 
     fun isOnline(): Boolean
 }

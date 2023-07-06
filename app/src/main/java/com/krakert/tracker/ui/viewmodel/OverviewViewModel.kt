@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package com.krakert.tracker.ui.viewmodel
 
 import android.app.Application

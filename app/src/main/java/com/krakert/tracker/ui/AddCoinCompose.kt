@@ -54,7 +54,7 @@ fun ListAddCoin(viewModel: AddCoinViewModel) {
     ) {
         when (val result = viewModel.listCoins.collectAsState().value) {
             is ViewStateAddCoin.Problem -> {
-                ShowProblem(result.exception){
+                ShowProblem(result.exception) {
                     when (result.exception) {
                         ProblemState.SSL -> viewModel.openSettings()
                         else -> viewModel.getListCoins()
@@ -103,17 +103,26 @@ private fun ShowList(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        listResult?.size?.let {
-            items(it) { index ->
-                Row(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    AddChipCoin(listResult[index]) {
-                        viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
+        listResult?.forEach { coin ->
+            item {
+                Row(modifier = Modifier.fillMaxSize()) {
+                    AddChipCoin(coin) {
+                        viewModel.addCoinToFavoriteCoins(coin, context = context)
                     }
                 }
             }
         }
+//        listResult?.size?.let {
+//            items(it) { index ->
+//                Row(
+//                    modifier = Modifier.fillMaxSize()
+//                ) {
+//                    AddChipCoin(listResult[index]) {
+//                        viewModel.addCoinToFavoriteCoins(listResult[index], context = context)
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

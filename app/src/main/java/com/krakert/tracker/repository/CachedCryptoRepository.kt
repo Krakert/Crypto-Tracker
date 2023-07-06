@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.flowOn
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-const val CACHE_KEY_PRICE_COINS  = "cache_key_prices_coins_data"
-const val CACHE_KEY_LIST_COINS   = "cache_key_list_coins_data"
+const val CACHE_KEY_PRICE_COINS = "cache_key_prices_coins_data"
+const val CACHE_KEY_LIST_COINS = "cache_key_list_coins_data"
 const val CACHE_KEY_DETAILS_COIN = "cache_key_details_coin_data"
 const val BASE_CACHE_KET_MARKET_CHART = "cache_key_market_chart_data_"
 
@@ -32,7 +32,7 @@ constructor(
     private val coinGeckoDataSource: CoinGeckoDataSource,
     private val cryptoCacheDao: CryptoCacheDao,
     private val sharedPreferences: SharedPreferences,
-    private val context: Context
+    private val context: Context,
 ) : CryptoRepository {
     // Setup of the limits for the different data in the DB
     private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
@@ -49,7 +49,7 @@ constructor(
             emit(Resource.Loading())
 
             if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {
-                Log.i("cacheRateLimiter: getListCoins", "getting data for: $ids out the DB")
+                Log.i("cacheRateLimiter: getListCoins", "Getting list of 100 coins out DB")
                 val dbResult = cryptoCacheDao.getListCoins()
                 if (dbResult.isNotEmpty()) {
                     val listFlow = ListCoins()
@@ -93,7 +93,8 @@ constructor(
             emit(Resource.Loading())
 
             if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
-                Log.i("cacheRateLimiter: getDetailsCoinByCoinId", "getting data for: $coinId out the DB")
+                Log.i("cacheRateLimiter: getDetailsCoinByCoinId",
+                    "getting data for: $coinId out the DB")
                 val dbResult = cryptoCacheDao.getDetailsCoin(coinId)
                 // Emit data form the DB
                 if (dbResult != null) emit(Resource.Success(dbResult))
@@ -163,7 +164,7 @@ constructor(
         if (result is Resource.Success) {
             result.data.let {
                 if (it != null) {
-                    Log.i("cacheRateLimiter: fetchListCoins", "data is being stored for: $ids")
+                    Log.i("cacheRateLimiter: fetchListCoins", "data is being stored for the 100 coins")
                     cryptoCacheDao.deleteListCoins(it)
                     cryptoCacheDao.insertListCoins(it)
                 }
