@@ -8,4 +8,6 @@ object Config {
     const val applicationId = "com.krakert.tracker"
     const val versionName = "1.1"
     const val versionCode = 7
+
+
 }

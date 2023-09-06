@@ -1,6 +1,6 @@
-package com.krakert.fish.data.component.network.models
+package com.krakert.tracker.data.components.net.model
 
 data class Query(
     val key: String,
-    val value: String
+    val value: Any
 )

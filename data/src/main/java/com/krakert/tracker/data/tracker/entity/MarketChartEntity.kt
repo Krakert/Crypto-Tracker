@@ -1,8 +1,9 @@
 package com.krakert.tracker.data.tracker.entity
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+// @SerialName
+@Serializable
 data class MarketChartEntity(
-    @SerializedName("prices")
-    val prices: List<List<Double?>?>,
+   val prices: List<List<Double?>?>,
 )

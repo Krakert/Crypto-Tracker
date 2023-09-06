@@ -1,19 +1,55 @@
 package com.krakert.tracker.ui.tracker.add
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.provider.Settings
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.domain.tracker.GetListCoinsToAdd
+import com.krakert.tracker.domain.tracker.model.ListCoins
+import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.*
+import com.krakert.tracker.ui.tracker.add.mapper.ListCoinsDisplayMapper
+import com.krakert.tracker.ui.tracker.add.model.ListCoinsDisplay
+import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
+import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+sealed class ViewStateAddCoin {
+    // Represents different states for the add coin screen
+    object Loading : ViewStateAddCoin()
+    data class Success(val coins: ListCoinsDisplay) : ViewStateAddCoin()
+    data class Problem(val exception: ProblemState?) : ViewStateAddCoin()
+}
 
 @HiltViewModel
 class AddCoinViewModel @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-    private val application: Application
+    private val application: Application,
+    private val getListCoinsToAdd: GetListCoinsToAdd,
+    private val listCoinsDisplayMapper: ListCoinsDisplayMapper,
 ) : ViewModel() {
+    private val mutableStateAdd = MutableStateFlow<ViewStateAddCoin>(Loading)
+    val addViewState = mutableStateAdd.asStateFlow()
+    fun getListCoins() {
+        viewModelScope.launch {
+            mutableStateAdd.emit(Loading)
+            getListCoinsToAdd().onSuccess {
+                mutableStateAdd.emit(
+                    Success(listCoinsDisplayMapper.map(it))
+                )
+            }
+        }
+    }
 
-//    private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
+    //    private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
 //
 //    // backing property to avoid state updates from other classes
 //    private val _viewState = MutableStateFlow<ViewStateAddCoin>(ViewStateAddCoin.Loading)
@@ -47,7 +83,7 @@ class AddCoinViewModel @Inject constructor(
 //        }
 //    }
 //
-//    fun toggleFavoriteCoin(coin: Coin, context: Context) {
+    fun toggleFavoriteCoin(coin: ListCoinsItemDisplay, context: Context) {
 //        try {
 //            var listFavoriteCoins = ArrayList<FavoriteCoin>()
 //            var alreadyAdded = false
@@ -99,11 +135,11 @@ class AddCoinViewModel @Inject constructor(
 //                e.message ?: "Something went wrong while saving the list of favorite coins"
 //            )
 //        }
-//    }
+    }
 //
-//    fun openSettings() {
-//        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
-//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//        application.applicationContext.startActivity(intent)
-//    }
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
+    }
 }

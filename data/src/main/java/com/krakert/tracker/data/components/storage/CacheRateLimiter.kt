@@ -3,18 +3,17 @@ package com.krakert.tracker.data.components.storage
 import android.content.SharedPreferences
 import android.os.SystemClock
 import android.util.ArrayMap
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import timber.log.Timber
-
 import java.util.concurrent.TimeUnit
 
 /**
  * Utility class that decides whether we should fetch some data or not.
  * Expanded this class with disk stored timestamps
  */
-class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
-    private val mGson = Gson()
+class CacheRateLimiter<in KEY : Any>(timeout: Int, timeUnit: TimeUnit) {
     private val TAG = "CacheRateLimiter"
     private val mTimeStamps = ArrayMap<KEY, Long>()
     private val mTimeout = timeUnit.toMillis(timeout.toLong())
@@ -61,7 +60,7 @@ class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
 
     private fun writeToPrefs(sharedPreferences: SharedPreferences, arrayMap: ArrayMap<KEY, Long>) {
         //convert to string using gson
-        val arrayMapJson = mGson.toJson(arrayMap)
+        val arrayMapJson = Json.encodeToString(arrayMap)
 
         //save in shared prefs
         sharedPreferences.edit().putString(KEY_CACHE_TIMESTAMPS, arrayMapJson).apply()
@@ -79,10 +78,7 @@ class CacheRateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
         val storedTimeStamps = sharedPreferences.getString(KEY_CACHE_TIMESTAMPS, null)
             ?: return ArrayMap()
 
-        val type = object : TypeToken<ArrayMap<String, Long>>() {
-        }.type
-
-        return mGson.fromJson(storedTimeStamps, type) ?: return ArrayMap()
+        return Json.decodeFromString(storedTimeStamps) ?: return ArrayMap()
     }
 
     fun removeForKey(prefs: SharedPreferences, key: KEY) {

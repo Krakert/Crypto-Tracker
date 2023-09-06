@@ -1,4 +1,4 @@
-package com.krakert.fish.data.component.network.models
+package com.krakert.tracker.data.components.net.model
 
 enum class ApiMethod {
     GET,

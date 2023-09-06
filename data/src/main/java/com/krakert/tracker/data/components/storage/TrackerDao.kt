@@ -9,25 +9,25 @@ import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 interface TrackerDao {
 
     /*---------------- Used for the AddCoinViewModel ----------------*/
-    @Query("SELECT * FROM DBListCoinItemEntity")
-    suspend fun getListCoins(): List<DBListCoinItemEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertListCoins(coins: List<DBListCoinItemEntity>)
-
-    @Delete
-    suspend fun deleteListCoins(it: List<DBListCoinItemEntity>)
-    /*---------------------------------------------------------------*/
-
-    /*---------------- Used for the DetailsViewModel ----------------*/
-    @Query("SELECT * FROM coinCurrentData WHERE coinCurrentData.id = :coinId")
-    suspend fun getDetailsCoin(coinId: String): DBCoinCurrentDataEntity?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertDetailsCoin(coinCurrentDataEntity: DBCoinCurrentDataEntity)
-
-    @Delete
-    suspend fun deleteDetailsCoin(coinCurrentDataEntity: DBCoinCurrentDataEntity)
+//    @Query("SELECT * FROM DBListCoinItemEntity")
+//    suspend fun getListCoins(): List<DBListCoinItemEntity>
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertListCoins(coins: List<DBListCoinItemEntity>)
+//
+//    @Delete
+//    suspend fun deleteListCoins(it: List<DBListCoinItemEntity>)
+//    /*---------------------------------------------------------------*/
+//
+//    /*---------------- Used for the DetailsViewModel ----------------*/
+//    @Query("SELECT * FROM coinCurrentData WHERE coinCurrentData.id = :coinId")
+//    suspend fun getDetailsCoin(coinId: String): DBCoinCurrentDataEntity?
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    suspend fun insertDetailsCoin(coinCurrentDataEntity: DBCoinCurrentDataEntity)
+//
+//    @Delete
+//    suspend fun deleteDetailsCoin(coinCurrentDataEntity: DBCoinCurrentDataEntity)
     /*---------------------------------------------------------------*/
 
     /*---------------- Used for the OverviewViewModel ---------------*/

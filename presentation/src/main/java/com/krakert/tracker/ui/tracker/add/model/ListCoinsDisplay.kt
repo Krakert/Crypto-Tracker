@@ -1,3 +1,5 @@
 package com.krakert.tracker.ui.tracker.add.model
 
-data class ListCoinsDisplay()
+data class ListCoinsDisplay(
+    val result: List<ListCoinsItemDisplay>
+)

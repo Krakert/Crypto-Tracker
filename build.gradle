@@ -21,7 +21,8 @@ buildscript {
         classpath Projects.gradleTools
         classpath Projects.kotlinGradlePlugin
         classpath Projects.gradleVersionsPlugin
-        classpath Projects.daggerHilt
+        classpath Projects.daggerHiltPlugin
+        classpath Projects.serializationPlugin
     }
 }
 

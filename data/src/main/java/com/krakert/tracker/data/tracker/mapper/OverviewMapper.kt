@@ -5,7 +5,8 @@ import com.krakert.tracker.domain.tracker.model.CoinOverview
 import javax.inject.Inject
 
 class OverviewMapper @Inject constructor(
-    private val marketChartMapper: MarketChartMapper
+    private val marketChartMapper: MarketChartMapper,
+    private val overviewItemMapper: OverviewItemMapper,
 ) {
     fun map(PricesCoinsEntity: Map<String, MutableMap<String, Any>>, listMarketChartEntity: List<MarketChartEntity>): CoinOverview {
         return CoinOverview(

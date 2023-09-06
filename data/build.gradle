@@ -1,49 +1,52 @@
-plugins {
-    id("com.android.library")
-    id ("kotlin-kapt")
-}
-
-//apply plugin: 'com.android.library'
-//apply plugin: 'dagger.hilt.android.plugin'
-
-apply {
-    from("../config-android.gradle")
-}
-
+apply plugin: 'com.android.library'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
+apply from: '../config-android.gradle'
 
 android {
     buildTypes {
         debug {
-            isTestCoverageEnabled = true
+            testCoverageEnabled true
         }
         release {
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
+    namespace 'com.krakert.tracker.data'
 }
 
 dependencies {
-    implementation( project(":domain") )
-    implementation( project(":common") )
+    implementation project(':domain')
+    implementation project(':common')
 
     //Compile time dependencies
-    kapt(Deps.daggerHiltCompiler)
+    kapt Deps.daggerHiltCompiler
 
     //Android dependencies
 
     //Framework dependencies
-    implementation (Deps.daggerHilt)
-//    api Deps.retrofit
-    implementation (Deps.roomKtx)
-    kapt (Deps.roomCompiler)
-    implementation (Deps.roomRuntime)
-//    implementation Deps.okhttp
-//    implementation Deps.okhttpLogging
-//    implementation Deps.retrofitGson
-    implementation (Deps.preference)
-    implementation (Deps.timber)
-    implementation (Deps.coroutinesCore)
-    implementation (Deps.coroutinesAndroid)
+    implementation Deps.daggerHilt
+
+    implementation Deps.ktorCore
+    implementation Deps.ktorClient
+    implementation Deps.ktorJvm
+    implementation Deps.ktorNeogotiation
+    implementation Deps.ktorSerialization
+    implementation Deps.ktorJson
+    implementation Deps.ktorLogging
+    implementation Deps.napier
+
+
+    implementation Deps.roomKtx
+    kapt Deps.roomCompiler
+    implementation Deps.roomRuntime
+
+    implementation Deps.dataStore
+    implementation Deps.preference
+    implementation Deps.timber
+
+    implementation Deps.coroutinesCore
+    implementation Deps.coroutinesAndroid
 
     //Testing dependencies
     testImplementation (Deps.junit)

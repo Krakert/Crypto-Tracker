@@ -29,7 +29,6 @@ dependencies {
     //Framework dependencies
     implementation Deps.daggerHilt
     implementation Deps.timber
-    implementation Deps.gson
 
     // Compose
     implementation Deps.composeRuntime
@@ -40,7 +39,6 @@ dependencies {
     implementation Deps.composePreview
     implementation Deps.composeViewModel
     implementation Deps.composeNavigation
-    implementation Deps.liveDataKTX
     implementation Deps.composeHiltNavigation
     implementation Deps.composeCoil
     implementation Deps.composeLottie

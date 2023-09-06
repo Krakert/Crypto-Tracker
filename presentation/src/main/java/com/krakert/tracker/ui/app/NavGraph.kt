@@ -20,7 +20,7 @@ fun NavGraph() {
     TrackerAppTheme {
         SwipeDismissableNavHost(
             navController = navController,
-            startDestination = Screen.Overview.route,
+            startDestination = Screen.Add.route,
         ) {
             composable(Screen.Overview.route) {
                 TrackerOverviewScreen(

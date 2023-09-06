@@ -41,11 +41,9 @@ object Versions {
     const val firebaseBom = "31.4.0"
     const val firebaseCrashlytics = "18.3.6"
 
-    const val retrofit = "2.9.0"
-    const val okHttp = "4.10.0"
-    const val gson = "2.10.1"
-    const val converterGson = "2.9.0"
-    const val interceptor = "4.4.0"
+    const val ktor = "2.2.4"
+    const val napier = "2.6.1"
+    const val serialization = "1.5.0"
 
 }
 
@@ -54,13 +52,12 @@ object Projects {
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.46.0"
     const val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.8.0"
-    const val daggerHilt = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
+    const val daggerHiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
+    const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:${Versions.serialization}"
 }
 
 object Deps {
     // Android
-    //    const val ktx = "androidx.core:core-ktx:1.9.0"
-    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}"
     const val appCompat = "androidx.appcompat:appcompat:${Versions.androidAppcompat}"
 
     // Preferences DataStore
@@ -69,17 +66,17 @@ object Deps {
     // Use of the input types WearOS has
     const val wearInput = "androidx.wear:wear-input:1.2.0-alpha02"
 
-    const val architectureComponents = "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    const val architectureComponentsCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.androidLifecycle}"
+    // Ktor
+    const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
+    const val ktorClient = "io.ktor:ktor-client-android:${Versions.ktor}"
+    const val ktorJvm = "io.ktor:ktor-client-core-jvm:${Versions.ktor}"
+    const val ktorNeogotiation = "io.ktor:ktor-client-content-negotiation:${Versions.ktor}"
+    const val ktorSerialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
+    const val ktorJson = "io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}"
+    const val ktorLogging = "io.ktor:ktor-client-logging:${Versions.ktor}"
+    const val napier = "io.github.aakira:napier:${Versions.napier}"
 
-    //    const val androidAnnotations = "androidx.annotation:annotation:1.4.0"
-    const val architectureComponentsViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.androidLifecycle}"
-    const val liveDataKTX = "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.androidLifecycle}"
 
-    const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val retrofitGson = "com.squareup.retrofit2:converter-gson:${Versions.converterGson}"
-    const val okhttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
-    const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.interceptor}"
 
     // Crashlytics
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
@@ -91,15 +88,8 @@ object Deps {
     const val roomRuntime = "androidx.room:room-runtime:${Versions.roomRuntime}"
     const val roomKtx = "androidx.room:room-ktx:${Versions.roomKtx}"
 
-    // Gson
-    const val gson = "com.google.code.gson:gson:${Versions.gson}"
-
     // General Wear functionality
     const val wear = "androidx.wear:wear:1.2.0"
-
-    // Tiles functionality
-    const val wearTile = "androidx.wear.tiles:tiles:1.1.0"
-    const val wearTilePreview = "androidx.wear.tiles:tiles-renderer:1.1.0"
 
     const val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
     const val coroutinesAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinCoroutines}"
@@ -113,6 +103,7 @@ object Deps {
     const val preference = "androidx.preference:preference:1.2.0"
 
     // Compose Navigation
+    const val androidNavigation = "androidx.navigation:navigation-compose:2.5.3"
     const val composeNavigation = "androidx.wear.compose:compose-navigation:${Versions.composeNavigation}"
     const val composeHiltNavigation = "androidx.hilt:hilt-navigation-compose:1.0.0"
 

@@ -3,10 +3,9 @@ package com.krakert.tracker.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
-import java.lang.reflect.Type
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 object SharedPreference {
     private const val currency = "CURRENCY"
@@ -49,13 +48,13 @@ object SharedPreference {
 
     fun SharedPreferences.getListFavoriteCoins(): List<FavoriteCoinEntity> {
         val dataSharedPreference = FavoriteCoins
-        val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoinEntity>>() {}.type
-        var listFavoriteCoins = arrayListOf<FavoriteCoinEntity>()
+        val listFavoriteCoins = arrayListOf<FavoriteCoinEntity>()
 
-        if (dataSharedPreference.isNotEmpty()) {
-            listFavoriteCoins = Gson().fromJson(dataSharedPreference, typeOfT)
+        if (dataSharedPreference.isEmpty()) {
+            return listFavoriteCoins
         }
-        return listFavoriteCoins
+        return Json.decodeFromString(FavoriteCoins)
+
     }
 
     private var SharedPreferences.FavoriteCoins

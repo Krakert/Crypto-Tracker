@@ -1,9 +1,9 @@
 package com.krakert.tracker.data.components.net
 
 
-import com.krakert.fish.data.component.network.models.ApiMethod
-import com.krakert.fish.data.component.network.models.ApiRequest
-import com.krakert.fish.data.component.network.models.Response
+import com.krakert.tracker.data.components.net.model.ApiMethod
+import com.krakert.tracker.data.components.net.model.ApiRequest
+import com.krakert.tracker.data.components.net.model.Response
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.request
@@ -15,38 +15,21 @@ import javax.inject.Inject
 
 class KtorRequest @Inject constructor(
     private val client: HttpClient,
-) : Api {
+) {
 
     @OptIn(InternalAPI::class)
-    override suspend fun <T>request(request: ApiRequest<T>): Response<T> {
+    suspend fun <T> request(request: ApiRequest<T>): Response<T> {
         val response = client.request {
             method(request.method)
             url(request.url, request.path)
             if (request.requestBody != null) {
                 body = request.requestBody
             }
-            if (request.parameters?.isNotEmpty() == true) {
-                request.parameters.forEach {
-                    url.parameters.append(it.key, it.value)
-                }
-            }
-        }
-        return Response(response)
-    }
 
-    @OptIn(InternalAPI::class)
-    override suspend fun <T>requestNoBaseURL(request: ApiRequest<T>): Response<T> {
-        val response = client.request {
-            method(request.method)
-            url(request.path)
-            if (request.requestBody != null) {
-                body = request.requestBody
+            request.parameters?.forEach {
+                url.parameters.append(it.key, it.value.toString())
             }
-            if (request.parameters?.isNotEmpty() == true) {
-                request.parameters.forEach {
-                    url.parameters.append(it.key, it.value)
-                }
-            }
+
         }
         return Response(response)
     }

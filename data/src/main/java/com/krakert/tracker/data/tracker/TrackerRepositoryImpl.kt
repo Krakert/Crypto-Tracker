@@ -2,29 +2,25 @@ package com.krakert.tracker.data.tracker
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
-import com.krakert.tracker.data.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.data.SharedPreference.Currency
 import com.krakert.tracker.data.SharedPreference.MinutesCache
 import com.krakert.tracker.data.SharedPreference.getListFavoriteCoins
-import com.krakert.tracker.data.extension.guard
+import com.krakert.tracker.data.components.net.KtorRequest
 import com.krakert.tracker.data.components.net.mapper.ResponseMapper
 import com.krakert.tracker.data.components.storage.CacheRateLimiter
 import com.krakert.tracker.data.components.storage.TrackerDao
-import com.krakert.tracker.data.tracker.api.CoinGeckoApi
-import com.krakert.tracker.data.tracker.entity.MarketChartEntity
+import com.krakert.tracker.data.extension.guard
+import com.krakert.tracker.data.tracker.api.ApiCalls
 import com.krakert.tracker.data.tracker.mapper.DetailCoinMapper
 import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.OverviewMapper
 import com.krakert.tracker.domain.tracker.TrackerRepository
-import com.krakert.tracker.domain.tracker.model.CoinDetails
-import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class TrackerRepositoryImpl @Inject constructor(
-    private val coinGeckoApi: CoinGeckoApi,
+    private val ktor: KtorRequest,
     private val cryptoCacheDao: TrackerDao,
     private val sharedPreferences: SharedPreferences,
     private val context: Context,
@@ -44,71 +40,81 @@ class TrackerRepositoryImpl @Inject constructor(
     private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
     private val cacheRateLimitList = CacheRateLimiter<String>(1, TimeUnit.DAYS)
 
-    override suspend fun getListCoins(
-        currency: String,
-        ids: String?,
-        order: String,
-        perPage: Int,
-        page: Int,
-    ): Result<ListCoins> {
-        if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {
-            val responseDatabase = cryptoCacheDao.getListCoins()
-            if (responseDatabase.isNotEmpty()) return Result.success(
-                listCoinsMapper.mapDatabaseToDomain(
-                    responseDatabase
+    override suspend fun getListCoins(): Result<ListCoins> {
+//        if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {
+//            val responseDatabase = cryptoCacheDao.getListCoins()
+//            if (responseDatabase.isNotEmpty()) return Result.success(
+//                listCoinsMapper.mapDatabaseToDomain(
+//                    responseDatabase
+//                )
+//            )
+//        }
+
+        val response = Result.runCatching {
+            ktor.request(
+                ApiCalls.getListCoins(
+                    currency = sharedPreferences.Currency
                 )
             )
-        }
-
-        val response = Result.runCatching { coinGeckoApi.getListCoins(currency, ids, order, perPage, page) }.guard { return it }
+        }.guard { return it }
         val entity = responseMapper.map(response)
-        //        cryptoCacheDao.deleteListCoins(entity)
-        //        cryptoCacheDao.insertListCoins()
         return entity.mapCatching { listCoinsMapper.mapApiToDomain(it) }
     }
 
 
-    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
-        if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
-            val responseDatabase = cryptoCacheDao.getDetailsCoin(coinId)
-            if (responseDatabase != null) return Result.success(detailCoinMapper.mapDatabaseToDomain(responseDatabase))
-        }
-        val response = Result.runCatching { coinGeckoApi.getDetailsCoin(coinId) }.guard { return it }
-        val entity = responseMapper.map(response)
-        //        cryptoCacheDao.insertDetailsCoin()
-        return entity.mapCatching { detailCoinMapper.mapApiToDomain(it) }
-    }
-
-    override suspend fun getOverview(): Result<CoinOverview> {
-        val responsePricesDatabase: Map<String, MutableMap<String, Any>?>?
-        if (!cacheRateLimit.shouldFetch(CACHE_KEY_OVERVIEW, sharedPreferences)) {
-//            responsePricesDatabase = cryptoCacheDao.getPriceCoins()?.data
-//            if (responsePricesDatabase != null) {
+//    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
+//        if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
+//            val responseDatabase = cryptoCacheDao.getDetailsCoin(coinId)
+//            if (responseDatabase != null) return Result.success(
+//                detailCoinMapper.mapDatabaseToDomain(
+//                    responseDatabase
+//                )
+//            )
+//        }
+//        val response =
+//            Result.runCatching { coinGeckoApi.fetchDetailsCoinByCoinId(coinId) }.guard { return it }
+//        val entity = responseMapper.map(response)
+//        //        cryptoCacheDao.insertDetailsCoin()
+//        return entity.mapCatching { detailCoinMapper.mapApiToDomain(it) }
+//    }
 //
-//            }
-        }
-        val responsePriceCoins = Result.runCatching { coinGeckoApi.getPriceByListCoinIds(getCoinsIdString(), sharedPreferences.Currency) }.guard { return it }
-        val entityPriceCoins = responseMapper.map(responsePriceCoins)
-        val listEntityMarketChart = arrayListOf<MarketChartEntity>()
-        sharedPreferences.getListFavoriteCoins().forEach {
-            val response = Result.runCatching {
-                coinGeckoApi.getHistoryByCoinId(it.id.toString(), sharedPreferences.Currency, sharedPreferences.AmountDaysTracking.toString())
-            }. guard { return it }
-            listEntityMarketChart.add(responseMapper.map(response).guard { return it })
-        }
-        return Result.runCatching { overviewMapper.map(entityPriceCoins.guard { return it }, listEntityMarketChart) }
-    }
-
-    override fun getCoinsIdString(): String {
+//    override suspend fun getOverview(): Result<CoinOverview> {
+//        val responsePriceCoins = Result.runCatching {
+//            coinGeckoApi.fetchCoinsPriceById(
+//                getCoinsIdString(),
+//                sharedPreferences.Currency
+//            )
+//        }.guard { return it }
+//        val entityPriceCoins = responseMapper.map(responsePriceCoins)
+//        val listEntityMarketChart = arrayListOf<MarketChartEntity>()
+//        sharedPreferences.getListFavoriteCoins().forEach {
+//            val response = Result.runCatching {
+//                coinGeckoApi.fetchHistoryByCoinId(
+//                    it.id.toString(),
+//                    sharedPreferences.Currency,
+//                    sharedPreferences.AmountDaysTracking.toString()
+//                )
+//            }.guard { return it }
+//            listEntityMarketChart.add(responseMapper.map(response).guard { return it })
+//        }
+//        return Result.runCatching {
+//            overviewMapper.map(
+//                entityPriceCoins.guard { return it },
+//                listEntityMarketChart
+//            )
+//        }
+//    }
+//
+    private fun getCoinsIdString(): String {
         return sharedPreferences.getListFavoriteCoins().joinToString(",")
     }
-
-
-    override fun isOnline(): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-        return capabilities !== null
-    }
-
-
+//
+//
+//    override fun isOnline(): Boolean {
+//        val connectivityManager =
+//            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val capabilities =
+//            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+//        return capabilities !== null
+//    }
 }

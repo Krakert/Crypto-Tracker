@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.tracker.api
+package com.krakert.tracker.data.components.net.model
 
 import com.krakert.tracker.data.tracker.entity.ProblemStateEntity
 

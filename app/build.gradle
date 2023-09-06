@@ -9,6 +9,7 @@ android {
     defaultConfig {
         applicationId Config.applicationId
         versionName Config.versionName
+        versionCode Config.versionCode
         buildConfigField("String", "BUILD_TIME", "\"${buildTime()}\"")
         setProperty("archivesBaseName", applicationId + "-v" + versionCode + "(" + versionName + ")")
     }
@@ -33,7 +34,7 @@ dependencies {
     //Compile time dependencies
     kapt Deps.daggerHiltCompiler
     kapt Deps.daggerHiltJetpackCompiler
-
+    implementation Deps.androidNavigation
     //Android dependencies
 
     //Framework dependencies
