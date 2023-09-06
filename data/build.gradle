@@ -1,42 +1,50 @@
-apply plugin: 'com.android.library'
-apply plugin: 'dagger.hilt.android.plugin'
-apply from: '../config-android.gradle'
+plugins {
+    id("com.android.library")
+    id ("kotlin-kapt")
+}
+
+//apply plugin: 'com.android.library'
+//apply plugin: 'dagger.hilt.android.plugin'
+
+apply {
+    from("../config-android.gradle")
+}
+
 
 android {
     buildTypes {
         debug {
-            testCoverageEnabled true
+            isTestCoverageEnabled = true
         }
         release {
-            consumerProguardFiles 'proguard-rules.pro'
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
 }
 
 dependencies {
-    implementation project(':domain')
-    implementation project(':common')
+    implementation( project(":domain") )
+    implementation( project(":common") )
 
     //Compile time dependencies
-    kapt Deps.daggerHiltCompiler
+    kapt(Deps.daggerHiltCompiler)
 
     //Android dependencies
 
     //Framework dependencies
-    implementation Deps.kotlin
-    implementation Deps.daggerHilt
-    api Deps.retrofit
-    implementation Deps.roomKtx
-    kapt Deps.roomCompiler
-    implementation Deps.roomRuntime
-    implementation Deps.okhttp
-    implementation Deps.okhttpLogging
-    implementation Deps.retrofitGson
-    implementation Deps.preference
-    implementation Deps.timber
-    implementation Deps.coroutinesCore
-    implementation Deps.coroutinesAndroid
+    implementation (Deps.daggerHilt)
+//    api Deps.retrofit
+    implementation (Deps.roomKtx)
+    kapt (Deps.roomCompiler)
+    implementation (Deps.roomRuntime)
+//    implementation Deps.okhttp
+//    implementation Deps.okhttpLogging
+//    implementation Deps.retrofitGson
+    implementation (Deps.preference)
+    implementation (Deps.timber)
+    implementation (Deps.coroutinesCore)
+    implementation (Deps.coroutinesAndroid)
 
     //Testing dependencies
-    testImplementation Deps.junit
+    testImplementation (Deps.junit)
 }

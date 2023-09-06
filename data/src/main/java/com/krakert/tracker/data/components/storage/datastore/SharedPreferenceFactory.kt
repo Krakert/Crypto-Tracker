@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.storage
+package com.krakert.tracker.data.components.storage.datastore
 
 import android.content.Context
 import android.content.SharedPreferences
