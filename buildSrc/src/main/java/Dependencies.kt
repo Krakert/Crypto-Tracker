@@ -27,7 +27,8 @@ object Versions {
     const val composePreview = "1.4.0"
     const val composeIcon = "1.4.0"
 
-    const val coil = "2.3.0"
+    const val coil = "2.4.0"
+    const val landscapistCoil = "2.0.3"
     const val composeLottie = "6.0.0"
     const val pallete = "2.0.3"
 
@@ -76,8 +77,6 @@ object Deps {
     const val ktorLogging = "io.ktor:ktor-client-logging:${Versions.ktor}"
     const val napier = "io.github.aakira:napier:${Versions.napier}"
 
-
-
     // Crashlytics
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
     const val firebaseCrashlyitcs = "com.google.firebase:firebase-crashlytics-ktx:${Versions.firebaseCrashlytics}"
@@ -96,7 +95,7 @@ object Deps {
 
     // Compose const val to load images via coil
     const val composeCoil = "io.coil-kt:coil:${Versions.coil}"
-    const val composeLottie = "com.airbnb.android:lottie-compose:${Versions.composeLottie}"
+    const val landscapistCoil = "com.github.skydoves:landscapist-coil:${Versions.landscapistCoil}"
     const val palette = "com.github.skydoves:landscapist-palette:${Versions.pallete}"
 
     // Share preference

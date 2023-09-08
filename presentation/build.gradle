@@ -41,7 +41,8 @@ dependencies {
     implementation Deps.composeNavigation
     implementation Deps.composeHiltNavigation
     implementation Deps.composeCoil
-    implementation Deps.composeLottie
+    implementation Deps.landscapistCoil
+    implementation Deps.palette
     implementation Deps.coroutinesCore
     implementation Deps.coroutinesAndroid
 

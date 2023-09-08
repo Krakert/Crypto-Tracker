@@ -1,6 +1,5 @@
 package com.krakert.tracker.ui.tracker.add
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,10 +21,13 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -33,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.AutoCenteringParams
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
@@ -50,10 +53,10 @@ import com.krakert.tracker.ui.components.ShowProblem
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
 import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.clip
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.palette.PalettePlugin
 
 @Composable
 fun TrackerAddCoinScreen(viewModel: AddCoinViewModel) {
@@ -140,7 +143,7 @@ private fun ShowList(
 @Composable
 private fun ChipCoin(coin: ListCoinsItemDisplay, onClick: () -> Unit) {
     var palette by remember { mutableStateOf<Palette?>(null) }
-    var isFavorite by remember { mutableStateOf(coin.isFavorite) }
+    var isFavorite by remember { mutableStateOf(coin.isFavourite) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,7 +173,7 @@ private fun ChipCoin(coin: ListCoinsItemDisplay, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CoilImage(
-                imageModel = { coin.image },
+                imageModel = { coin.imageUrl },
                 imageOptions = ImageOptions(
                     contentScale = ContentScale.Fit
                 ),
