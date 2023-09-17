@@ -19,7 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +32,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.palette.graphics.Palette
 import androidx.wear.compose.material.AutoCenteringParams
 import androidx.wear.compose.material.Icon
@@ -59,10 +63,22 @@ import com.skydoves.landscapist.components.rememberImageComponent
 import com.skydoves.landscapist.palette.PalettePlugin
 
 @Composable
-fun TrackerAddCoinScreen(viewModel: AddCoinViewModel) {
+fun TrackerAddCoinScreen(
+    viewModel: AddCoinViewModel,
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+) {
 
-    LaunchedEffect(Unit) {
-        viewModel.getListCoins()
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.getListCoins()
+            }
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     val scrollState = rememberScalingLazyListState()
@@ -110,7 +126,7 @@ fun TrackerAddCoinScreen(viewModel: AddCoinViewModel) {
 @Composable
 private fun ShowList(
     scrollState: ScalingLazyListState,
-    listCoins:  List<ListCoinsItemDisplay>,
+    listCoins: List<ListCoinsItemDisplay>,
     viewModel: AddCoinViewModel,
 ) {
     val context = LocalContext.current
@@ -128,7 +144,6 @@ private fun ShowList(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-
         listCoins.forEach { coin ->
             item {
                 ChipCoin(coin = coin) {
@@ -149,6 +164,10 @@ private fun ChipCoin(coin: ListCoinsItemDisplay, onClick: () -> Unit) {
             .fillMaxWidth()
             .height(52.dp)
             .clip(shape = RoundedCornerShape(50))
+            .clickable {
+                isFavorite = !isFavorite
+                onClick()
+            }
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
@@ -160,11 +179,7 @@ private fun ChipCoin(coin: ListCoinsItemDisplay, onClick: () -> Unit) {
             .padding(
                 horizontal = 8.dp,
                 vertical = 4.dp
-            )
-            .clickable {
-                isFavorite = !isFavorite
-                onClick()
-            },
+            ),
         contentAlignment = Alignment.Center
     ) {
         Row(
