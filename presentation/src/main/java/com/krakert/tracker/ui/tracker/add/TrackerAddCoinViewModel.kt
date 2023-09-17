@@ -1,6 +1,7 @@
 package com.krakert.tracker.ui.tracker.add
 
 import android.app.Application
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -8,18 +9,21 @@ import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.domain.tracker.GetListCoinsToAdd
-import com.krakert.tracker.domain.tracker.model.ListCoins
-import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.*
+import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Loading
+import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Problem
+import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Success
 import com.krakert.tracker.ui.tracker.add.mapper.ListCoinsDisplayMapper
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsDisplay
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
 import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.net.ConnectException
 import javax.inject.Inject
+import javax.net.ssl.SSLHandshakeException
 
 
 sealed class ViewStateAddCoin {
@@ -45,6 +49,18 @@ class AddCoinViewModel @Inject constructor(
                 mutableStateAdd.emit(
                     Success(listCoinsDisplayMapper.map(it))
                 )
+            }.onFailure {
+                when (it){
+                    is SSLHandshakeException -> {
+                        mutableStateAdd.emit(Problem(ProblemState.SSL))
+                    }
+                    is ConnectException ->{
+                        mutableStateAdd.emit(Problem(ProblemState.NO_CONNECTION))
+                    }
+                    else -> {
+                        mutableStateAdd.emit(Problem(ProblemState.UNKNOWN))
+                    }
+                }
             }
         }
     }
@@ -84,10 +100,10 @@ class AddCoinViewModel @Inject constructor(
 //    }
 //
     fun toggleFavoriteCoin(coin: ListCoinsItemDisplay, context: Context) {
-//        try {
+        try {
 //            var listFavoriteCoins = ArrayList<FavoriteCoin>()
 //            var alreadyAdded = false
-//            val dataSharedPreferences = sharedPreferences.FavoriteCoins.toString()
+            val dataSharedPreferences = sharedPreferences
 //
 //            //TODO: Fix this warning, serious warning
 //            val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
@@ -129,14 +145,15 @@ class AddCoinViewModel @Inject constructor(
 //
 //            sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
 //            cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
-//        } catch (e: Exception) {
-//            Log.e(
-//                TAG,
-//                e.message ?: "Something went wrong while saving the list of favorite coins"
-//            )
-//        }
+        } catch (e: Exception) {
+            Timber.e(
+                TAG,
+                e.message ?: "Something went wrong while saving the list of favorite coins"
+            )
+        }
     }
-//
+
+    //
     fun openSettings() {
         val intent = Intent(Settings.ACTION_DATE_SETTINGS)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
