@@ -61,9 +61,6 @@ object Deps {
     // Android
     const val appCompat = "androidx.appcompat:appcompat:${Versions.androidAppcompat}"
 
-    // Preferences DataStore
-    const val dataStore = "androidx.datastore:datastore-preferences:1.0.0"
-
     // Use of the input types WearOS has
     const val wearInput = "androidx.wear:wear-input:1.2.0-alpha02"
 

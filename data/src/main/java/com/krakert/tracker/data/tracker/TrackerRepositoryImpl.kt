@@ -3,6 +3,7 @@ package com.krakert.tracker.data.tracker
 import android.content.Context
 import android.content.SharedPreferences
 import com.krakert.tracker.data.SharedPreference.Currency
+import com.krakert.tracker.data.SharedPreference.FavoriteCoins
 import com.krakert.tracker.data.SharedPreference.MinutesCache
 import com.krakert.tracker.data.SharedPreference.getListFavoriteCoins
 import com.krakert.tracker.data.components.net.KtorRequest
@@ -11,11 +12,14 @@ import com.krakert.tracker.data.components.storage.CacheRateLimiter
 import com.krakert.tracker.data.components.storage.TrackerDao
 import com.krakert.tracker.data.extension.guard
 import com.krakert.tracker.data.tracker.api.ApiCalls
+import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
 import com.krakert.tracker.data.tracker.mapper.DetailCoinMapper
 import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.OverviewMapper
 import com.krakert.tracker.domain.tracker.TrackerRepository
 import com.krakert.tracker.domain.tracker.model.ListCoins
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -32,12 +36,14 @@ class TrackerRepositoryImpl @Inject constructor(
 
     companion object {
         const val CACHE_KEY_OVERVIEW = "cache_key_overview_data"
+        const val CACHE_KEY_PRICE_COINS = "cache_key_prices_coins_data"
         const val CACHE_KEY_LIST_COINS = "cache_key_list_coins_data"
         const val CACHE_KEY_DETAILS_COIN = "cache_key_details_coin_data"
     }
 
     // Setup of the limits for the different data in the DB
-    private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
+    private val cacheRateLimit =
+        CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
     private val cacheRateLimitList = CacheRateLimiter<String>(1, TimeUnit.DAYS)
 
     override suspend fun getListCoins(): Result<ListCoins> {
@@ -58,7 +64,12 @@ class TrackerRepositoryImpl @Inject constructor(
             )
         }.guard { return it }
         val entity = responseMapper.map(response)
-        return entity.mapCatching { listCoinsMapper.mapApiToDomain(it) }
+        return entity.mapCatching {
+            listCoinsMapper.mapApiToDomain(
+                it,
+                sharedPreferences.getListFavoriteCoins()
+            )
+        }
     }
 
 
@@ -108,8 +119,44 @@ class TrackerRepositoryImpl @Inject constructor(
     private fun getCoinsIdString(): String {
         return sharedPreferences.getListFavoriteCoins().joinToString(",")
     }
-//
-//
+
+    override suspend fun addFavouriteCoin(id: String, name: String): Result<Boolean> {
+
+        val itemToStore = FavoriteCoinEntity(id = id, name = name.lowercase())
+        val dataSharedPreferences = sharedPreferences.getListFavoriteCoins()
+
+        if (!dataSharedPreferences.contains(itemToStore)) {
+            val listFavoriteCoins = dataSharedPreferences.toMutableList()
+            listFavoriteCoins.add(itemToStore)
+            Result.runCatching {
+                sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
+            }.guard { return it }
+        }
+
+        //cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
+
+        return Result.success(true)
+    }
+
+    override suspend fun removeFavouriteCoin(id: String, name: String): Result<Boolean> {
+
+        val itemToRemove = FavoriteCoinEntity(id = id, name = name.lowercase())
+        val dataSharedPreferences = sharedPreferences.getListFavoriteCoins()
+
+        if (dataSharedPreferences.contains(itemToRemove)) {
+            val listFavoriteCoins = dataSharedPreferences.toMutableList()
+            listFavoriteCoins.remove(itemToRemove)
+            Result.runCatching {
+                sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
+            }.guard { return it }
+        }
+
+        //cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
+
+        return Result.success(true)
+    }
+
+
 //    override fun isOnline(): Boolean {
 //        val connectivityManager =
 //            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

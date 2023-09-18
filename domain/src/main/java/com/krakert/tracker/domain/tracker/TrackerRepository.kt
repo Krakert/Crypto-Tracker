@@ -1,13 +1,13 @@
 package com.krakert.tracker.domain.tracker
 
-import com.krakert.tracker.domain.tracker.model.CoinDetails
-import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
-import java.util.Currency
 
 
 interface TrackerRepository {
     suspend fun getListCoins(): Result<ListCoins>
+    suspend fun addFavouriteCoin(id: String, name: String): Result<Boolean>
+
+    suspend fun removeFavouriteCoin(id: String, name: String): Result<Boolean>
 
 //    suspend fun getDetailsCoin(
 //        coinId: String,

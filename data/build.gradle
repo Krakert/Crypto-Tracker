@@ -41,7 +41,6 @@ dependencies {
     kapt Deps.roomCompiler
     implementation Deps.roomRuntime
 
-    implementation Deps.dataStore
     implementation Deps.preference
     implementation Deps.timber
 

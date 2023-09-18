@@ -21,7 +21,6 @@ import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_WIDTH_DP
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_SHOW_BACKGROUND
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 
-
 @Composable
 fun ShowProblem(problemState: ProblemState?, onClick: () -> Unit) {
     CenterElement {
@@ -35,7 +34,6 @@ fun ShowProblem(problemState: ProblemState?, onClick: () -> Unit) {
             text = problemState?.txt?.let { stringResource(it) }.toString(),
             fontSize = 16.sp,
             textAlign = TextAlign.Center
-
         )
     }
 }

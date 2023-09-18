@@ -14,7 +14,8 @@ object SharedPreference {
     private const val favoriteCoins = "FAVORITE_COINS"
     private const val minutesCache = "MINUTES_CACHE"
 
-    fun sharedPreference(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    fun sharedPreference(context: Context): SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     private inline fun SharedPreferences.editMe(operation: (SharedPreferences.Editor) -> Unit) {
         val editMe = edit()
@@ -57,7 +58,7 @@ object SharedPreference {
 
     }
 
-    private var SharedPreferences.FavoriteCoins
+    var SharedPreferences.FavoriteCoins
         get() = getString(favoriteCoins, "").toString()
         set(value) {
             editMe {

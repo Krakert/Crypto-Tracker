@@ -129,8 +129,6 @@ private fun ShowList(
     listCoins: List<ListCoinsItemDisplay>,
     viewModel: AddCoinViewModel,
 ) {
-    val context = LocalContext.current
-
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -148,7 +146,7 @@ private fun ShowList(
             item {
                 ChipCoin(coin = coin) {
                     coin.isFavourite = !coin.isFavourite
-                    viewModel.toggleFavoriteCoin(coin, context = context)
+                    viewModel.toggleFavoriteCoin(coin)
                 }
             }
         }
