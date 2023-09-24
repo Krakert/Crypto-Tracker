@@ -2,21 +2,23 @@ package com.krakert.tracker.ui.tracker.overview
 
 import android.app.Application
 import android.content.Intent
-import android.content.SharedPreferences
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.domain.tracker.GetFavouriteCoins
-import com.krakert.tracker.domain.tracker.GetListCoinsToAdd
-import com.krakert.tracker.domain.tracker.GetPrices
+import com.krakert.tracker.domain.tracker.GetOverview
 import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.*
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.net.ConnectException
 import javax.inject.Inject
+import javax.net.ssl.SSLHandshakeException
 
 sealed class ViewStateOverview {
     // Represents different states for the overview screen
@@ -30,7 +32,7 @@ class OverviewViewModel
 @Inject constructor(
     private val application: Application,
     private val getFavouriteCoins: GetFavouriteCoins,
-    private val getPrices: GetPrices,
+    private val getOverview: GetOverview,
 ) : ViewModel() {
     private val mutableStateOverview = MutableStateFlow<ViewStateOverview>(Loading)
     val overviewViewState = mutableStateOverview.asStateFlow()
@@ -38,9 +40,34 @@ class OverviewViewModel
     fun getAllOverviewData() {
         viewModelScope.launch {
             mutableStateOverview.emit(Loading)
+            getFavouriteCoins()
+                .onSuccess { listFavouriteCoins ->
+                    if (listFavouriteCoins.result.isEmpty()) {
+                        mutableStateOverview.emit(Problem(ProblemState.EMPTY))
+                    }
+                    Timber.i(listFavouriteCoins.result.toString())
+                    getOverview()
+                        .onSuccess { coinOverview ->
+                            Timber.i(coinOverview.result.toString())
+                        }
+                        .onFailure {
+                            when (it) {
+                                is SSLHandshakeException -> {
+                                    mutableStateOverview.emit(Problem(ProblemState.SSL))
+                                }
 
-            }
+                                is ConnectException -> {
+                                    mutableStateOverview.emit(Problem(ProblemState.NO_CONNECTION))
+                                }
+
+                                else -> {
+                                    mutableStateOverview.emit(Problem(ProblemState.UNKNOWN))
+                                }
+                            }
+                        }
+                }
         }
+    }
 
 //        val favoriteCoinList = sharedPreferences.getFavoriteCoinList()
 //

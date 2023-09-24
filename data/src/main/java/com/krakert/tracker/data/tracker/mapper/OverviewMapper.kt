@@ -8,7 +8,7 @@ class OverviewMapper @Inject constructor(
     private val marketChartMapper: MarketChartMapper,
     private val overviewItemMapper: OverviewItemMapper,
 ) {
-    fun map(PricesCoinsEntity: Map<String, MutableMap<String, Any>>, listMarketChartEntity: List<MarketChartEntity>): CoinOverview {
+    fun map(pricesCoinsEntity: Map<String, Map<String, Any>>, listMarketChartEntity: List<MarketChartEntity>): CoinOverview {
         return CoinOverview(
             result = arrayListOf()
         )

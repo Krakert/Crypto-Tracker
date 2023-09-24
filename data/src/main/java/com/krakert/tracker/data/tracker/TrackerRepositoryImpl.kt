@@ -2,6 +2,7 @@ package com.krakert.tracker.data.tracker
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.krakert.tracker.data.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.data.SharedPreference.Currency
 import com.krakert.tracker.data.SharedPreference.FavoriteCoins
 import com.krakert.tracker.data.SharedPreference.MinutesCache
@@ -13,13 +14,18 @@ import com.krakert.tracker.data.components.storage.TrackerDao
 import com.krakert.tracker.data.extension.guard
 import com.krakert.tracker.data.tracker.api.ApiCalls
 import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
+import com.krakert.tracker.data.tracker.entity.MarketChartEntity
 import com.krakert.tracker.data.tracker.mapper.DetailCoinMapper
+import com.krakert.tracker.data.tracker.mapper.FavouriteCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.OverviewMapper
 import com.krakert.tracker.domain.tracker.TrackerRepository
+import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
+import com.krakert.tracker.domain.tracker.model.ListFavouriteCoins
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -32,6 +38,7 @@ class TrackerRepositoryImpl @Inject constructor(
     private val listCoinsMapper: ListCoinsMapper,
     private val detailCoinMapper: DetailCoinMapper,
     private val overviewMapper: OverviewMapper,
+    private val favouriteCoinsMapper: FavouriteCoinsMapper,
 ) : TrackerRepository {
 
     companion object {
@@ -73,7 +80,7 @@ class TrackerRepositoryImpl @Inject constructor(
     }
 
 
-//    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
+    //    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
 //        if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
 //            val responseDatabase = cryptoCacheDao.getDetailsCoin(coinId)
 //            if (responseDatabase != null) return Result.success(
@@ -89,35 +96,40 @@ class TrackerRepositoryImpl @Inject constructor(
 //        return entity.mapCatching { detailCoinMapper.mapApiToDomain(it) }
 //    }
 //
-//    override suspend fun getOverview(): Result<CoinOverview> {
-//        val responsePriceCoins = Result.runCatching {
-//            coinGeckoApi.fetchCoinsPriceById(
-//                getCoinsIdString(),
-//                sharedPreferences.Currency
-//            )
-//        }.guard { return it }
-//        val entityPriceCoins = responseMapper.map(responsePriceCoins)
-//        val listEntityMarketChart = arrayListOf<MarketChartEntity>()
-//        sharedPreferences.getListFavoriteCoins().forEach {
-//            val response = Result.runCatching {
-//                coinGeckoApi.fetchHistoryByCoinId(
-//                    it.id.toString(),
-//                    sharedPreferences.Currency,
-//                    sharedPreferences.AmountDaysTracking.toString()
-//                )
-//            }.guard { return it }
-//            listEntityMarketChart.add(responseMapper.map(response).guard { return it })
-//        }
-//        return Result.runCatching {
-//            overviewMapper.map(
-//                entityPriceCoins.guard { return it },
-//                listEntityMarketChart
-//            )
-//        }
-//    }
-//
-    private fun getCoinsIdString(): String {
-        return sharedPreferences.getListFavoriteCoins().joinToString(",")
+    override suspend fun getOverview(): Result<CoinOverview> {
+        val favoriteCoins = sharedPreferences.getListFavoriteCoins()
+        val responsePriceCoins = Result.runCatching {
+            ktor.request(
+                ApiCalls.getPriceByListCoinIds(
+                    ids = favoriteCoins.mapNotNull { it.id }.joinToString(","),
+                    currency = sharedPreferences.Currency
+                )
+            )
+        }.guard { return it }
+        Timber.i(responsePriceCoins.response.toString())
+        val entityPriceCoins = responseMapper.map(responsePriceCoins)
+        val listEntityMarketChart = arrayListOf<MarketChartEntity>()
+        favoriteCoins.forEach { coin ->
+            if (!coin.id.isNullOrBlank()) {
+                val responseMarketChart = Result.runCatching {
+                    ktor.request(
+                        ApiCalls.getHistoryByCoinId(
+                            coinId = coin.id,
+                            currency = sharedPreferences.Currency,
+                            days = sharedPreferences.AmountDaysTracking.toString()
+                        )
+                    )
+                }.guard { return it }
+                listEntityMarketChart.add(
+                    responseMapper.map(responseMarketChart).guard { return it })
+            }
+        }
+        return Result.runCatching {
+            overviewMapper.map(
+                entityPriceCoins.guard { return it },
+                listEntityMarketChart
+            )
+        }
     }
 
     override suspend fun addFavouriteCoin(id: String, name: String): Result<Boolean> {
@@ -154,6 +166,13 @@ class TrackerRepositoryImpl @Inject constructor(
         //cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
 
         return Result.success(true)
+    }
+
+    override suspend fun getFavouriteCoins(): Result<ListFavouriteCoins> {
+        val data = Result.runCatching {
+            sharedPreferences.getListFavoriteCoins()
+        }
+        return data.mapCatching { favouriteCoinsMapper.map(it) }
     }
 
 

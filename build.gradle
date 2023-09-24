@@ -23,6 +23,8 @@ buildscript {
         classpath Projects.gradleVersionsPlugin
         classpath Projects.daggerHiltPlugin
         classpath Projects.serializationPlugin
+        classpath Projects.googleServicePlugin
+        classpath Projects.firebaseCrashlyticsPlugin
     }
 }
 
@@ -32,3 +34,6 @@ allprojects {
         mavenCentral()
     }
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

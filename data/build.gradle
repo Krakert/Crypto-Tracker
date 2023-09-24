@@ -22,8 +22,6 @@ dependencies {
     //Compile time dependencies
     kapt Deps.daggerHiltCompiler
 
-    //Android dependencies
-
     //Framework dependencies
     implementation Deps.daggerHilt
 

@@ -35,7 +35,11 @@ dependencies {
     kapt Deps.daggerHiltCompiler
     kapt Deps.daggerHiltJetpackCompiler
     implementation Deps.androidNavigation
-    //Android dependencies
+
+    //Firebase
+    implementation(platform(Deps.firebaseBom))
+    implementation(Deps.firebaseAnalytics)
+    implementation(Deps.firebaseCrashlyitcs)
 
     //Framework dependencies
     implementation Deps.daggerHilt
@@ -56,3 +60,6 @@ static def buildTime() {
     def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
     return df.format(new Date())
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'

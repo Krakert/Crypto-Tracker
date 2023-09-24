@@ -38,9 +38,10 @@ object Versions {
 
     const val dagger = "2.45"
 
+    const val googleService = "4.3.15"
     const val firebaseAnalytics = "21.2.1"
-    const val firebaseBom = "31.4.0"
-    const val firebaseCrashlytics = "18.3.6"
+    const val firebaseBom = "32.3.1"
+    const val firebaseCrashlytics = "2.9.9"
 
     const val ktor = "2.2.4"
     const val napier = "2.6.1"
@@ -55,6 +56,8 @@ object Projects {
     const val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.8.0"
     const val daggerHiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
     const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:${Versions.serialization}"
+    const val googleServicePlugin = "com.google.gms:google-services:${Versions.googleService}"
+    const val firebaseCrashlyticsPlugin = "com.google.firebase:firebase-crashlytics-gradle:${Versions.firebaseCrashlytics}"
 }
 
 object Deps {
@@ -76,8 +79,8 @@ object Deps {
 
     // Crashlytics
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
-    const val firebaseCrashlyitcs = "com.google.firebase:firebase-crashlytics-ktx:${Versions.firebaseCrashlytics}"
-    const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx:${Versions.firebaseAnalytics}"
+    const val firebaseCrashlyitcs = "com.google.firebase:firebase-crashlytics-ktx"
+    const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx"
 
     // Room
     const val roomCompiler = "androidx.room:room-compiler:${Versions.roomCompiler}"

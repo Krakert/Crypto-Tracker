@@ -1,6 +1,5 @@
 package com.krakert.tracker.ui.tracker.add.mapper
 
-import android.content.SharedPreferences
 import com.krakert.tracker.domain.tracker.model.ListCoinsItem
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
 import javax.inject.Inject
