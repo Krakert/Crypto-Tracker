@@ -1,6 +1,5 @@
 package com.krakert.tracker.ui.tracker.overview
 
-import android.graphics.PointF
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -50,7 +47,6 @@ import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.krakert.tracker.R
-import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
 import com.krakert.tracker.ui.components.IconButton
@@ -58,12 +54,18 @@ import com.krakert.tracker.ui.components.Loading
 import com.krakert.tracker.ui.components.Screen
 import com.krakert.tracker.ui.components.ShowProblem
 import com.krakert.tracker.ui.theme.themeValues
-import com.krakert.tracker.ui.tracker.model.Currency
 import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.*
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
+import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
 
 @Composable
-fun TrackerOverviewScreen(viewModel: OverviewViewModel, navController: NavHostController, lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current) {
+fun TrackerOverviewScreen(
+    viewModel: OverviewViewModel,
+    navController: NavHostController,
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+) {
     val scrollState = rememberScalingLazyListState()
     Scaffold(
         timeText = {
@@ -82,7 +84,7 @@ fun TrackerOverviewScreen(viewModel: OverviewViewModel, navController: NavHostCo
     ) {
         DisposableEffect(lifeCycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME){
+                if (event == Lifecycle.Event.ON_RESUME) {
                     viewModel.getAllOverviewData()
                 }
             }
@@ -96,7 +98,7 @@ fun TrackerOverviewScreen(viewModel: OverviewViewModel, navController: NavHostCo
         when (val response = viewModel.overviewViewState.collectAsState().value) {
             is Loading -> Loading()
             is Problem -> {
-                ShowProblem(response.exception){
+                ShowProblem(response.exception) {
                     when (response.exception) {
                         ProblemState.SSL -> viewModel.openSettings()
                         ProblemState.EMPTY -> navController.navigate(Screen.Add.route)
@@ -108,7 +110,7 @@ fun TrackerOverviewScreen(viewModel: OverviewViewModel, navController: NavHostCo
             is Success ->
                 ShowStatsCoins(
                     scrollState = scrollState,
-                    resultAPi = response.data,
+                    result = response.data,
                     navController = navController
                 )
         }
@@ -118,17 +120,9 @@ fun TrackerOverviewScreen(viewModel: OverviewViewModel, navController: NavHostCo
 @Composable
 fun ShowStatsCoins(
     scrollState: ScalingLazyListState,
-    resultAPi: CoinOverview,
+    result: OverviewCoinDisplay,
     navController: NavHostController,
 ) {
-
-    val path = Path()
-    val context = LocalContext.current
-//    val sharedPreference = SharedPreference.sharedPreference(context = context)
-//    val currencyObject = sharedPreference.Currency?.let { Currency.valueOf(it) }
-//    val favoriteCoin = sharedPreference.FavoriteCoin
-
-
     ScalingLazyColumn(
         modifier = Modifier
             .fillMaxSize(),
@@ -140,7 +134,7 @@ fun ShowStatsCoins(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        resultAPi.result.forEach {
+        result.result.forEach {
             item {
                 Row(
                     modifier = Modifier
@@ -156,106 +150,61 @@ fun ShowStatsCoins(
                         )
                 ) {
                     CenterElement {
-//                        if (favoriteCoin == it.id) {
-//                            Text(
-//                                text = buildAnnotatedString {
-//                                    append(it.name.replaceFirstChar { it.uppercase() })
-//                                    appendInlineContent("inlineContent", "[icon]")
-//                                },
-//                                modifier = Modifier.padding(bottom = 8.dp),
-//                                textAlign = TextAlign.Center,
-//                                color = MaterialTheme.colors.primary,
-//                                fontSize = 20.sp,
-//                                inlineContent = addIconFavorite()
-//                            )
-//                        } else {
+                        if (result.tileCoin == it.id) {
                             Text(
-                                text = it.name.replaceFirstChar { it.uppercase() },
+                                text = buildAnnotatedString {
+                                    append(it.name)
+                                    appendInlineContent("inlineContent", "[icon]")
+                                },
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colors.primary,
+                                fontSize = 20.sp,
+                                inlineContent = addIconFavorite()
+                            )
+                        } else {
+                            Text(
+                                text = it.name,
                                 modifier = Modifier.padding(bottom = 8.dp),
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colors.primary,
                                 fontSize = 20.sp,
                             )
-//                        }
+                        }
 
-//                        Canvas(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .height(105.dp)
-//                                .padding(bottom = 8.dp)
-//                        ) {
-//                            val points = arrayListOf<PointF>()
-//                            val pointsCon1 = arrayListOf<PointF>()
-//                            val pointsCon2 = arrayListOf<PointF>()
-//
-//                            var maxData = it.graphData[0].price.toFloat()
-//                            var minData = it.graphData[0].price.toFloat()
-////
-//                            it.graphData.forEach {
-//                                if (maxData < it.price.toFloat()) {
-//                                    maxData = it.price.toFloat()
-//                                }
-//                                if (minData > it.price.toFloat()) {
-//                                    minData = it.price.toFloat()
-//                                }
-//                            }
-//
-//                            val pointsMean = arrayListOf<Float>()
-//                            // Calculate mean over 5 point and add that value to the list
-//                            for (i in 0 until it.graphData.size - 5 step 5) {
-//                                pointsMean.add(
-//                                    med(listOf(
-//                                    it.graphData[i].price.toFloat(),
-//                                    it.graphData[i + 1].price.toFloat(),
-//                                    it.graphData[i + 2].price.toFloat(),
-//                                    it.graphData[i + 3].price.toFloat(),
-//                                    it.graphData[i + 4].price.toFloat(),
-//                                ))
-//                                )
-//                            }
-//
-//                            val distance = size.width / (pointsMean.size + 1)
-//                            var currentX = 0F
-//
-//                            pointsMean.forEach { point ->
-//                                val y = (point - maxData) / (minData - maxData) * size.height
-//                                val x = currentX + distance
-//                                points.add(PointF(x, y))
-//                                currentX += distance
-//                            }
-//
-//                            for (i in 1 until points.size) {
-//                                pointsCon1.add(PointF((points[i].x + points[i - 1].x) / 2, points[i - 1].y))
-//                                pointsCon2.add(PointF((points[i].x + points[i - 1].x) / 2, points[i].y))
-//                            }
-//
-//
-//                            path.reset()
-//                            path.moveTo(points.first().x, points.first().y)
-//                            for (i in 1 until points.size) {
-//                                path.cubicTo(
-//                                    pointsCon1[i - 1].x,
-//                                    pointsCon1[i - 1].y,
-//                                    pointsCon2[i - 1].x,
-//                                    pointsCon2[i - 1].y,
-//                                    points[i].x,
-//                                    points[i].y
-//                                )
-//                            }
-//
-//                            drawPath(
-//                                path = path,
-//                                color = themeValues[3].colors.secondary,
-//                                style = Stroke(width = 6f)
-//                            )
-//                        }
 
-                        val textData = it.currentPrice
-//                        Text(text = buildString {
-//                            append(currencyObject?.nameFull?.get(1))
-//                                .append(" ")
-//                                .append(textData)
-//                        })
+                        Canvas(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(105.dp)
+                                .padding(bottom = 8.dp)
+                        ) {
+                            // Get the canvas size
+                            val canvasWidth = size.width
+                            val canvasHeight = size.height
+
+                            // Calculate the transformation
+                            val pathWidth = it.marketChart.getBounds().width
+                            val pathHeight = it.marketChart.getBounds().height
+                            val scaleX = canvasWidth / pathWidth
+                            val scaleY = canvasHeight / pathHeight
+
+                            // Calculate translation factors to center the path horizontally
+                            val translateX = -(it.marketChart.getBounds().left * scaleX)
+                            val translateY = (canvasHeight - pathHeight * scaleY) / 2
+
+                            // Draw the path with the applied transformation
+                            drawContext.canvas.apply {
+                                scale(scaleX, scaleY)
+                                translate(translateX, translateY)
+                                drawPath(
+                                    path = it.marketChart,
+                                    color = themeValues[3].colors.secondary,
+                                    style = Stroke(width = 6.0f)
+                                )
+                            }
+                        }
+                        Text(text = it.currentPrice)
                         Divider()
                     }
                 }
@@ -295,13 +244,6 @@ fun ShowStatsCoins(
             }
         }
     }
-}
-
-fun med(list: List<Float>) = list.sorted().let {
-    if (it.size % 2 == 0)
-        (it[it.size / 2] + it[(it.size - 1) / 2]) / 2
-    else
-        it[it.size / 2]
 }
 
 private fun addIconFavorite(): Map<String, InlineTextContent> {

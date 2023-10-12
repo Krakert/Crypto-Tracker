@@ -6,6 +6,7 @@ import com.krakert.tracker.data.SharedPreference.AmountDaysTracking
 import com.krakert.tracker.data.SharedPreference.Currency
 import com.krakert.tracker.data.SharedPreference.FavoriteCoins
 import com.krakert.tracker.data.SharedPreference.MinutesCache
+import com.krakert.tracker.data.SharedPreference.TileCoin
 import com.krakert.tracker.data.SharedPreference.getListFavoriteCoins
 import com.krakert.tracker.data.components.net.KtorRequest
 import com.krakert.tracker.data.components.net.mapper.ResponseMapper
@@ -25,7 +26,6 @@ import com.krakert.tracker.domain.tracker.model.ListCoins
 import com.krakert.tracker.domain.tracker.model.ListFavouriteCoins
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -106,7 +106,6 @@ class TrackerRepositoryImpl @Inject constructor(
                 )
             )
         }.guard { return it }
-        Timber.i(responsePriceCoins.response.toString())
         val entityPriceCoins = responseMapper.map(responsePriceCoins)
         val listEntityMarketChart = arrayListOf<MarketChartEntity>()
         favoriteCoins.forEach { coin ->
@@ -126,8 +125,11 @@ class TrackerRepositoryImpl @Inject constructor(
         }
         return Result.runCatching {
             overviewMapper.map(
-                entityPriceCoins.guard { return it },
-                listEntityMarketChart
+                favoriteCoins = favoriteCoins,
+                tileCoin = sharedPreferences.TileCoin,
+                pricesCoinsEntity = entityPriceCoins.guard { return it },
+                listMarketChartEntity = listEntityMarketChart,
+                currency = sharedPreferences.Currency,
             )
         }
     }

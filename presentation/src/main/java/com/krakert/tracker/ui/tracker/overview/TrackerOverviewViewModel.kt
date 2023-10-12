@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.domain.tracker.GetFavouriteCoins
 import com.krakert.tracker.domain.tracker.GetOverview
-import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
+import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
+import com.krakert.tracker.ui.tracker.overview.mapper.OverviewCoinDisplayMapper
+import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +25,7 @@ import javax.net.ssl.SSLHandshakeException
 sealed class ViewStateOverview {
     // Represents different states for the overview screen
     object Loading : ViewStateOverview()
-    data class Success(val data: CoinOverview) : ViewStateOverview()
+    data class Success(val data: OverviewCoinDisplay) : ViewStateOverview()
     data class Problem(val exception: ProblemState?) : ViewStateOverview()
 }
 
@@ -33,6 +35,7 @@ class OverviewViewModel
     private val application: Application,
     private val getFavouriteCoins: GetFavouriteCoins,
     private val getOverview: GetOverview,
+    private val overviewCoinDisplayMapper: OverviewCoinDisplayMapper,
 ) : ViewModel() {
     private val mutableStateOverview = MutableStateFlow<ViewStateOverview>(Loading)
     val overviewViewState = mutableStateOverview.asStateFlow()
@@ -48,7 +51,11 @@ class OverviewViewModel
                     Timber.i(listFavouriteCoins.result.toString())
                     getOverview()
                         .onSuccess { coinOverview ->
-                            Timber.i(coinOverview.result.toString())
+                            mutableStateOverview.emit(
+                                Success(
+                                    overviewCoinDisplayMapper.map(coinOverview)
+                                )
+                            )
                         }
                         .onFailure {
                             when (it) {
