@@ -63,7 +63,7 @@ object ApiCalls {
         coinId: String,
         localization: String = "false",
         tickers: Boolean = false,
-        markerData: Boolean = false,
+        markerData: Boolean = true,
         communityData: Boolean = false,
         developerData: Boolean = false,
         sparkline: Boolean = false

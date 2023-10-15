@@ -1,5 +1,8 @@
 package com.krakert.tracker.data.tracker.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class MarketDataEntity(
     val current_price: Map<String, Double>?,
     val market_cap: Map<String, Double>?,

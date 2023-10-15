@@ -1,9 +1,12 @@
 package com.krakert.tracker.data.tracker.entity
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CoinCurrentDataEntity(
     val id: String?,
     val symbol: String?,
     val name: String?,
-    val images: ImagesEntity?,
-    val marketData: MarketDataEntity?,
+    val image: ImagesEntity?,
+    val market_data: MarketDataEntity?,
 )
