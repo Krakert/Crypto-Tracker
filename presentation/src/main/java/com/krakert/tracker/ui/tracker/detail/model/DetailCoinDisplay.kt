@@ -5,5 +5,5 @@ data class DetailCoinDisplay(
     val symbol: String,
     val name: String,
     val imageUrl: String,
-    val marketData: DetailCoinMarketDataDisplay
+    val marketData: DetailCoinMarketDataDisplay,
 )

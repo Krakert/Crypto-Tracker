@@ -1,6 +1,6 @@
 package com.krakert.tracker.ui.tracker.model
 
-enum class Currency(val fullName: String, symbol: String) {
+enum class Currency(val fullName: String, val symbol: String) {
     Usd(fullName = "Dollar", symbol = "$"),
     Eur(fullName = "Euro", symbol = "€"),
     Jpy(fullName = "Japanese Yen", symbol = "¥"),

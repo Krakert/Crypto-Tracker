@@ -57,31 +57,6 @@ import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 
-//
-//@Preview(
-//    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
-//    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,
-//    uiMode = WEAR_PREVIEW_UI_MODE,
-//    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
-//    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
-//)
-//@Composable
-//fun PreviewShowDetails() {
-//    ShowDetailsCoin(detailsCoins =
-//    DetailsCoin(
-//        name = "Bitcoin",
-//        image = null,
-//        currentPrice = "16.043,86",
-//        priceChangePercentage24h = -2.12,
-//        priceChangePercentage7d = -2.1,
-//        circulatingSupply = 19214981.0,
-//        high24h = 16609.39,
-//        low24h = 15738.18,
-//        marketCap = 317737907422.0,
-//        marketCapChangePercentage24h = 2.1,
-//    ), coinId = "bitcoin", navController = null, viewModel = null)
-//}
-
 @Composable
 fun TrackerDetailScreen(
     coinId: String,
@@ -185,7 +160,7 @@ fun ShowDetailsCoin(
                     )
                 }
                 Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = stringResource(R.string.txt_price_change_percentage_7d),
@@ -224,11 +199,7 @@ fun ShowDetailsCoin(
             ) {
                 CenterElement {
                     Text(
-                        text = buildString {
-//                            append(currencyObject?.nameFull?.get(1))
-//                                .append(" ")
-                                append(detailsCoins.marketData.currentPrice)
-                        },
+                        text = detailsCoins.marketData.currentPrice,
                         textAlign = TextAlign.Center,
                         fontSize = 28.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -258,7 +229,7 @@ fun ShowDetailsCoin(
             ) {
                 CenterElement {
                     Text(
-                        text = String.format("%,.0f", detailsCoins.marketData.circulatingSupply),
+                        text = detailsCoins.marketData.circulatingSupply,
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                     )
@@ -286,19 +257,11 @@ fun ShowDetailsCoin(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
-                    text = buildString {
-//                        append(currencyObject?.nameFull?.get(1))
-//                            .append(" ")
-                            append(detailsCoins.marketData.low24h)
-                    },
+                    text = detailsCoins.marketData.low24h,
                     fontSize = 16.sp,
                 )
                 Text(
-                    text = buildString {
-//                        append(currencyObject?.nameFull?.get(1))
-//                            .append(" ")
-                            append(detailsCoins.marketData.high24h)
-                    },
+                    text = detailsCoins.marketData.high24h,
                     fontSize = 16.sp,
                 )
             }
@@ -324,12 +287,7 @@ fun ShowDetailsCoin(
             ) {
                 CenterElement {
                     Text(
-                        text = buildString {
-//                            append(currencyObject?.nameFull?.get(1))
-//                                .append(" ")
-                                append(String.format("%,.2f", detailsCoins.marketData.marketCap))
-
-                        },
+                        text = detailsCoins.marketData.marketCap,
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                     )
@@ -400,11 +358,9 @@ fun ShowDetailsCoin(
 }
 
 private fun addIcon(value: Double?): Map<String, InlineTextContent> {
-    val myId = "inlineContent"
-
     val inlineContent = mapOf(
         Pair(
-            myId,
+            "inlineContent",
             InlineTextContent(
                 Placeholder(
                     width = 24.sp,
