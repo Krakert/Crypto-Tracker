@@ -1,95 +1,79 @@
 package com.krakert.tracker.ui.tracker.detail
 
 import android.app.Application
-import android.content.SharedPreferences
+import android.content.Intent
+import android.provider.Settings
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.domain.tracker.GetDetailsCoin
+import com.krakert.tracker.domain.tracker.RemoveFavouriteCoin
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Loading
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Problem
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Success
+import com.krakert.tracker.ui.tracker.detail.mapper.DetailCoinDisplayMapper
+import com.krakert.tracker.ui.tracker.detail.model.DetailCoinDisplay
+import com.krakert.tracker.ui.tracker.model.ProblemState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
+import javax.net.ssl.SSLHandshakeException
 
-//sealed class ViewStateDetailsCoins {
-//    object Loading : ViewStateDetailsCoins()
-//    data class Success(val details: DetailsCoin) : ViewStateDetailsCoins()
-//    data class Problem(val exception: ProblemState?) : ViewStateDetailsCoins()
-//}
+sealed class ViewStateDetails {
+    object Loading : ViewStateDetails()
+    data class Success(val details: DetailCoinDisplay) : ViewStateDetails()
+    data class Problem(val exception: ProblemState?) : ViewStateDetails()
+}
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-//    private val CryptoRepository: CryptoRepository,
-    private val sharedPreferences: SharedPreferences,
     private val application: Application,
+    private val getDetailsCoin: GetDetailsCoin,
+    private val removeFavouriteCoin: RemoveFavouriteCoin,
+    private val detailCoinDisplayMapper: DetailCoinDisplayMapper
 ) : ViewModel() {
-//
-//    lateinit var coinId: String
-//
-//    private val _viewState = MutableStateFlow<ViewStateDetailsCoins>(ViewStateDetailsCoins.Loading)
-//    val detailsCoin = _viewState.asStateFlow()
-//
-//    fun getDetailsCoinByCoinId() {
-//        viewModelScope.launch {
-//            if (!CryptoRepository.isOnline()) {
-//                _viewState.value = ViewStateDetailsCoins.Problem(ProblemState.NO_CONNECTION)
-//            } else {
-//                CryptoRepository.getDetailsCoinByCoinId(
-//                    coinId = coinId
-//                ).collect { result ->
-//                    when (result) {
-//                        is Resource.Success -> {
-//                            _viewState.value = ViewStateDetailsCoins.Success(
-//                                DetailsCoin(
-//                                    name = result.data?.name.toString(),
-//                                    image = result.data?.image,
-//                                    currentPrice = result.data?.marketData?.currentPrice?.get(sharedPreferences.Currency).toString(),
-//                                    priceChangePercentage24h = result.data?.marketData?.priceChangePercentage24h?: 0.0,
-//                                    priceChangePercentage7d = result.data?.marketData?.priceChangePercentage7d ?: 0.0,
-//                                    circulatingSupply = result.data?.marketData?.circulatingSupply ?: 0.0,
-//                                    high24h = result.data?.marketData?.high24h?.get(sharedPreferences.Currency) ?: 0.0,
-//                                    low24h = result.data?.marketData?.low24h?.get(sharedPreferences.Currency) ?: 0.0,
-//                                    marketCap = result.data?.marketData?.marketCap?.get(sharedPreferences.Currency) ?: 0.0,
-//                                    marketCapChangePercentage24h = result.data?.marketData?.marketCapChangePercentage24h ?: 0.0
-//                                )
-//                            )
-//                        }
-//                        is Resource.Error -> {
-//                            _viewState.value = ViewStateDetailsCoins.Problem(result.state)
-//                        }
-//                        is Resource.Loading -> {
-//                            _viewState.value = ViewStateDetailsCoins.Loading
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    fun removeCoinFromFavoriteCoins(coinId: String) {
-//        try {
-//            val dataSharedPreferences = sharedPreferences.FavoriteCoins.toString()
-//            val favoriteCoin = sharedPreferences.FavoriteCoin
-//            val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
-//            val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(dataSharedPreferences, typeOfT)
-//
-//            var indexToRemove: Int? = null
-//                listFavoriteCoins.forEach {
-//                    if (it.id == coinId.lowercase())
-//                        indexToRemove = listFavoriteCoins.indexOf(it)
-//                }
-//
-//            indexToRemove?.let { listFavoriteCoins.removeAt(it) }
-//
-//            sharedPreferences.FavoriteCoins = Gson().toJson(listFavoriteCoins)
-//
-//            if (favoriteCoin == coinId) {
-//                sharedPreferences.FavoriteCoin = ""
-//            }
-//
-//        } catch (e: Exception) {
-//            Log.e(ContentValues.TAG, e.message ?: "Something went wrong while deleting a coins")
-//        }
-//    }
-//
-//    fun openSettings() {
-//        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
-//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//        application.applicationContext.startActivity(intent)
-//    }
+
+    private val mutableStateDetail = MutableStateFlow<ViewStateDetails>(Loading)
+    val detailsCoin = mutableStateDetail.asStateFlow()
+    fun getDetailsByCoinId(coinId: String) {
+        viewModelScope.launch {
+            getDetailsCoin(coinId)
+                .onSuccess { details ->
+                    mutableStateDetail.emit(
+                        Success(
+                            detailCoinDisplayMapper.map(details)
+                        )
+                    )
+                }
+                .onFailure {
+                    when (it) {
+                        is SSLHandshakeException -> {
+                            mutableStateDetail.emit(Problem(ProblemState.SSL))
+                        }
+
+                        is ConnectException -> {
+                            mutableStateDetail.emit(Problem(ProblemState.NO_CONNECTION))
+                        }
+
+                        else -> {
+                            mutableStateDetail.emit(Problem(ProblemState.UNKNOWN))
+                        }
+                    }
+                }
+        }
+    }
+
+    fun removeCoinFromFavoriteCoins(id: String, name: String) {
+        viewModelScope.launch {
+            removeFavouriteCoin(id = id, name = name)
+        }
+    }
+
+    fun openSettings() {
+        val intent = Intent(Settings.ACTION_DATE_SETTINGS)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        application.applicationContext.startActivity(intent)
+    }
 }
