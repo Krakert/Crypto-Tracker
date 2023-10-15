@@ -1,5 +1,6 @@
 package com.krakert.tracker.domain.tracker
 
+import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
 import com.krakert.tracker.domain.tracker.model.ListFavouriteCoins
@@ -16,9 +17,7 @@ interface TrackerRepository {
 
     suspend fun getFavouriteCoins(): Result<ListFavouriteCoins>
 
-//    suspend fun getDetailsCoin(
-//        coinId: String,
-//    ): Result<CoinDetails>
+    suspend fun getDetailsCoin(coinId: String): Result<CoinDetails>
 
 
 //    suspend fun getHistoryByCoinId(

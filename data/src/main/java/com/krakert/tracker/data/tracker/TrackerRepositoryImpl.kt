@@ -21,6 +21,7 @@ import com.krakert.tracker.data.tracker.mapper.FavouriteCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.data.tracker.mapper.OverviewMapper
 import com.krakert.tracker.domain.tracker.TrackerRepository
+import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
 import com.krakert.tracker.domain.tracker.model.ListFavouriteCoins
@@ -80,7 +81,7 @@ class TrackerRepositoryImpl @Inject constructor(
     }
 
 
-    //    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
+    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
 //        if (!cacheRateLimit.shouldFetch(CACHE_KEY_DETAILS_COIN, sharedPreferences)) {
 //            val responseDatabase = cryptoCacheDao.getDetailsCoin(coinId)
 //            if (responseDatabase != null) return Result.success(
@@ -89,13 +90,16 @@ class TrackerRepositoryImpl @Inject constructor(
 //                )
 //            )
 //        }
-//        val response =
-//            Result.runCatching { coinGeckoApi.fetchDetailsCoinByCoinId(coinId) }.guard { return it }
-//        val entity = responseMapper.map(response)
-//        //        cryptoCacheDao.insertDetailsCoin()
-//        return entity.mapCatching { detailCoinMapper.mapApiToDomain(it) }
-//    }
-//
+        val response =
+            Result.runCatching {
+                ktor.request(ApiCalls.getDetailsCoinByCoinId(coinId = coinId))
+            }.guard { return it }
+        val entity = responseMapper.map(response)
+        //        cryptoCacheDao.insertDetailsCoin()
+        return entity.mapCatching { detailCoinMapper.mapApiToDomain(it) }
+    }
+
+    //
     override suspend fun getOverview(): Result<CoinOverview> {
         val favoriteCoins = sharedPreferences.getListFavoriteCoins()
         val responsePriceCoins = Result.runCatching {
