@@ -19,20 +19,4 @@ interface TrackerRepository {
 
     suspend fun getDetailsCoin(coinId: String): Result<CoinDetails>
 
-
-//    suspend fun getHistoryByCoinId(
-//        coinId: String,
-//        currency: String,
-//        days: String,
-//    ): Result<MarketChart>
-
-//    suspend fun getPriceCoins(
-//        idCoins: String,
-//        currency: String):
-//        Result<Map<String, MutableMap<String, Any>>>
-
-//    fun getCoinsIdString() : String
-//
-//    fun isOnline(): Boolean
-
 }

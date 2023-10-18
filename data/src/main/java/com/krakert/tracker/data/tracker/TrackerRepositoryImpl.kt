@@ -67,7 +67,7 @@ class TrackerRepositoryImpl @Inject constructor(
         val response = Result.runCatching {
             ktor.request(
                 ApiCalls.getListCoins(
-                    currency = sharedPreferences.Currency
+                    currency = sharedPreferences.Currency.lowercase()
                 )
             )
         }.guard { return it }
@@ -106,7 +106,7 @@ class TrackerRepositoryImpl @Inject constructor(
             ktor.request(
                 ApiCalls.getPriceByListCoinIds(
                     ids = favoriteCoins.mapNotNull { it.id }.joinToString(","),
-                    currency = sharedPreferences.Currency
+                    currency = sharedPreferences.Currency.lowercase()
                 )
             )
         }.guard { return it }
@@ -118,7 +118,7 @@ class TrackerRepositoryImpl @Inject constructor(
                     ktor.request(
                         ApiCalls.getHistoryByCoinId(
                             coinId = coin.id,
-                            currency = sharedPreferences.Currency,
+                            currency = sharedPreferences.Currency.lowercase(),
                             days = sharedPreferences.AmountDaysTracking.toString()
                         )
                     )
@@ -133,7 +133,7 @@ class TrackerRepositoryImpl @Inject constructor(
                 tileCoin = sharedPreferences.TileCoin,
                 pricesCoinsEntity = entityPriceCoins.guard { return it },
                 listMarketChartEntity = listEntityMarketChart,
-                currency = sharedPreferences.Currency,
+                currency = sharedPreferences.Currency.lowercase(),
             )
         }
     }
