@@ -1,28 +1,20 @@
 package com.krakert.tracker.ui.tracker.overview
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.rounded.PlusOne
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,7 +26,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.AutoCenteringParams
-import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.PositionIndicator
@@ -46,18 +37,17 @@ import androidx.wear.compose.material.TimeText
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
-import com.krakert.tracker.R
 import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
-import com.krakert.tracker.ui.components.IconButton
 import com.krakert.tracker.ui.components.Loading
 import com.krakert.tracker.ui.components.Screen
 import com.krakert.tracker.ui.components.ShowProblem
-import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
+import com.krakert.tracker.ui.tracker.overview.components.OverviewBottomBar
+import com.krakert.tracker.ui.tracker.overview.components.OverviewMarketChart
 import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
 
 @Composable
@@ -124,8 +114,7 @@ fun ShowStatsCoins(
     navController: NavHostController,
 ) {
     ScalingLazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             top = 8.dp,
             bottom = 32.dp
@@ -136,9 +125,8 @@ fun ShowStatsCoins(
     ) {
         result.result.forEach {
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
+                Column(
+                    modifier = Modifier.fillMaxSize()
                         .clickable(
                             onClick = {
                                 navController.currentBackStackEntry?.savedStateHandle?.set(
@@ -150,98 +138,31 @@ fun ShowStatsCoins(
                         )
                 ) {
                     CenterElement {
-                        if (result.tileCoin == it.id) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    append(it.name)
+                        Text(
+                            text = buildAnnotatedString {
+                                append(it.name)
+                                if (result.tileCoin == it.id) {
                                     appendInlineContent("inlineContent", "[icon]")
-                                },
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colors.primary,
-                                fontSize = 20.sp,
-                                inlineContent = addIconFavorite()
-                            )
-                        } else {
-                            Text(
-                                text = it.name,
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colors.primary,
-                                fontSize = 20.sp,
-                            )
-                        }
+                                }
+                            },
+                            modifier = Modifier.padding(bottom = 8.dp),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colors.primary,
+                            fontSize = 20.sp,
+                            inlineContent = if (result.tileCoin == it.id) addIconFavorite() else emptyMap()
+                        )
 
-
-                        Canvas(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(105.dp)
-                                .padding(bottom = 8.dp)
-                        ) {
-                            // Get the canvas size
-                            val canvasWidth = size.width
-                            val canvasHeight = size.height
-
-                            // Calculate the transformation
-                            val pathWidth = it.marketChart.getBounds().width
-                            val pathHeight = it.marketChart.getBounds().height
-                            val scaleX = canvasWidth / pathWidth
-                            val scaleY = canvasHeight / pathHeight
-
-                            // Calculate translation factors to center the path horizontally
-                            val translateX = -(it.marketChart.getBounds().left * scaleX)
-                            val translateY = (canvasHeight - pathHeight * scaleY) / 2
-
-                            // Draw the path with the applied transformation
-                            drawContext.canvas.apply {
-                                scale(scaleX, scaleY)
-                                translate(translateX, translateY)
-                                drawPath(
-                                    path = it.marketChart,
-                                    color = themeValues[3].colors.secondary,
-                                    style = Stroke(width = 6.0f)
-                                )
-                            }
-                        }
+                        OverviewMarketChart(marketChart = it.marketChart)
                         Text(text = it.currentPrice)
                         Divider()
                     }
                 }
             }
         }
-        // Last item of the row, add more coins to track
         item {
-            Row(modifier = Modifier.fillMaxSize()) {
-                CenterElement {
-                    Text(
-                        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-                        text = stringResource(R.string.txt_add_more_change_settings),
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
-
-                    )
-                }
-            }
-        }
-        item {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.PlusOne
-                ) {
-                    navController.navigate(Screen.Add.route)
-                }
-                IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.Settings
-                ) {
-                    navController.navigate(Screen.Settings.route)
-                }
-            }
+            OverviewBottomBar(
+                openListCoins = { navController.navigate(Screen.Add.route) },
+                openSettings = { navController.navigate(Screen.Settings.route) })
         }
     }
 }
