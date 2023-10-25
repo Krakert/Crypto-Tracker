@@ -51,8 +51,8 @@ class TrackerRepositoryImpl @Inject constructor(
 
     // Setup of the limits for the different data in the DB
     private val cacheRateLimit =
-        CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
-    private val cacheRateLimitList = CacheRateLimiter<String>(1, TimeUnit.DAYS)
+        CacheRateLimiter(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
+    private val cacheRateLimitList = CacheRateLimiter(1, TimeUnit.DAYS)
 
     override suspend fun getListCoins(): Result<ListCoins> {
 //        if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {

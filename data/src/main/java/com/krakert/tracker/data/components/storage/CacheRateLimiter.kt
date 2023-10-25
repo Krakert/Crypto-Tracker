@@ -2,7 +2,6 @@ package com.krakert.tracker.data.components.storage
 
 import android.content.SharedPreferences
 import android.os.SystemClock
-import android.util.ArrayMap
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -13,9 +12,9 @@ import java.util.concurrent.TimeUnit
  * Utility class that decides whether we should fetch some data or not.
  * Expanded this class with disk stored timestamps
  */
-class CacheRateLimiter<in KEY : Any>(timeout: Int, timeUnit: TimeUnit) {
+class CacheRateLimiter(timeout: Int, timeUnit: TimeUnit) {
     private val TAG = "CacheRateLimiter"
-    private val mTimeStamps = ArrayMap<KEY, Long>()
+    private val mTimeStamps = mutableMapOf<String, Long>()
     private val mTimeout = timeUnit.toMillis(timeout.toLong())
 
     companion object {
@@ -23,7 +22,7 @@ class CacheRateLimiter<in KEY : Any>(timeout: Int, timeUnit: TimeUnit) {
     }
 
     @Synchronized
-    fun shouldFetch(key: KEY, prefs: SharedPreferences): Boolean {
+    fun shouldFetch(key: String, prefs: SharedPreferences): Boolean {
         val lastFetched = getTimeStampForKey(prefs, key)
 
         val now = now()
@@ -47,7 +46,7 @@ class CacheRateLimiter<in KEY : Any>(timeout: Int, timeUnit: TimeUnit) {
 
     private fun now() = SystemClock.uptimeMillis()
 
-    private fun storeTimeStamps(sharedPreferences: SharedPreferences, key: KEY, time: Long?) {
+    private fun storeTimeStamps(sharedPreferences: SharedPreferences, key: String, time: Long) {
         //get from shared prefs
         val arrayMap = getStoredTimestamps(sharedPreferences)
 
@@ -58,31 +57,34 @@ class CacheRateLimiter<in KEY : Any>(timeout: Int, timeUnit: TimeUnit) {
         }
     }
 
-    private fun writeToPrefs(sharedPreferences: SharedPreferences, arrayMap: ArrayMap<KEY, Long>) {
+    private fun writeToPrefs(
+        sharedPreferences: SharedPreferences,
+        arrayMap: MutableMap<String, Long>
+    ) {
         //convert to string using gson
-        val arrayMapJson = Json.encodeToString(arrayMap)
+        val arrayMapJson = Json.encodeToString(arrayMap.toMap())
 
         //save in shared prefs
         sharedPreferences.edit().putString(KEY_CACHE_TIMESTAMPS, arrayMapJson).apply()
     }
 
-    private fun getTimeStampForKey(prefs: SharedPreferences, key: KEY): Long? {
+    private fun getTimeStampForKey(prefs: SharedPreferences, key: String): Long? {
         //get from shared prefs
-        val arrayMap: ArrayMap<KEY, Long> = getStoredTimestamps(prefs)
+        val arrayMap: MutableMap<String, Long> = getStoredTimestamps(prefs)
 
         return arrayMap[key]
     }
 
 
-    private fun getStoredTimestamps(sharedPreferences: SharedPreferences): ArrayMap<KEY, Long> {
+    private fun getStoredTimestamps(sharedPreferences: SharedPreferences): MutableMap<String, Long> {
         val storedTimeStamps = sharedPreferences.getString(KEY_CACHE_TIMESTAMPS, null)
-            ?: return ArrayMap()
+            ?: return mutableMapOf()
 
-        return Json.decodeFromString(storedTimeStamps) ?: return ArrayMap()
+        return Json.decodeFromString(storedTimeStamps) ?: return mutableMapOf()
     }
 
-    fun removeForKey(prefs: SharedPreferences, key: KEY) {
-        val timestamps: ArrayMap<KEY, Long> = getStoredTimestamps(prefs)
+    fun removeForKey(prefs: SharedPreferences, key: String) {
+        val timestamps: MutableMap<String, Long> = getStoredTimestamps(prefs)
 
         timestamps.remove(key)
 
