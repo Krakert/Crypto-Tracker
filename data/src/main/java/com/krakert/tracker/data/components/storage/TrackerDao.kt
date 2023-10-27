@@ -1,23 +1,21 @@
 package com.krakert.tracker.data.components.storage
 
 import androidx.room.*
-import com.krakert.tracker.data.tracker.entity.database.DBCoinCurrentDataEntity
-import com.krakert.tracker.data.tracker.entity.ListPricesCoinsEntity
 import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 
 @Dao
 interface TrackerDao {
 
     /*---------------- Used for the AddCoinViewModel ----------------*/
-//    @Query("SELECT * FROM DBListCoinItemEntity")
-//    suspend fun getListCoins(): List<DBListCoinItemEntity>
-//
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    suspend fun insertListCoins(coins: List<DBListCoinItemEntity>)
-//
-//    @Delete
-//    suspend fun deleteListCoins(it: List<DBListCoinItemEntity>)
-//    /*---------------------------------------------------------------*/
+    @Query("SELECT * FROM DBListCoinItemEntity")
+    suspend fun getListCoins(): List<DBListCoinItemEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertListCoins(coins: List<DBListCoinItemEntity>)
+
+    @Delete
+    suspend fun deleteListCoins(it: List<DBListCoinItemEntity>)
+    /*---------------------------------------------------------------*/
 //
 //    /*---------------- Used for the DetailsViewModel ----------------*/
 //    @Query("SELECT * FROM coinCurrentData WHERE coinCurrentData.id = :coinId")

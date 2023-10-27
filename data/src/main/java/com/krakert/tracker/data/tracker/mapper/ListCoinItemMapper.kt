@@ -1,6 +1,5 @@
 package com.krakert.tracker.data.tracker.mapper
 
-import android.content.SharedPreferences
 import com.krakert.tracker.data.extension.requireNotNull
 import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
 import com.krakert.tracker.data.tracker.entity.ListCoinsItemEntity
@@ -37,7 +36,7 @@ class ListCoinItemMapper @Inject constructor() {
             isFavouriteCoin = listFavoriteCoins.contains(
                 FavoriteCoinEntity(
                     id = entity.id,
-                    name = entity.name?.lowercase()
+                    name = entity.name.lowercase()
                 )
             )
         )

@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 
 class RemoveFavouriteCoin @Inject constructor(
-    private val repository: TrackerRepository,
+    private val repository: PreferencesRepository,
 ) {
-    suspend operator fun invoke(id: String, name: String): Result<Boolean> = repository.removeFavouriteCoin(id = id, name = name)
+    operator fun invoke(id: String, name: String) = repository.removeFavouriteCoin(id = id, name = name)
 }

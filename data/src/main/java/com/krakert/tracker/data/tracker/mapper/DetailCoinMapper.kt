@@ -19,7 +19,7 @@ class DetailCoinMapper @Inject constructor(
             symbol = entity.symbol.requireNotNull(),
             name = entity.name.requireNotNull(),
             images = entity.image.requireNotNull().let { imageMapper.mapApiToDomain(it) },
-            marketData = entity.market_data.requireNotNull().let { marketDataMapper.mapApiToDomain(it) },
+            marketData = entity.marketData.requireNotNull().let { marketDataMapper.mapApiToDomain(it) },
             currency = sharedPreferences.Currency
         )
     }

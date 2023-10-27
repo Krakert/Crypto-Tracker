@@ -5,7 +5,6 @@ import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
 import com.krakert.tracker.data.tracker.entity.ListCoinsItemEntity
 import com.krakert.tracker.data.tracker.entity.database.DBListCoinItemEntity
 import com.krakert.tracker.domain.tracker.model.ListCoins
-import com.krakert.tracker.domain.tracker.model.ListCoinsItem
 import javax.inject.Inject
 
 class ListCoinsMapper @Inject constructor(
@@ -15,9 +14,11 @@ class ListCoinsMapper @Inject constructor(
         entities: List<ListCoinsItemEntity?>,
         listFavoriteCoins: List<FavoriteCoinEntity>,
     ): ListCoins {
-        val coins = mutableListOf<ListCoinsItem>()
-        entities.forEach { coins.add(listCoinItemMapper.mapApiToDomain(it, listFavoriteCoins)) }
-        return ListCoins(result = coins)
+        return ListCoins(
+            result = entities.map {
+                listCoinItemMapper.mapApiToDomain(it, listFavoriteCoins)
+            }
+        )
     }
 
     fun mapDatabaseToDomain(
@@ -25,7 +26,9 @@ class ListCoinsMapper @Inject constructor(
         listFavoriteCoins: List<FavoriteCoinEntity>,
     ): ListCoins {
         return ListCoins(
-            result = entity.map { listCoinItemMapper.mapDatabaseToDomain(it, listFavoriteCoins) }
+            result = entity.map {
+                listCoinItemMapper.mapDatabaseToDomain(it, listFavoriteCoins)
+            }
         )
     }
 
