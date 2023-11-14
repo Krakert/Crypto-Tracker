@@ -65,10 +65,11 @@ class PreferencesRepositoryImpl @Inject constructor(
         val dataSharedPreferences = sharedPreferences.getListFavoriteCoins()
 
         if (!dataSharedPreferences.contains(itemToStore)) {
-            sharedPreferences.FavoriteCoins =
-                Json.encodeToString(dataSharedPreferences.toMutableList().add(itemToStore))
-
+            val listFavoriteCoins = dataSharedPreferences.toMutableList()
+            listFavoriteCoins.add(itemToStore)
+            sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
         }
+
         cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
     }
 
@@ -80,9 +81,9 @@ class PreferencesRepositoryImpl @Inject constructor(
         if (dataSharedPreferences.contains(itemToRemove)) {
             val listFavoriteCoins = dataSharedPreferences.toMutableList()
             listFavoriteCoins.remove(itemToRemove)
-
             sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
         }
+
         cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
     }
 
@@ -94,10 +95,10 @@ class PreferencesRepositoryImpl @Inject constructor(
     }
 
 
-    private fun clearKeysForMarketChart(){
+    private fun clearKeysForMarketChart() {
         val listFavoriteCoins = sharedPreferences.getListFavoriteCoins()
 
-        if (listFavoriteCoins.isNotEmpty()){
+        if (listFavoriteCoins.isNotEmpty()) {
             listFavoriteCoins.forEach {
                 cacheRateLimit.removeForKey(sharedPreferences, BASE_CACHE_KET_MARKET_CHART + it.id)
             }
