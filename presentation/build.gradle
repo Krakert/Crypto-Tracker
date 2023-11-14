@@ -16,7 +16,6 @@ android {
 
 dependencies {
     implementation project(':domain')
-    implementation project(':common')
 
     //Compile time dependencies
     kapt Deps.composeCompiler
@@ -43,8 +42,6 @@ dependencies {
     implementation Deps.composeCoil
     implementation Deps.landscapistCoil
     implementation Deps.palette
-    implementation Deps.coroutinesCore
-    implementation Deps.coroutinesAndroid
 
     //Firebase dependencies
 
