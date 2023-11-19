@@ -9,7 +9,9 @@ class ListCoinsDisplayMapper @Inject constructor(
 ) {
     fun map(coins: ListCoins): ListCoinsDisplay {
         return ListCoinsDisplay(
-            result = coins.result.map(listCoinsItemDisplayMapper::map)
+            result = coins.result.map(listCoinsItemDisplayMapper::map).sortedBy {
+                !it.isFavourite
+            }
         )
     }
 }
