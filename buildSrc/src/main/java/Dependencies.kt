@@ -6,14 +6,10 @@ object Versions {
 
     const val kotlinCoroutines = "1.6.4"
 
-    const val jacoco = "0.8.7"
     const val daggerHilt = "2.45"
     const val hilt = "1.0.0"
 
-    const val accompanist = "0.23.1"
-
     const val androidAppcompat = "1.6.1"
-    const val androidLifecycle = "2.6.1"
 
     const val compose = "1.4.4"
     const val composeCompiler = "1.4.4"
@@ -31,10 +27,6 @@ object Versions {
     const val landscapistCoil = "2.0.3"
     const val composeLottie = "6.0.0"
     const val pallete = "2.0.3"
-
-    const val roomCompiler = "2.5.1"
-    const val roomRuntime = "2.5.1"
-    const val roomKtx = "2.5.1"
 
     const val dagger = "2.45"
 
@@ -81,11 +73,6 @@ object Deps {
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
     const val firebaseCrashlyitcs = "com.google.firebase:firebase-crashlytics-ktx"
     const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx"
-
-    // Room
-    const val roomCompiler = "androidx.room:room-compiler:${Versions.roomCompiler}"
-    const val roomRuntime = "androidx.room:room-runtime:${Versions.roomRuntime}"
-    const val roomKtx = "androidx.room:room-ktx:${Versions.roomKtx}"
 
     // General Wear functionality
     const val wear = "androidx.wear:wear:1.2.0"

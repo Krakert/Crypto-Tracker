@@ -33,11 +33,6 @@ dependencies {
     implementation Deps.ktorLogging
     implementation Deps.napier
 
-
-    implementation Deps.roomKtx
-    kapt Deps.roomCompiler
-    implementation Deps.roomRuntime
-
     implementation Deps.preference
     implementation Deps.timber
 
