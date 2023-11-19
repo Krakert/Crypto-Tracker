@@ -67,6 +67,7 @@ class PreferencesRepositoryImpl @Inject constructor(
         }
 
         cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+        cacheRateLimiter.removeForKey(CACHE_KEY_LIST_COINS)
     }
 
     override fun removeFavouriteCoin(id: String, name: String) {
@@ -81,6 +82,7 @@ class PreferencesRepositoryImpl @Inject constructor(
         }
 
         cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+        cacheRateLimiter.removeForKey(CACHE_KEY_LIST_COINS)
     }
 
     override fun getFavouriteCoins(): Result<ListFavouriteCoins> {
