@@ -10,6 +10,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 
 @Module
@@ -17,12 +18,15 @@ import dagger.hilt.components.SingletonComponent
 interface RepositoryFactory {
 
     @Binds
+    @Singleton
     fun bindTrackerRepository(repository: TrackerRepositoryImpl): TrackerRepository
 
     @Binds
+    @Singleton
     fun bindCryptoApiRepository(repository: ApiRepositoryImpl): ApiRepository
 
     @Binds
+    @Singleton
     fun bindPreferencesRepository(repository: PreferencesRepositoryImpl): PreferencesRepository
 
 }

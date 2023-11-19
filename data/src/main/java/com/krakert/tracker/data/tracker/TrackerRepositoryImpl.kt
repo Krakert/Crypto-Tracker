@@ -23,7 +23,7 @@ class TrackerRepositoryImpl @Inject constructor(
     private lateinit var coinOverview: CoinOverview
     private lateinit var coinDetails: CoinDetails
 
-    //
+    // Store the ID of the last details call
     private var prevCoinId = ""
 
     override suspend fun getListCoins(): Flow<Result<ListCoins>> {
