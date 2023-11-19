@@ -9,7 +9,9 @@ class OverviewCoinDisplayMapper @Inject constructor(
 ) {
     fun map(item: CoinOverview): OverviewCoinDisplay {
         return OverviewCoinDisplay(
-            result = item.result.map(itemDisplayMapper::map),
+            result = item.result.map(itemDisplayMapper::map).sortedBy {
+                    it.name
+            },
             tileCoin = item.tileCoin
         )
     }
