@@ -14,27 +14,23 @@ import com.krakert.tracker.domain.tracker.model.ListFavouriteCoins
 import com.krakert.tracker.domain.tracker.model.Preferences
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PreferencesRepositoryImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
+    private val cacheRateLimiter: CacheRateLimiter,
     private val favouriteCoinsMapper: FavouriteCoinsMapper,
 ) : PreferencesRepository {
 
     companion object {
         const val CACHE_KEY_OVERVIEW = "cache_key_overview_data"
-        const val CACHE_KEY_PRICE_COINS = "cache_key_prices_coins_data"
         const val CACHE_KEY_LIST_COINS = "cache_key_list_coins_data"
         const val CACHE_KEY_DETAILS_COIN = "cache_key_details_coin_data"
-        const val BASE_CACHE_KET_MARKET_CHART = "cache_key_market_chart_data_"
     }
-
-    private val cacheRateLimit = CacheRateLimiter(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
 
     override fun setAmountDaysTracking(days: Int) {
         sharedPreferences.AmountDaysTracking = days
-        clearKeysForMarketChart()
+        cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
     }
 
     override fun resetSettings() {
@@ -47,8 +43,8 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override fun setCurrency(currency: String) {
         sharedPreferences.Currency = currency.lowercase()
-        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
-        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_DETAILS_COIN)
+        cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+        cacheRateLimiter.removeForKey(CACHE_KEY_DETAILS_COIN)
     }
 
     override fun getAllPreferences(): Preferences {
@@ -70,7 +66,7 @@ class PreferencesRepositoryImpl @Inject constructor(
             sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
         }
 
-        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
+        cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
     }
 
     override fun removeFavouriteCoin(id: String, name: String) {
@@ -84,7 +80,7 @@ class PreferencesRepositoryImpl @Inject constructor(
             sharedPreferences.FavoriteCoins = Json.encodeToString(listFavoriteCoins)
         }
 
-        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
+        cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
     }
 
     override fun getFavouriteCoins(): Result<ListFavouriteCoins> {
@@ -92,16 +88,5 @@ class PreferencesRepositoryImpl @Inject constructor(
             sharedPreferences.getListFavoriteCoins()
         }
         return data.mapCatching { favouriteCoinsMapper.map(it) }
-    }
-
-
-    private fun clearKeysForMarketChart() {
-        val listFavoriteCoins = sharedPreferences.getListFavoriteCoins()
-
-        if (listFavoriteCoins.isNotEmpty()) {
-            listFavoriteCoins.forEach {
-                cacheRateLimit.removeForKey(sharedPreferences, BASE_CACHE_KET_MARKET_CHART + it.id)
-            }
-        }
     }
 }
