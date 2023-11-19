@@ -43,23 +43,24 @@ class AddCoinViewModel @Inject constructor(
     val addViewState = mutableStateAdd.asStateFlow()
     fun getListCoins() {
         viewModelScope.launch {
-            mutableStateAdd.emit(Loading)
-            getListCoinsToAdd().onSuccess {
-                mutableStateAdd.emit(
-                    Success(listCoinsDisplayMapper.map(it))
-                )
-            }.onFailure {
-                when (it) {
-                    is SSLHandshakeException -> {
-                        mutableStateAdd.emit(Problem(ProblemState.SSL))
-                    }
+            getListCoinsToAdd().collect { flow ->
+                flow.onSuccess { success ->
+                    mutableStateAdd.emit(
+                        Success(listCoinsDisplayMapper.map(success))
+                    )
+                }.onFailure { failure ->
+                    when (failure) {
+                        is SSLHandshakeException -> {
+                            mutableStateAdd.emit(Problem(ProblemState.SSL))
+                        }
 
-                    is ConnectException -> {
-                        mutableStateAdd.emit(Problem(ProblemState.NO_CONNECTION))
-                    }
+                        is ConnectException -> {
+                            mutableStateAdd.emit(Problem(ProblemState.NO_CONNECTION))
+                        }
 
-                    else -> {
-                        mutableStateAdd.emit(Problem(ProblemState.UNKNOWN))
+                        else -> {
+                            mutableStateAdd.emit(Problem(ProblemState.UNKNOWN))
+                        }
                     }
                 }
             }

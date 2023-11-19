@@ -1,62 +1,91 @@
 package com.krakert.tracker.data.tracker
 
-import android.content.SharedPreferences
-import com.krakert.tracker.data.SharedPreference.MinutesCache
-import com.krakert.tracker.data.SharedPreference.getListFavoriteCoins
 import com.krakert.tracker.data.components.storage.CacheRateLimiter
-import com.krakert.tracker.data.components.storage.TrackerDao
+import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_DETAILS_COIN
 import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_LIST_COINS
 import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_OVERVIEW
-import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.domain.tracker.ApiRepository
 import com.krakert.tracker.domain.tracker.TrackerRepository
 import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.CoinOverview
 import com.krakert.tracker.domain.tracker.model.ListCoins
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class TrackerRepositoryImpl @Inject constructor(
     private val api: ApiRepository,
-    private val database: TrackerDao,
-    private val sharedPreferences: SharedPreferences,
-    private val listCoinsMapper: ListCoinsMapper
-
+    private var cacheRateLimiter: CacheRateLimiter,
 ) : TrackerRepository {
 
-    // Setup of the limits for the different data in the DB
-    private val cacheRateLimit = CacheRateLimiter(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
-    private val cacheRateLimitList = CacheRateLimiter(1, TimeUnit.DAYS)
+    // Cache of the API calls
+    private lateinit var listCoins: ListCoins
+    private lateinit var coinOverview: CoinOverview
+    private lateinit var coinDetails: CoinDetails
 
-    override suspend fun getListCoins(): Result<ListCoins> {
-        if (!cacheRateLimitList.shouldFetch(CACHE_KEY_LIST_COINS, sharedPreferences)) {
-            val responseDatabase = database.getListCoins()
-            if (responseDatabase.isNotEmpty()){
-                return Result.success(
-                    listCoinsMapper.mapDatabaseToDomain(
-                        responseDatabase,
-                        sharedPreferences.getListFavoriteCoins()
-                    )
-                )
-            }
-        } else {
-            return api.fetchListCoins() .onSuccess { list ->
-                database.insertListCoins(listCoinsMapper.mapDomainToDatabase(list))
+    //
+    private var prevCoinId = ""
+
+    override suspend fun getListCoins(): Flow<Result<ListCoins>> {
+        return flow {
+            if (cacheRateLimiter.shouldFetch(CACHE_KEY_LIST_COINS)) {
+                api.fetchListCoins()
+                    .onSuccess {
+                        listCoins = it
+                        emit(Result.success(listCoins))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            } else {
+                emit(Result.success(listCoins))
             }
         }
-        return Result.failure(UnknownError())
     }
 
-    override suspend fun getOverview(): Result<CoinOverview> {
-        if (!cacheRateLimit.shouldFetch(CACHE_KEY_OVERVIEW, sharedPreferences)) {
-
-        } else {
-            api.fetchOverview()
+    override suspend fun getOverview(): Flow<Result<CoinOverview>> {
+        return flow {
+            if (cacheRateLimiter.shouldFetch(CACHE_KEY_OVERVIEW)) {
+                api.fetchOverview()
+                    .onSuccess {
+                        coinOverview = it
+                        emit(Result.success(coinOverview))
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            } else {
+                emit(Result.success(coinOverview))
+            }
         }
-        return Result.failure(UnknownError())
     }
 
-    override suspend fun getDetailsCoin(coinId: String): Result<CoinDetails> {
-        TODO("Not yet implemented")
+    override suspend fun getDetailsCoin(coinId: String): Flow<Result<CoinDetails>> {
+        return flow {
+            if (prevCoinId != coinId) {
+                api.fetchDetailsCoin(coinId = coinId)
+                    .onSuccess {
+                        coinDetails = it
+                        emit(Result.success(coinDetails))
+                        prevCoinId = coinId
+                    }
+                    .onFailure {
+                        emit(Result.failure(it))
+                    }
+            } else {
+                if (cacheRateLimiter.shouldFetch(CACHE_KEY_DETAILS_COIN)) {
+                    api.fetchDetailsCoin(coinId = coinId)
+                        .onSuccess {
+                            coinDetails = it
+                            emit(Result.success(coinDetails))
+                        }
+                        .onFailure {
+                            emit(Result.failure(it))
+                        }
+                } else {
+                    emit(Result.success(coinDetails))
+                }
+            }
+        }
     }
 }

@@ -39,29 +39,30 @@ class DetailsViewModel @Inject constructor(
     val detailsCoin = mutableStateDetail.asStateFlow()
     fun getDetailsByCoinId(coinId: String) {
         viewModelScope.launch {
-            getDetailsCoin(coinId)
-                .onSuccess { details ->
+            getDetailsCoin(coinId).collect { flow ->
+                flow.onSuccess { details ->
                     mutableStateDetail.emit(
                         Success(
                             detailCoinDisplayMapper.map(details)
                         )
                     )
                 }
-                .onFailure {
-                    when (it) {
-                        is SSLHandshakeException -> {
-                            mutableStateDetail.emit(Problem(ProblemState.SSL))
-                        }
+                    .onFailure { failure ->
+                        when (failure) {
+                            is SSLHandshakeException -> {
+                                mutableStateDetail.emit(Problem(ProblemState.SSL))
+                            }
 
-                        is ConnectException -> {
-                            mutableStateDetail.emit(Problem(ProblemState.NO_CONNECTION))
-                        }
+                            is ConnectException -> {
+                                mutableStateDetail.emit(Problem(ProblemState.NO_CONNECTION))
+                            }
 
-                        else -> {
-                            mutableStateDetail.emit(Problem(ProblemState.UNKNOWN))
+                            else -> {
+                                mutableStateDetail.emit(Problem(ProblemState.UNKNOWN))
+                            }
                         }
                     }
-                }
+            }
         }
     }
 

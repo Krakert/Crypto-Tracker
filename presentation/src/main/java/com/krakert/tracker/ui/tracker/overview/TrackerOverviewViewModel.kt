@@ -5,10 +5,8 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.krakert.tracker.domain.tracker.GetFavouriteCoins
 import com.krakert.tracker.domain.tracker.GetOverview
 import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.model.ProblemState.EMPTY
 import com.krakert.tracker.ui.tracker.model.ProblemState.NO_CONNECTION
 import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
 import com.krakert.tracker.ui.tracker.model.ProblemState.UNKNOWN
@@ -36,7 +34,6 @@ sealed class ViewStateOverview {
 class OverviewViewModel
 @Inject constructor(
     private val application: Application,
-    private val getFavouriteCoins: GetFavouriteCoins,
     private val getOverview: GetOverview,
     private val overviewCoinDisplayMapper: OverviewCoinDisplayMapper,
 ) : ViewModel() {
@@ -45,40 +42,32 @@ class OverviewViewModel
 
     fun getAllOverviewData() {
         viewModelScope.launch {
-            mutableStateOverview.emit(Loading)
-            getFavouriteCoins()
-                .onSuccess { listFavouriteCoins ->
-                    if (listFavouriteCoins.result.isNotEmpty()) {
-                        getOverview()
-                            .onSuccess { coinOverview ->
-                                mutableStateOverview.emit(
-                                    Success(
-                                        overviewCoinDisplayMapper.map(coinOverview)
-                                    )
-                                )
-                            }
-                            .onFailure {
-                                when (it) {
-                                    is SSLHandshakeException -> {
-                                        mutableStateOverview.emit(Problem(SSL))
-                                    }
-
-                                    is ConnectException -> {
-                                        mutableStateOverview.emit(Problem(NO_CONNECTION))
-                                    }
-
-                                    else -> {
-                                        mutableStateOverview.emit(Problem(UNKNOWN))
-                                    }
-                                }
-                            }
-                    } else {
-                        mutableStateOverview.emit(
-                            Problem(EMPTY)
+            getOverview().collect { flow ->
+                flow.onSuccess { coinOverview ->
+                    mutableStateOverview.emit(
+                        Success(
+                            overviewCoinDisplayMapper.map(coinOverview)
                         )
-                    }
+                    )
                 }
+                    .onFailure { failure ->
+                        when (failure) {
+                            is SSLHandshakeException -> {
+                                mutableStateOverview.emit(Problem(SSL))
+                            }
+
+                            is ConnectException -> {
+                                mutableStateOverview.emit(Problem(NO_CONNECTION))
+                            }
+
+                            else -> {
+                                mutableStateOverview.emit(Problem(UNKNOWN))
+                            }
+                        }
+                    }
+            }
         }
+
     }
 
     fun openSettings() {
