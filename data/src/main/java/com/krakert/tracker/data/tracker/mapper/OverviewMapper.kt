@@ -1,14 +1,11 @@
 package com.krakert.tracker.data.tracker.mapper
 
-import com.krakert.tracker.data.extension.requireNotNull
 import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
 import com.krakert.tracker.data.tracker.entity.MarketChartEntity
 import com.krakert.tracker.domain.tracker.model.CoinOverview
-import com.krakert.tracker.domain.tracker.model.CoinOverviewItem
 import javax.inject.Inject
 
 class OverviewMapper @Inject constructor(
-    private val marketChartMapper: MarketChartMapper,
     private val overviewItemMapper: OverviewItemMapper,
 ) {
     fun map(
@@ -18,18 +15,15 @@ class OverviewMapper @Inject constructor(
         favoriteCoins: List<FavoriteCoinEntity>,
         listMarketChartEntity: List<MarketChartEntity>,
     ): CoinOverview {
-        val results = favoriteCoins.map { coin ->
-            CoinOverviewItem(
-                name = coin.name.toString().requireNotNull(),
-                id = coin.id.requireNotNull(),
-                currentPrice = pricesCoinsEntity[coin.id]?.get(currency).requireNotNull(),
-                marketChart = marketChartMapper.map(listMarketChartEntity[favoriteCoins.indexOf(coin)])
-                    .requireNotNull()
-            )
-        }
-
         return CoinOverview(
-            result = results,
+            result = favoriteCoins.map { coin ->
+                overviewItemMapper.map(
+                    name = coin.name,
+                    id = coin.id,
+                    currentPrice = pricesCoinsEntity[coin.id]?.get(currency),
+                    marketChart = listMarketChartEntity[favoriteCoins.indexOf(coin)],
+                )
+            },
             tileCoin = tileCoin
         )
     }
