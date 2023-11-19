@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components.storage.datastore
+package com.krakert.tracker.data.di
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,7 +11,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class SharedPreferencesModule {
+class SharedPreferencesProvider {
 
     @Singleton
     @Provides

@@ -1,4 +1,4 @@
-package com.krakert.tracker.data.components
+package com.krakert.tracker.data.di
 
 import android.app.Application
 import android.content.Context
@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+class ContextProvider {
 
     @Singleton
     @Provides

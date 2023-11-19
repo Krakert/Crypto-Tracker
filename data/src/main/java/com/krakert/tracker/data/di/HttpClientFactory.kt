@@ -19,8 +19,8 @@ import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent ::class)
-object NetworkModule {
+@InstallIn(SingletonComponent::class)
+object HttpClientFactory {
 
     @OptIn(ExperimentalSerializationApi::class)
     @Provides
@@ -42,7 +42,7 @@ object NetworkModule {
                     Napier.d(message, tag = "HTTP Client")
                 }
             }
-            level = LogLevel.BODY
+            level = LogLevel.INFO
         }.also { Napier.base(DebugAntilog()) }
     }
 }
