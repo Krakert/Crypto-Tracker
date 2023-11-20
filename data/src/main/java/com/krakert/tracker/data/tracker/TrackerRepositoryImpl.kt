@@ -63,6 +63,7 @@ class TrackerRepositoryImpl @Inject constructor(
     override suspend fun getDetailsCoin(coinId: String): Flow<Result<CoinDetails>> {
         return flow {
             if (prevCoinId != coinId) {
+                cacheRateLimiter.shouldFetch(CACHE_KEY_DETAILS_COIN)
                 api.fetchDetailsCoin(coinId = coinId)
                     .onSuccess {
                         coinDetails = it
