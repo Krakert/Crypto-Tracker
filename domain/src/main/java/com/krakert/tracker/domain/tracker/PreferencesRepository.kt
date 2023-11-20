@@ -20,4 +20,6 @@ interface PreferencesRepository {
     fun removeFavouriteCoin(id: String, name: String)
 
     fun getFavouriteCoins(): Result<ListFavouriteCoins>
+
+    fun favouriteCoinsIsEmpty(): Boolean
 }

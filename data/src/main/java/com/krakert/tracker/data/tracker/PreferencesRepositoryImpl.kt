@@ -91,4 +91,8 @@ class PreferencesRepositoryImpl @Inject constructor(
         }
         return data.mapCatching { favouriteCoinsMapper.map(it) }
     }
+
+    override fun favouriteCoinsIsEmpty(): Boolean {
+        return sharedPreferences.getListFavoriteCoins().isEmpty()
+    }
 }
