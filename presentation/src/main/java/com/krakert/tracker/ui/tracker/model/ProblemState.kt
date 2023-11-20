@@ -9,7 +9,7 @@ import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.krakert.tracker.R
+import com.krakert.tracker.presentation.R
 
 enum class ProblemState(val txt: Int, val icon: ImageVector) {
 

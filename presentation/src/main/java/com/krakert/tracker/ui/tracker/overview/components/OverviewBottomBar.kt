@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
-import com.krakert.tracker.R
+import com.krakert.tracker.presentation.R
 import com.krakert.tracker.ui.components.IconButton
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_API_LEVEL
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
