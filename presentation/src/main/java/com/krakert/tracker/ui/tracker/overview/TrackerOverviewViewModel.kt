@@ -5,11 +5,10 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.GetOverview
 import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.model.ProblemState.NO_CONNECTION
-import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
-import com.krakert.tracker.ui.tracker.model.ProblemState.UNKNOWN
+import com.krakert.tracker.ui.tracker.model.ProblemState.*
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
 import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
@@ -50,19 +49,21 @@ class OverviewViewModel
                         )
                     )
                 }
-                    .onFailure { failure ->
-                        when (failure) {
-                            is SSLHandshakeException -> {
-                                mutableStateOverview.emit(Problem(SSL))
+                    .onFailure { exception ->
+                        when (exception) {
+                            is SSLHandshakeException -> mutableStateOverview.emit(Problem(SSL))
+
+                            is ConnectException -> mutableStateOverview.emit(Problem(NO_CONNECTION))
+
+                            is BackendException -> {
+                                when (exception.errorCode) {
+                                    in 400..499 -> mutableStateOverview.emit(Problem(API_LIMIT))
+                                    in 500..599 -> mutableStateOverview.emit(Problem(SERVER))
+                                    else -> mutableStateOverview.emit(Problem(UNKNOWN))
+                                }
                             }
 
-                            is ConnectException -> {
-                                mutableStateOverview.emit(Problem(NO_CONNECTION))
-                            }
-
-                            else -> {
-                                mutableStateOverview.emit(Problem(UNKNOWN))
-                            }
+                            else -> mutableStateOverview.emit(Problem(UNKNOWN))
                         }
                     }
             }

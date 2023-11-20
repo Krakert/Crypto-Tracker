@@ -5,6 +5,7 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.AddFavouriteCoin
 import com.krakert.tracker.domain.tracker.GetListCoinsToAdd
 import com.krakert.tracker.domain.tracker.RemoveFavouriteCoin
@@ -15,6 +16,7 @@ import com.krakert.tracker.ui.tracker.add.mapper.ListCoinsDisplayMapper
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsDisplay
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
 import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.ProblemState.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,19 +50,21 @@ class AddCoinViewModel @Inject constructor(
                     mutableStateAdd.emit(
                         Success(listCoinsDisplayMapper.map(success))
                     )
-                }.onFailure { failure ->
-                    when (failure) {
-                        is SSLHandshakeException -> {
-                            mutableStateAdd.emit(Problem(ProblemState.SSL))
+                }.onFailure { exception ->
+                    when (exception) {
+                        is SSLHandshakeException -> mutableStateAdd.emit(Problem(SSL))
+
+                        is ConnectException -> mutableStateAdd.emit(Problem(NO_CONNECTION))
+
+                        is BackendException -> {
+                            when (exception.errorCode) {
+                                in 400..499 -> mutableStateAdd.emit(Problem(API_LIMIT))
+                                in 500..599 -> mutableStateAdd.emit(Problem(SERVER))
+                                else -> mutableStateAdd.emit(Problem(UNKNOWN))
+                            }
                         }
 
-                        is ConnectException -> {
-                            mutableStateAdd.emit(Problem(ProblemState.NO_CONNECTION))
-                        }
-
-                        else -> {
-                            mutableStateAdd.emit(Problem(ProblemState.UNKNOWN))
-                        }
+                        else -> mutableStateAdd.emit(Problem(UNKNOWN))
                     }
                 }
             }

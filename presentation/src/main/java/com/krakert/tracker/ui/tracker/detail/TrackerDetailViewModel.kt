@@ -5,14 +5,14 @@ import android.content.Intent
 import android.provider.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.GetDetailsCoin
 import com.krakert.tracker.domain.tracker.RemoveFavouriteCoin
-import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Loading
-import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Problem
-import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Success
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.*
 import com.krakert.tracker.ui.tracker.detail.mapper.DetailCoinDisplayMapper
 import com.krakert.tracker.ui.tracker.detail.model.DetailCoinDisplay
 import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.ProblemState.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -47,19 +47,21 @@ class DetailsViewModel @Inject constructor(
                         )
                     )
                 }
-                    .onFailure { failure ->
-                        when (failure) {
-                            is SSLHandshakeException -> {
-                                mutableStateDetail.emit(Problem(ProblemState.SSL))
+                    .onFailure { exception ->
+                        when (exception) {
+                            is SSLHandshakeException -> mutableStateDetail.emit(Problem(SSL))
+
+                            is ConnectException -> mutableStateDetail.emit(Problem(NO_CONNECTION))
+
+                            is BackendException -> {
+                                when (exception.errorCode) {
+                                    in 400..499 -> mutableStateDetail.emit(Problem(API_LIMIT))
+                                    in 500..599 -> mutableStateDetail.emit(Problem(SERVER))
+                                    else -> mutableStateDetail.emit(Problem(UNKNOWN))
+                                }
                             }
 
-                            is ConnectException -> {
-                                mutableStateDetail.emit(Problem(ProblemState.NO_CONNECTION))
-                            }
-
-                            else -> {
-                                mutableStateDetail.emit(Problem(ProblemState.UNKNOWN))
-                            }
+                            else -> mutableStateDetail.emit(Problem(UNKNOWN))
                         }
                     }
             }

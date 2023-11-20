@@ -1,6 +1,7 @@
 package com.krakert.tracker.ui.tracker.model
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.PlusOne
 import androidx.compose.material.icons.rounded.QuestionMark
 import androidx.compose.material.icons.rounded.Schedule
@@ -17,5 +18,6 @@ enum class ProblemState(val txt: Int, val icon: ImageVector) {
     COULD_NOT_LOAD(R.string.txt_could_not_load, Icons.Rounded.Sync),
     API_LIMIT(R.string.txt_limit, Icons.Rounded.Update),
     UNKNOWN(R.string.txt_unknown, Icons.Rounded.QuestionMark),
-    SSL(R.string.txt_set_time, Icons.Rounded.Schedule)
+    SSL(R.string.txt_set_time, Icons.Rounded.Schedule),
+    SERVER(R.string.txt_server, Icons.Rounded.Dns)
 }

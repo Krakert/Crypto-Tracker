@@ -5,9 +5,10 @@
     <string name="txt_could_not_load">Unable to load data, please try again</string>
     <string name="txt_empty_overview">your list is empty, let\'s add a coin</string>
     <string name="txt_no_connection">No connection available, check network settings</string>
-    <string name="txt_limit">API limit reached, please retry after 1 minute</string>
+    <string name="txt_limit">Limit reached, please retry after 1 minute</string>
     <string name="txt_unknown">Unknown problem, please try again</string>
     <string name="txt_set_time">SSL handshake failed, make sure the date and time are set correctly</string>
+    <string name="txt_server">It looks the server does not know what to do</string>
 
     <string name="txt_add_more_change_settings">Add more coins, or change settings</string>
     <string name="txt_details_circulation">Circulation</string>
@@ -26,8 +27,5 @@
     <string name="txt_toast_set_tile">%1$s is set to the Tile</string>
     <string name="txt_toast_removed">%1$s has been removed</string>
     <string name="txt_settings_minutes_cache">Max age of the data</string>
-    <string name="text_input_label">Text Input</string>
-    <string name="manual_text_entry_label">Manual Text Entry</string>
-
 
 </resources>
