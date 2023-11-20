@@ -1,0 +1,64 @@
+import java.text.SimpleDateFormat
+
+apply plugin: 'com.android.library'
+apply plugin: 'dagger.hilt.android.plugin'
+
+apply from: '../config-android.gradle'
+
+android {
+
+    defaultConfig {
+        buildConfigField("String", "BUILD_TIME", "\"${buildTime()}\"")
+        buildConfigField("String", "VERSION_NAME", "\"$Config.versionName\"")
+        buildConfigField("String", "VERSION_CODE", "\"${Config.versionCode}\"")
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = Versions.composeCompiler
+    }
+    namespace "com.krakert.tracker.presentation"
+}
+
+dependencies {
+    implementation project(':domain')
+
+    //Compile time dependencies
+    kapt Deps.composeCompiler
+    kapt Deps.daggerHiltCompiler
+    kapt Deps.daggerHiltJetpackCompiler
+
+    //Android dependencies
+    implementation Deps.appCompat
+
+    //Framework dependencies
+    implementation Deps.daggerHilt
+    implementation Deps.timber
+
+    // Compose
+    implementation Deps.composeRuntime
+    implementation Deps.composeActivity
+    implementation Deps.composeMaterial
+    implementation Deps.composeIcons
+    implementation Deps.composeIconsExtend
+    implementation Deps.composePreview
+    implementation Deps.composeViewModel
+    implementation Deps.composeNavigation
+    implementation Deps.composeHiltNavigation
+    implementation Deps.composeCoil
+    implementation Deps.landscapistCoil
+    implementation Deps.palette
+
+    //Firebase dependencies
+
+    //Project specific dependencies
+}
+
+static def buildTime() {
+    def df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
+    return df.format(new Date())
+}

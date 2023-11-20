@@ -14,6 +14,7 @@
 .cxx
 local.properties
 /app/release/app-release.aab
+/keystore.properties
 *.aab
 *.pem
 *.jks
