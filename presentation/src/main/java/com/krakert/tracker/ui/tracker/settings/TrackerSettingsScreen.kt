@@ -39,7 +39,8 @@ import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.ToggleChipDefaults
 import androidx.wear.compose.material.items
 import androidx.wear.compose.material.rememberScalingLazyListState
-import com.krakert.tracker.R
+import com.krakert.tracker.presentation.BuildConfig
+import com.krakert.tracker.presentation.R
 import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
 import com.krakert.tracker.ui.components.IconButton
@@ -77,16 +78,7 @@ fun TrackerSettingsScreen(
 
     when (val response = viewModel.settingViewState.collectAsState().value) {
         is Loading -> Loading()
-        is Problem -> {
-            ShowProblem(response.exception) {
-//                when (response.exception) {
-//                    ProblemState.SSL -> viewModel.openSettings()
-//                    ProblemState.EMPTY -> navController.navigate(Screen.Add.route)
-//                    else -> viewModel.getAllOverviewData()
-//                }
-            }
-        }
-
+        is Problem -> ShowProblem(response.exception) { viewModel.getSettings() }
         is Success -> {
 
             var amountDaysTracking by remember { mutableStateOf(response.data.daysOfTracking) }
@@ -252,39 +244,25 @@ fun TrackerSettingsScreen(
                         }
                     }
                 }
-//                item {
-//                    Text(
-//                        text = buildString {
-//                            append("Version name: ")
-//                                .append(BuildConfig.VERSION_NAME)
-//                                .append(".")
-//                                .append(BuildConfig.BUILD_TYPE)
-//                                .append("\n Build date: ")
-//                                .append(BuildConfig.BUILD_TIME)
-//                                .append("\n Version ID: ")
-//                                .append(BuildConfig.VERSION_CODE)
-//                        },
-//                        textAlign = TextAlign.Center,
-//                        fontSize = 10.sp,
-//                        modifier = Modifier.padding(top = 16.dp)
-//                    )
-//                }
+                item {
+                    Text(
+                        text = buildString {
+                            append("Version name: ")
+                                .append(BuildConfig.VERSION_NAME)
+                                .append(".")
+                                .append(BuildConfig.BUILD_TYPE)
+                                .append("\n Build date: ")
+                                .append(BuildConfig.BUILD_TIME)
+                                .append("\n Version ID: ")
+                                .append(BuildConfig.VERSION_CODE)
+                        },
+                        textAlign = TextAlign.Center,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
             }
         }
 
     }
-
-
 }
-
-//@Preview (
-//    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
-//    heightDp = WEAR_PREVIEW_DEVICE_HEIGHT_DP,
-//    uiMode = WEAR_PREVIEW_UI_MODE,
-//    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
-//    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
-//)
-//@Composable
-//fun PreviewSettings(){
-//    ListSettings(null)
-//}

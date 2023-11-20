@@ -6,7 +6,7 @@ object Config {
     const val minSdk = 27
 
     const val applicationId = "com.krakert.tracker"
-    const val versionName = "1.1"
+    const val versionName = "Clean"
     const val versionCode = 7
 
 
