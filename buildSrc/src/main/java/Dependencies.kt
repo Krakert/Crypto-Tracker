@@ -1,7 +1,7 @@
 @file:Suppress("unused", "SpellCheckingInspection")
 
 object Versions {
-    const val kotlin = "1.8.10"
+    const val kotlin = "1.8.21"
     const val gradle = "7.4.2"
 
     const val kotlinCoroutines = "1.6.4"
@@ -11,8 +11,8 @@ object Versions {
 
     const val androidAppcompat = "1.6.1"
 
-    const val compose = "1.4.4"
-    const val composeCompiler = "1.4.4"
+    const val compose = "1.4.7"
+    const val composeCompiler = "1.4.7"
     const val composeRuntime = "1.4.0"
     const val composeActivity = "1.7.0"
     const val composeWear = "1.1.0"
@@ -37,17 +37,15 @@ object Versions {
 
     const val ktor = "2.2.4"
     const val napier = "2.6.1"
-    const val serialization = "1.5.0"
+    const val serialization = "1.5.1"
 
 }
 
 object Projects {
     const val gradleTools = "com.android.tools.build:gradle:${Versions.gradle}"
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    const val gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.46.0"
-    const val spotless = "com.diffplug.spotless:spotless-plugin-gradle:6.8.0"
     const val daggerHiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
-    const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:${Versions.serialization}"
+    const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
     const val googleServicePlugin = "com.google.gms:google-services:${Versions.googleService}"
     const val firebaseCrashlyticsPlugin = "com.google.firebase:firebase-crashlytics-gradle:${Versions.firebaseCrashlytics}"
 }
