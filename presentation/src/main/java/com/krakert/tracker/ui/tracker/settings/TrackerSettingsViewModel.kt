@@ -35,14 +35,10 @@ class TrackerSettingsViewModel
     private val setPreferencesCurrency: SetPreferencesCurrency,
     private val getAllPreferences: GetAllPreferences,
     private val preferencesDisplayMapper: PreferencesDisplayMapper
-//    private val cryptoRoomDb: CryptoDatabase,
 ) : ViewModel() {
 
     private val mutableStateSettings = MutableStateFlow<ViewStateSettings>(Loading)
     val settingViewState = mutableStateSettings.asStateFlow()
-
-
-    //private val cacheRateLimit = CacheRateLimiter<String>(sharedPreferences.MinutesCache, TimeUnit.MINUTES)
 
     fun getSettings() {
         viewModelScope.launch {
@@ -61,22 +57,5 @@ class TrackerSettingsViewModel
     fun setCacheRate(minutesCache: Int) = setCacheRateTime(minutesCache)
 
     fun setCurrency(currency: Currency) = setPreferencesCurrency(currency.name)
-//        sharedPreferences.apply {
-//            this.Currency = currency
-//        }
-//        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_PRICE_COINS)
-//        cacheRateLimit.removeForKey(sharedPreferences, CACHE_KEY_DETAILS_COIN)
-//        clearKeysForMarketChart()
-//    }
 
-//    private fun clearKeysForMarketChart(){
-//        val typeOfT: Type = object : TypeToken<ArrayList<FavoriteCoin>>() {}.type
-//        val listFavoriteCoins: ArrayList<FavoriteCoin> = Gson().fromJson(sharedPreferences.FavoriteCoins, typeOfT)
-//
-//        if (listFavoriteCoins.isNotEmpty()){
-//            listFavoriteCoins.forEach {
-//                cacheRateLimit.removeForKey(sharedPreferences, BASE_CACHE_KET_MARKET_CHART + it.id)
-//            }
-//        }
-//    }
 }
