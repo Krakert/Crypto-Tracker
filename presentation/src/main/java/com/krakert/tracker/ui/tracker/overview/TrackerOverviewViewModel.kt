@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.CheckFavouriteCoins
 import com.krakert.tracker.domain.tracker.GetOverview
-import com.krakert.tracker.domain.tracker.PreferencesRepository
 import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.krakert.tracker.ui.tracker.model.ProblemState.API_LIMIT
 import com.krakert.tracker.ui.tracker.model.ProblemState.EMPTY
@@ -39,7 +38,6 @@ sealed class ViewStateOverview {
 @HiltViewModel
 class OverviewViewModel
 @Inject constructor(
-    private val repository: PreferencesRepository,
     private val application: Application,
     private val checkFavouriteCoins: CheckFavouriteCoins,
     private val getOverview: GetOverview,
