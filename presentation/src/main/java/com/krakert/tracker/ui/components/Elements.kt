@@ -41,7 +41,6 @@ fun CenterElement(content: @Composable () -> Unit) {
 @Composable
 fun Loading() {
     CenterElement {
-//        CircularProgressIndicator(modifier = Modifier.size(55.dp))
         DotsPulsing()
         Text(text = "Loading, please wait")
     }
@@ -99,7 +98,7 @@ fun DotsPulsing() {
             )
     )
 
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "AnimateInfinite")
 
     @Composable
     fun animateScaleWithDelay(delay: Int) = infiniteTransition.animateFloat(
@@ -112,7 +111,7 @@ fun DotsPulsing() {
                 1f at delay + delayUnit with LinearEasing
                 0f at delay + delayUnit * 2
             }
-        )
+        ), label = "AnimateScale"
     )
 
     val scale1 by animateScaleWithDelay(0)
