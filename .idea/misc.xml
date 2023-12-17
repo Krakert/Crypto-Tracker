@@ -1,35 +1,3 @@
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="../../../../../layout/compose-model-1653772786966.xml" value="1.0" />
-        <entry key="../../../../../layout/compose-model-1653772895795.xml" value="1.210909090909091" />
-        <entry key="../../../../../layout/compose-model-1653772946887.xml" value="1.0" />
-        <entry key="../../../../../layout/compose-model-1653773331801.xml" value="0.9781818181818182" />
-        <entry key="../../../../../layout/compose-model-1653773411890.xml" value="0.9781818181818182" />
-        <entry key="../../../../../layout/compose-model-1653773611960.xml" value="0.9781818181818182" />
-        <entry key="../../../../../layout/compose-model-1653774677613.xml" value="0.9781818181818182" />
-        <entry key="../../../../../layout/compose-model-1653775696975.xml" value="1.0" />
-        <entry key="../../../../../layout/compose-model-1653775812752.xml" value="0.536" />
-        <entry key="../../../../../layout/compose-model-1653776000193.xml" value="0.6" />
-        <entry key="../../../../../layout/compose-model-1653776244192.xml" value="1.0" />
-        <entry key="../../../../../layout/compose-model-1653776382174.xml" value="0.6" />
-        <entry key="../../../../../layout/compose-model-1653776778175.xml" value="0.8" />
-        <entry key="app/src/main/res/drawable/ic_baseline_movie.xml" value="0.2075" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.72" />
-        <entry key="app/src/main/res/layout/fragment_details.xml" value="2.265625" />
-        <entry key="app/src/main/res/layout/fragment_list_coins.xml" value="2.265625" />
-        <entry key="app/src/main/res/layout/item_coin.xml" value="2.265625" />
-      </map>
-    </option>
-  </component>
-  <component name="EntryPointsManager">
-    <list size="2">
-      <item index="0" class="java.lang.String" itemvalue="dagger.Binds" />
-      <item index="1" class="java.lang.String" itemvalue="dagger.Module" />
-    </list>
-  </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
-  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK" />
 </project>
