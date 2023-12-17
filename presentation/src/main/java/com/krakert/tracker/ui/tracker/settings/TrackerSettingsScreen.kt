@@ -246,16 +246,13 @@ fun TrackerSettingsScreen(
                 }
                 item {
                     Text(
-                        text = buildString {
-                            append("Version name: ")
-                                .append(BuildConfig.VERSION_NAME)
-                                .append(".")
-                                .append(BuildConfig.BUILD_TYPE)
-                                .append("\n Build date: ")
-                                .append(BuildConfig.BUILD_TIME)
-                                .append("\n Version ID: ")
-                                .append(BuildConfig.VERSION_CODE)
-                        },
+                        text = stringResource(
+                            id = R.string.txt_build_string,
+                            BuildConfig.VERSION_NAME,
+                            BuildConfig.BUILD_TYPE,
+                            BuildConfig.BUILD_TIME,
+                            BuildConfig.VERSION_CODE
+                        ),
                         textAlign = TextAlign.Center,
                         fontSize = 10.sp,
                         modifier = Modifier.padding(top = 16.dp)

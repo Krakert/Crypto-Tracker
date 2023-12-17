@@ -27,5 +27,6 @@
     <string name="txt_toast_set_tile">%1$s is set to the Tile</string>
     <string name="txt_toast_removed">%1$s has been removed</string>
     <string name="txt_settings_minutes_cache">Max age of the data</string>
+    <string name="txt_build_string">Version name: %1$s.%2$s \nBuild date: %3$s \nVersion ID: %4$s"</string>
 
 </resources>
