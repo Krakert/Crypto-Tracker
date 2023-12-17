@@ -1,18 +1,18 @@
 @file:Suppress("unused", "SpellCheckingInspection")
 
 object Versions {
-    const val kotlin = "1.8.21"
+    const val kotlin = "1.9.10"
     const val gradle = "7.4.2"
 
     const val kotlinCoroutines = "1.6.4"
 
-    const val daggerHilt = "2.45"
+    const val daggerHilt = "2.46"
     const val hilt = "1.0.0"
 
     const val androidAppcompat = "1.6.1"
 
     const val compose = "1.4.7"
-    const val composeCompiler = "1.4.7"
+    const val composeCompiler = "1.5.3"
     const val composeRuntime = "1.4.0"
     const val composeActivity = "1.7.0"
     const val composeWear = "1.1.0"
@@ -28,26 +28,15 @@ object Versions {
     const val composeLottie = "6.0.0"
     const val pallete = "2.0.3"
 
-    const val dagger = "2.45"
-
     const val googleService = "4.3.15"
     const val firebaseAnalytics = "21.2.1"
     const val firebaseBom = "32.3.1"
     const val firebaseCrashlytics = "2.9.9"
 
-    const val ktor = "2.2.4"
-    const val napier = "2.6.1"
-    const val serialization = "1.5.1"
+    const val ktor = "2.3.1"
+    const val SLF4j = "1.7.36"
+    const val serialization = "1.6.0"
 
-}
-
-object Projects {
-    const val gradleTools = "com.android.tools.build:gradle:${Versions.gradle}"
-    const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    const val daggerHiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${Versions.daggerHilt}"
-    const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:${Versions.kotlin}"
-    const val googleServicePlugin = "com.google.gms:google-services:${Versions.googleService}"
-    const val firebaseCrashlyticsPlugin = "com.google.firebase:firebase-crashlytics-gradle:${Versions.firebaseCrashlytics}"
 }
 
 object Deps {
@@ -60,12 +49,11 @@ object Deps {
     // Ktor
     const val ktorCore = "io.ktor:ktor-client-core:${Versions.ktor}"
     const val ktorClient = "io.ktor:ktor-client-android:${Versions.ktor}"
-    const val ktorJvm = "io.ktor:ktor-client-core-jvm:${Versions.ktor}"
     const val ktorNeogotiation = "io.ktor:ktor-client-content-negotiation:${Versions.ktor}"
     const val ktorSerialization = "io.ktor:ktor-client-serialization:${Versions.ktor}"
     const val ktorJson = "io.ktor:ktor-serialization-kotlinx-json:${Versions.ktor}"
     const val ktorLogging = "io.ktor:ktor-client-logging:${Versions.ktor}"
-    const val napier = "io.github.aakira:napier:${Versions.napier}"
+    const val SLF4J = "org.slf4j:slf4j-android:${Versions.SLF4j}"
 
     // Crashlytics
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
@@ -111,7 +99,11 @@ object Deps {
     // Testing
     const val timber = "com.jakewharton.timber:timber:5.0.1"
     const val tilePreview = "androidx.wear.tiles:tiles-renderer:1.1.0"
-    const val espresso = "androidx.test.espresso:espresso-core:3.0.1"
+    const val espresso = "androidx.test.espresso:espresso-core:3.5.1"
     const val junit = "junit:junit:4.13.2"
-
+    const val androidTestJunit = "androidx.test.ext:junit:1.1.5"
+    const val composeUiTools = "androidx.compose.ui:ui-tooling"
+    const val composeUiTest = "androidx.compose.ui:ui-test-junit4"
+    const val composeTestManifest = "androidx.compose.ui:ui-test-manifest"
 }
+
