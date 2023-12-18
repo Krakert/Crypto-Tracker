@@ -17,4 +17,4 @@ local.properties
 /keystore.properties
 *.aab
 *.pem
-*.jks
+**/*.jks

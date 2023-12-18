@@ -46,7 +46,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
-            isDebuggable = true
+            isDebuggable = false
         }
     }
 
