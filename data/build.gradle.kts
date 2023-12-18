@@ -7,7 +7,10 @@ plugins {
 }
 
 android {
-    compileSdk = Config.compileSdk
+    defaultConfig {
+        compileSdk = Config.compileSdk
+        minSdk = Config.minSdk
+    }
     buildTypes {
         getByName("debug") {
             enableUnitTestCoverage = true
@@ -16,7 +19,8 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
-            )        }
+            )
+        }
     }
 
     compileOptions {
@@ -56,7 +60,7 @@ dependencies {
     implementation(Deps.coroutinesAndroid)
 
     //Testing dependencies
-    testImplementation (Deps.junit)
+    testImplementation(Deps.junit)
 }
 
 kapt {

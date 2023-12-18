@@ -9,8 +9,9 @@ plugins {
 }
 
 android {
-    compileSdk = Config.compileSdk
     defaultConfig {
+        compileSdk = Config.compileSdk
+        minSdk = Config.minSdk
         buildConfigField("String", "BUILD_TIME", "\"${SimpleDateFormat("dd-MM-yyyy_hh-mm").format(Date())}\"")
         buildConfigField("String", "VERSION_NAME", "\"${Config.versionName}\"")
         buildConfigField("String", "VERSION_CODE", "\"${Config.versionCode}\"")

@@ -5,7 +5,10 @@ plugins {
 }
 
 android {
-    compileSdk = Config.compileSdk
+    defaultConfig {
+        compileSdk = Config.compileSdk
+        minSdk = Config.minSdk
+    }
     buildTypes {
         getByName("debug") {
             proguardFiles(

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.krakert.tracker.data.tracker.entity.FavoriteCoinEntity
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object SharedPreference {
