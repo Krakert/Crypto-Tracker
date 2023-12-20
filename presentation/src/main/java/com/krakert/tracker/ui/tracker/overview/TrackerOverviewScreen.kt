@@ -40,12 +40,13 @@ import androidx.wear.compose.material.rememberScalingLazyListState
 import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
 import com.krakert.tracker.ui.components.Loading
+import com.krakert.tracker.ui.components.OnDisplay
+import com.krakert.tracker.ui.components.OnError
+import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.components.Screen
 import com.krakert.tracker.ui.components.ShowProblem
-import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
+import com.krakert.tracker.ui.tracker.model.ProblemState.EMPTY
+import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
 import com.krakert.tracker.ui.tracker.overview.components.OverviewBottomBar
 import com.krakert.tracker.ui.tracker.overview.components.OverviewMarketChart
 import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
@@ -86,21 +87,21 @@ fun TrackerOverviewScreen(
         }
 
         when (val response = viewModel.overviewViewState.collectAsState().value) {
-            is Loading -> Loading()
-            is Problem -> {
-                ShowProblem(response.exception) {
-                    when (response.exception) {
-                        ProblemState.SSL -> viewModel.openSettings()
-                        ProblemState.EMPTY -> navController.navigate(Screen.Add.route)
+            is OnLoading -> Loading()
+            is OnError -> {
+                ShowProblem(response.errorDisplay) {
+                    when (response.errorDisplay) {
+                        SSL -> viewModel.openSettings()
+                        EMPTY -> navController.navigate(Screen.Add.route)
                         else -> viewModel.getAllOverviewData()
                     }
                 }
             }
 
-            is Success ->
+            is OnDisplay ->
                 ShowStatsCoins(
                     scrollState = scrollState,
-                    result = response.data,
+                    result = response.display,
                     navController = navController
                 )
         }

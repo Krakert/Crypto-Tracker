@@ -23,7 +23,7 @@ sealed class ViewStateSettings {
     // Represents different states for the overview screen
     object Loading : ViewStateSettings()
     data class Success(val data: SettingsDisplay) : ViewStateSettings()
-    data class Problem(val exception: ProblemState?) : ViewStateSettings()
+    data class Problem(val exception: ProblemState) : ViewStateSettings()
 }
 
 @HiltViewModel

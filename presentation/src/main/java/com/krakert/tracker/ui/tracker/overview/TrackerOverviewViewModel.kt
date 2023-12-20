@@ -8,16 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.CheckFavouriteCoins
 import com.krakert.tracker.domain.tracker.GetOverview
-import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.components.ContentState
+import com.krakert.tracker.ui.components.OnDisplay
+import com.krakert.tracker.ui.components.OnError
+import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.tracker.model.ProblemState.API_LIMIT
 import com.krakert.tracker.ui.tracker.model.ProblemState.EMPTY
 import com.krakert.tracker.ui.tracker.model.ProblemState.NO_CONNECTION
 import com.krakert.tracker.ui.tracker.model.ProblemState.SERVER
 import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
 import com.krakert.tracker.ui.tracker.model.ProblemState.UNKNOWN
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Loading
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Problem
-import com.krakert.tracker.ui.tracker.overview.ViewStateOverview.Success
 import com.krakert.tracker.ui.tracker.overview.mapper.OverviewCoinDisplayMapper
 import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,13 +28,6 @@ import java.net.ConnectException
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
-sealed class ViewStateOverview {
-    // Represents different states for the overview screen
-    object Loading : ViewStateOverview()
-    data class Success(val data: OverviewCoinDisplay) : ViewStateOverview()
-    data class Problem(val exception: ProblemState?) : ViewStateOverview()
-}
-
 @HiltViewModel
 class OverviewViewModel
 @Inject constructor(
@@ -43,7 +36,7 @@ class OverviewViewModel
     private val getOverview: GetOverview,
     private val overviewCoinDisplayMapper: OverviewCoinDisplayMapper,
 ) : ViewModel() {
-    private val mutableStateOverview = MutableStateFlow<ViewStateOverview>(Loading)
+    private val mutableStateOverview = MutableStateFlow<ContentState<OverviewCoinDisplay>>(OnLoading)
     val overviewViewState = mutableStateOverview.asStateFlow()
 
     fun getAllOverviewData() {
@@ -51,27 +44,27 @@ class OverviewViewModel
             if (!checkFavouriteCoins()) {
                 getOverview().collect { flow ->
                     flow.onSuccess { coinOverview ->
-                        mutableStateOverview.emit(Success(overviewCoinDisplayMapper.map(coinOverview)))
+                        mutableStateOverview.emit(OnDisplay(overviewCoinDisplayMapper.map(coinOverview)))
                     }
                         .onFailure { exception ->
                             when (exception) {
-                                is SSLHandshakeException -> mutableStateOverview.emit(Problem(SSL))
+                                is SSLHandshakeException -> mutableStateOverview.emit(OnError(SSL))
 
-                                is ConnectException -> mutableStateOverview.emit(Problem(NO_CONNECTION))
+                                is ConnectException -> mutableStateOverview.emit(OnError(NO_CONNECTION))
 
                                 is BackendException -> {
                                     when (exception.errorCode) {
-                                        in 400..499 -> mutableStateOverview.emit(Problem(API_LIMIT))
-                                        in 500..599 -> mutableStateOverview.emit(Problem(SERVER))
-                                        else -> mutableStateOverview.emit(Problem(UNKNOWN))
+                                        in 400..499 -> mutableStateOverview.emit(OnError(API_LIMIT))
+                                        in 500..599 -> mutableStateOverview.emit(OnError(SERVER))
+                                        else -> mutableStateOverview.emit(OnError(UNKNOWN))
                                     }
                                 }
-                                else -> mutableStateOverview.emit(Problem(UNKNOWN))
+                                else -> mutableStateOverview.emit(OnError(UNKNOWN))
                             }
                         }
                 }
             } else {
-                mutableStateOverview.emit(Problem(EMPTY))
+                mutableStateOverview.emit(OnError(EMPTY))
             }
         }
     }
