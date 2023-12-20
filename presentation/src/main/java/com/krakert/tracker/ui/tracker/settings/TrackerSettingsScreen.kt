@@ -232,16 +232,21 @@ fun TrackerSettingsScreen(
                             textAlign = TextAlign.Center,
                         )
                         IconButton(
-                            Modifier.size(ButtonDefaults.LargeButtonSize),
-                            Icons.Rounded.RestartAlt
-                        ) {
-                            viewModel.resetSettings()
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.txt_toast_reset),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                            modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                            imageVector = Icons.Rounded.RestartAlt,
+                            contentDescription = stringResource(
+                                R.string.button_with_icon,
+                                Icons.Rounded.RestartAlt.name
+                            ),
+                            onClick = {
+                                viewModel.resetSettings()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.txt_toast_reset),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
                     }
                 }
                 item {

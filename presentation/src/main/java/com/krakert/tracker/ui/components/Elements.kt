@@ -1,12 +1,28 @@
 package com.krakert.tracker.ui.components
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -14,8 +30,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.*
-
+import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
+import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.MaterialTheme
+import androidx.wear.compose.material.Text
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_API_LEVEL
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_HEIGHT_DP
@@ -47,7 +66,12 @@ fun Loading() {
 }
 
 @Composable
-fun IconButton(modifier: Modifier, imageVector: ImageVector, onClick: () -> Unit) {
+fun IconButton(
+    modifier: Modifier,
+    imageVector: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit
+) {
     // Button
     Button(
         modifier = modifier,
@@ -55,7 +79,7 @@ fun IconButton(modifier: Modifier, imageVector: ImageVector, onClick: () -> Unit
     ) {
         Icon(
             imageVector = imageVector,
-            contentDescription = null,
+            contentDescription = contentDescription,
             modifier = Modifier
                 .size(24.dp)
                 .wrapContentSize(align = Alignment.Center)
@@ -85,6 +109,7 @@ fun Divider() {
 fun DotsPulsing() {
     val dotSize = 24.dp // made it bigger for demo
     val delayUnit = 300 // you can change delay to change animation speed
+
     @Composable
     fun Dot(
         scale: Float
@@ -142,9 +167,12 @@ fun PreviewIconButton() {
         modifier = Modifier
             .size(ButtonDefaults.SmallButtonSize)
             .padding(all = 8.dp),
-        imageVector = Icons.Rounded.Search){
-        println("testing")
-    }
+        contentDescription = "Button with Search icon",
+        imageVector = Icons.Rounded.Search,
+        onClick = {
+            println("testing")
+        }
+    )
 }
 
 // Text Preview
@@ -162,19 +190,7 @@ fun PreviewLoading() {
     Loading()
 }
 
-@Preview (
-    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
-    heightDp = WEAR_PREVIEW_ROW_HEIGHT_DP,
-    uiMode = WEAR_PREVIEW_UI_MODE,
-    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
-    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
-    )
-@Composable
-fun PreviewDivider(){
-    Divider()
-}
-
-@Preview (
+@Preview(
     widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
     heightDp = WEAR_PREVIEW_ROW_HEIGHT_DP,
     uiMode = WEAR_PREVIEW_UI_MODE,
@@ -182,6 +198,18 @@ fun PreviewDivider(){
     showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
 )
 @Composable
-fun PreviewDots(){
+fun PreviewDivider() {
+    Divider()
+}
+
+@Preview(
+    widthDp = WEAR_PREVIEW_DEVICE_WIDTH_DP,
+    heightDp = WEAR_PREVIEW_ROW_HEIGHT_DP,
+    uiMode = WEAR_PREVIEW_UI_MODE,
+    backgroundColor = WEAR_PREVIEW_BACKGROUND_COLOR_BLACK,
+    showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
+)
+@Composable
+fun PreviewDots() {
     DotsPulsing()
 }

@@ -58,17 +58,23 @@ fun OverviewBottomBar(openSettings: () -> Unit, openListCoins: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             IconButton(
-                Modifier.size(ButtonDefaults.LargeButtonSize),
-                Icons.Rounded.PlusOne
-            ) {
-                openListCoins()
-            }
+                modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                imageVector = Icons.Rounded.PlusOne,
+                contentDescription = stringResource(
+                    R.string.button_with_icon,
+                    Icons.Rounded.PlusOne.name
+                ),
+                onClick = { openListCoins() }
+            )
             IconButton(
-                Modifier.size(ButtonDefaults.LargeButtonSize),
-                Icons.Rounded.Settings
-            ) {
-                openSettings()
-            }
+                modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                imageVector = Icons.Rounded.Settings,
+                contentDescription = stringResource(
+                    R.string.button_with_icon,
+                    Icons.Rounded.Settings.name
+                ),
+                onClick = { openSettings() }
+            )
         }
     }
 

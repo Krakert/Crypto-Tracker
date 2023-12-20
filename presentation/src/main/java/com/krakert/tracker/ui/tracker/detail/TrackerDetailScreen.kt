@@ -333,25 +333,43 @@ fun ShowDetailsCoin(
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.Delete
-                ) {
-                    viewModel.removeCoinFromFavoriteCoins(
-                        id = detailsCoins.id,
-                        name = detailsCoins.name
-                    )
-                    navController?.popBackStack()
-                    Toast.makeText(context, context.getString(R.string.txt_toast_removed,
-                        detailsCoins.name), Toast.LENGTH_SHORT).show()
-                }
+                    modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                    imageVector = Icons.Rounded.Delete,
+                    contentDescription = stringResource(
+                        R.string.button_with_icon,
+                        Icons.Rounded.Delete.name
+                    ),
+                    onClick = {
+                        viewModel.removeCoinFromFavoriteCoins(
+                            id = detailsCoins.id,
+                            name = detailsCoins.name
+                        )
+                        navController?.popBackStack()
+                        Toast.makeText(
+                            context, context.getString(
+                                R.string.txt_toast_removed,
+                                detailsCoins.name
+                            ), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
                 IconButton(
-                    Modifier.size(ButtonDefaults.LargeButtonSize),
-                    Icons.Rounded.Star
-                ) {
-//                    sharedPreference.FavoriteCoin = coinId
-                    Toast.makeText(context, context.getString(R.string.txt_toast_set_tile,
-                        detailsCoins.name), Toast.LENGTH_SHORT).show()
-                }
+                    modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                    imageVector = Icons.Rounded.Star,
+                    contentDescription = stringResource(
+                        id = R.string.button_with_icon,
+                        Icons.Rounded.Star.name
+                    ),
+                    onClick = {
+                        // TODO = sharedPreference.FavoriteCoin = coinId
+                        Toast.makeText(
+                            context, context.getString(
+                                R.string.txt_toast_set_tile,
+                                detailsCoins.name
+                            ), Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
             }
         }
     }
