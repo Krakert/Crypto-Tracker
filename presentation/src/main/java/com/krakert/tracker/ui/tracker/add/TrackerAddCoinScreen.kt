@@ -22,10 +22,13 @@ import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.krakert.tracker.ui.components.Loading
+import com.krakert.tracker.ui.components.OnDisplay
+import com.krakert.tracker.ui.components.OnError
+import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.components.ShowProblem
 import com.krakert.tracker.ui.tracker.add.component.ChipCoin
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
-import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
 
 @Composable
 fun TrackerAddCoinScreen(
@@ -63,23 +66,23 @@ fun TrackerAddCoinScreen(
         }
     ) {
         when (val state = viewModel.addViewState.collectAsState().value) {
-            is ViewStateAddCoin.Problem -> {
-                ShowProblem(state.exception) {
-                    when (state.exception) {
-                        ProblemState.SSL -> viewModel.openSettings()
+            is OnError-> {
+                ShowProblem(state.errorDisplay) {
+                    when (state.errorDisplay) {
+                        SSL -> viewModel.openSettings()
                         else -> viewModel.getListCoins()
                     }
                 }
             }
 
-            ViewStateAddCoin.Loading -> {
+            OnLoading -> {
                 Loading()
             }
 
-            is ViewStateAddCoin.Success -> {
+            is OnDisplay -> {
                 ShowList(
                     scrollState = scrollState,
-                    listCoins = state.coins.result,
+                    listCoins = state.display.result,
                     viewModel = viewModel
                 )
             }
