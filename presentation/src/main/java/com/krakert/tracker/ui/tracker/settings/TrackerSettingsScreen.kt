@@ -1,6 +1,9 @@
 package com.krakert.tracker.ui.tracker.settings
 
 import android.widget.Toast
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,10 +17,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -28,17 +35,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.wear.compose.material.AutoCenteringParams
+import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
+import androidx.wear.compose.foundation.lazy.ScalingLazyListState
+import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.rememberActiveFocusRequester
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.InlineSlider
 import androidx.wear.compose.material.InlineSliderDefaults
-import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.ToggleChipDefaults
-import androidx.wear.compose.material.items
-import androidx.wear.compose.material.rememberScalingLazyListState
 import com.krakert.tracker.presentation.BuildConfig
 import com.krakert.tracker.presentation.R
 import com.krakert.tracker.ui.components.CenterElement
@@ -50,8 +58,10 @@ import com.krakert.tracker.ui.tracker.model.Currency
 import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Loading
 import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Problem
 import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Success
+import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalWearFoundationApi::class)
 @Composable
 fun TrackerSettingsScreen(
     viewModel: TrackerSettingsViewModel,
@@ -74,20 +84,32 @@ fun TrackerSettingsScreen(
 
     val context = LocalContext.current
 
-    val scrollState = rememberScalingLazyListState()
+    val scrollState = ScalingLazyListState()
 
     when (val response = viewModel.settingViewState.collectAsState().value) {
         is Loading -> Loading()
         is Problem -> ShowProblem(response.exception) { viewModel.getSettings() }
         is Success -> {
 
-            var amountDaysTracking by remember { mutableStateOf(response.data.daysOfTracking) }
-            var minutesCache by remember { mutableStateOf(response.data.minutesOfCache) }
+            var amountDaysTracking by remember { mutableIntStateOf(response.data.daysOfTracking) }
+            var minutesCache by remember { mutableIntStateOf(response.data.minutesOfCache) }
             var checked by remember { mutableStateOf(response.data.currency) }
 
-            ScalingLazyColumn(
+            val focusRequester = rememberActiveFocusRequester()
+            val coroutineScope = rememberCoroutineScope()
+
+            androidx.wear.compose.foundation.lazy.ScalingLazyColumn(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .onRotaryScrollEvent {
+                        coroutineScope.launch {
+                            scrollState.scrollBy(it.verticalScrollPixels)
+                            scrollState.animateScrollBy(0f)
+                        }
+                        true
+                    }
+                    .focusRequester(focusRequester)
+                    .focusable(),
                 contentPadding = PaddingValues(
                     top = 8.dp,
                     start = 8.dp,

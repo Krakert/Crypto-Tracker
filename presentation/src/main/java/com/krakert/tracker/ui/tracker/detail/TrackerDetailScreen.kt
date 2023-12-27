@@ -1,6 +1,9 @@
 package com.krakert.tracker.ui.tracker.detail
 
 import android.widget.Toast
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,8 +23,11 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -37,13 +43,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
-import androidx.wear.compose.material.AutoCenteringParams
+import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.ScalingLazyListState
+import androidx.wear.compose.foundation.rememberActiveFocusRequester
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.rememberScalingLazyListState
 import com.krakert.tracker.presentation.R
 import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
@@ -51,11 +59,14 @@ import com.krakert.tracker.ui.components.IconButton
 import com.krakert.tracker.ui.components.Loading
 import com.krakert.tracker.ui.components.ShowProblem
 import com.krakert.tracker.ui.theme.themeValues
-import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.*
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Loading
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Problem
+import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Success
 import com.krakert.tracker.ui.tracker.detail.model.DetailCoinDisplay
 import com.krakert.tracker.ui.tracker.model.ProblemState
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun TrackerDetailScreen(
@@ -96,6 +107,7 @@ fun TrackerDetailScreen(
     }
 }
 
+@OptIn(ExperimentalWearFoundationApi::class)
 @Composable
 fun ShowDetailsCoin(
     detailsCoins: DetailCoinDisplay,
@@ -105,10 +117,22 @@ fun ShowDetailsCoin(
 
     val context = LocalContext.current
 
-    val scrollState = rememberScalingLazyListState()
+    val focusRequester = rememberActiveFocusRequester()
+    val coroutineScope = rememberCoroutineScope()
+    val scrollState = ScalingLazyListState()
+
     ScalingLazyColumn(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .onRotaryScrollEvent {
+                coroutineScope.launch {
+                    scrollState.scrollBy(it.verticalScrollPixels)
+                    scrollState.animateScrollBy(0f)
+                }
+                true
+            }
+            .focusRequester(focusRequester)
+            .focusable(),
         contentPadding = PaddingValues(
             top = 8.dp,
             start = 8.dp,
@@ -123,11 +147,8 @@ fun ShowDetailsCoin(
             CenterElement {
                 CoilImage(
                     imageModel = { detailsCoins.imageUrl },
-                    imageOptions = ImageOptions(
-                        contentScale = ContentScale.Fit),
-                    modifier = Modifier
-                        .size(40.dp)
-                        .wrapContentSize(align = Alignment.Center),
+                    imageOptions = ImageOptions(contentScale = ContentScale.Fit),
+                    modifier = Modifier.size(40.dp).wrapContentSize(align = Alignment.Center),
                 )
                 Text(
                     text = detailsCoins.name,

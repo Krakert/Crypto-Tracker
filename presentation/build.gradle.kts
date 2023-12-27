@@ -62,6 +62,7 @@ dependencies {
     implementation(Deps.composeNavigation)
     implementation(Deps.composeHiltNavigation)
     implementation(Deps.composeCoil)
+    implementation(Deps.composeFoundation)
     implementation(Deps.landscapistCoil)
     implementation(Deps.palette)
 

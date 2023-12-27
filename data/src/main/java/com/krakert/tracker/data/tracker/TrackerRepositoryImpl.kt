@@ -4,7 +4,9 @@ import com.krakert.tracker.data.components.storage.CacheRateLimiter
 import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_DETAILS_COIN
 import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_LIST_COINS
 import com.krakert.tracker.data.tracker.PreferencesRepositoryImpl.Companion.CACHE_KEY_OVERVIEW
+import com.krakert.tracker.data.tracker.mapper.ListCoinsMapper
 import com.krakert.tracker.domain.tracker.ApiRepository
+import com.krakert.tracker.domain.tracker.PreferencesRepository
 import com.krakert.tracker.domain.tracker.TrackerRepository
 import com.krakert.tracker.domain.tracker.model.CoinDetails
 import com.krakert.tracker.domain.tracker.model.CoinOverview
@@ -15,7 +17,9 @@ import javax.inject.Inject
 
 class TrackerRepositoryImpl @Inject constructor(
     private val api: ApiRepository,
-    private var cacheRateLimiter: CacheRateLimiter,
+    private val preferencesRepository: PreferencesRepository,
+    private val cacheRateLimiter: CacheRateLimiter,
+    private val listCoinsMapper: ListCoinsMapper,
 ) : TrackerRepository {
 
     // Cache of the API calls
@@ -35,10 +39,21 @@ class TrackerRepositoryImpl @Inject constructor(
                         emit(Result.success(listCoins))
                     }
                     .onFailure {
+                        if (!::coinOverview.isInitialized) {
+                            cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+                        }
                         emit(Result.failure(it))
                     }
             } else {
-                emit(Result.success(listCoins))
+                if (!::coinOverview.isInitialized) {
+                    cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+                    emit(Result.failure(Throwable()))
+                } else {
+                    preferencesRepository.getFavouriteCoins().mapCatching {
+                        listCoins = listCoinsMapper.remap(listCoins.result, it.result)
+                        emit(Result.success(listCoins))
+                    }
+                }
             }
         }
     }
@@ -55,7 +70,12 @@ class TrackerRepositoryImpl @Inject constructor(
                         emit(Result.failure(it))
                     }
             } else {
-                emit(Result.success(coinOverview))
+                if (!::coinOverview.isInitialized) {
+                    cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+                    emit(Result.failure(Throwable()))
+                } else {
+                    emit(Result.success(coinOverview))
+                }
             }
         }
     }
@@ -84,7 +104,12 @@ class TrackerRepositoryImpl @Inject constructor(
                             emit(Result.failure(it))
                         }
                 } else {
-                    emit(Result.success(coinDetails))
+                    if (!::coinOverview.isInitialized) {
+                        cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
+                        emit(Result.failure(Throwable()))
+                    } else {
+                        emit(Result.success(coinDetails))
+                    }
                 }
             }
         }

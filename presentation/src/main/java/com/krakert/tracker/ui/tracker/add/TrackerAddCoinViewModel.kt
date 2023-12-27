@@ -9,9 +9,10 @@ import com.krakert.tracker.domain.response.BackendException
 import com.krakert.tracker.domain.tracker.AddFavouriteCoin
 import com.krakert.tracker.domain.tracker.GetListCoinsToAdd
 import com.krakert.tracker.domain.tracker.RemoveFavouriteCoin
-import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Loading
-import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Problem
-import com.krakert.tracker.ui.tracker.add.ViewStateAddCoin.Success
+import com.krakert.tracker.ui.components.ContentState
+import com.krakert.tracker.ui.components.OnDisplay
+import com.krakert.tracker.ui.components.OnError
+import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.tracker.add.mapper.ListCoinsDisplayMapper
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsDisplay
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
@@ -45,30 +46,30 @@ class AddCoinViewModel @Inject constructor(
     private val removeFavouriteCoin: RemoveFavouriteCoin,
     private val listCoinsDisplayMapper: ListCoinsDisplayMapper,
 ) : ViewModel() {
-    private val mutableStateAdd = MutableStateFlow<ViewStateAddCoin>(Loading)
+    private val mutableStateAdd = MutableStateFlow<ContentState<ListCoinsDisplay>>(OnLoading)
     val addViewState = mutableStateAdd.asStateFlow()
     fun getListCoins() {
         viewModelScope.launch {
             getListCoinsToAdd().collect { flow ->
                 flow.onSuccess { success ->
                     mutableStateAdd.emit(
-                        Success(listCoinsDisplayMapper.map(success))
+                        OnDisplay(listCoinsDisplayMapper.map(success))
                     )
                 }.onFailure { exception ->
                     when (exception) {
-                        is SSLHandshakeException -> mutableStateAdd.emit(Problem(SSL))
+                        is SSLHandshakeException -> mutableStateAdd.emit(OnError(SSL))
 
-                        is ConnectException -> mutableStateAdd.emit(Problem(NO_CONNECTION))
+                        is ConnectException -> mutableStateAdd.emit(OnError(NO_CONNECTION))
 
                         is BackendException -> {
                             when (exception.errorCode) {
-                                in 400..499 -> mutableStateAdd.emit(Problem(API_LIMIT))
-                                in 500..599 -> mutableStateAdd.emit(Problem(SERVER))
-                                else -> mutableStateAdd.emit(Problem(UNKNOWN))
+                                in 400..499 -> mutableStateAdd.emit(OnError(API_LIMIT))
+                                in 500..599 -> mutableStateAdd.emit(OnError(SERVER))
+                                else -> mutableStateAdd.emit(OnError(UNKNOWN))
                             }
                         }
 
-                        else -> mutableStateAdd.emit(Problem(UNKNOWN))
+                        else -> mutableStateAdd.emit(OnError(UNKNOWN))
                     }
                 }
             }

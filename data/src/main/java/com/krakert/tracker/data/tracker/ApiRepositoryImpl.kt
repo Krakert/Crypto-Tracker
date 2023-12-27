@@ -38,7 +38,7 @@ class ApiRepositoryImpl @Inject constructor(
         }.guard { return it }
         val entity = responseMapper.map(response)
         return entity.mapCatching {
-            listCoinsMapper.mapApiToDomain(
+            listCoinsMapper.map(
                 it,
                 sharedPreferences.getListFavoriteCoins()
             )
