@@ -89,6 +89,7 @@ object Deps {
 
     // Compose for Wear OS Dependencies
     const val composeMaterial = "androidx.wear.compose:compose-material:${Versions.composeWear}"
+    const val composeFoundation = "androidx.wear.compose:compose-foundation:1.2.1"
 
     //DI
     const val daggerHilt = "com.google.dagger:hilt-android:${Versions.daggerHilt}"
