@@ -10,12 +10,13 @@ object Versions {
     const val hilt = "1.0.0"
 
     const val androidAppcompat = "1.6.1"
+    const val androidSplash = "1.0.1"
 
     const val compose = "1.4.7"
     const val composeCompiler = "1.5.3"
     const val composeRuntime = "1.4.0"
     const val composeActivity = "1.7.0"
-    const val composeWear = "1.1.0"
+    const val composeWear = "1.2.1"
     const val composeNavigation = "1.1.2"
     const val composeViewModel = "2.5.0"
     const val composeUi = "1.4.0"
@@ -42,6 +43,7 @@ object Versions {
 object Deps {
     // Android
     const val appCompat = "androidx.appcompat:appcompat:${Versions.androidAppcompat}"
+    const val androidSplash = "androidx.core:core-splashscreen:${Versions.androidSplash}"
 
     // Use of the input types WearOS has
     const val wearInput = "androidx.wear:wear-input:1.2.0-alpha02"
@@ -89,7 +91,7 @@ object Deps {
 
     // Compose for Wear OS Dependencies
     const val composeMaterial = "androidx.wear.compose:compose-material:${Versions.composeWear}"
-    const val composeFoundation = "androidx.wear.compose:compose-foundation:1.2.1"
+    const val composeFoundation = "androidx.wear.compose:compose-foundation:${Versions.composeWear}"
 
     //DI
     const val daggerHilt = "com.google.dagger:hilt-android:${Versions.daggerHilt}"

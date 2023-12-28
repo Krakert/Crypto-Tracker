@@ -66,4 +66,5 @@ dependencies {
     implementation(Deps.landscapistCoil)
     implementation(Deps.palette)
 
+    implementation(Deps.androidSplash)
 }
