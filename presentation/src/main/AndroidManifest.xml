@@ -7,7 +7,7 @@
 
         <activity
             android:name="com.krakert.tracker.ui.main.MainActivity"
-            android:theme="@android:style/Theme.DeviceDefault"
+            android:theme="@style/Theme.App.Starting"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

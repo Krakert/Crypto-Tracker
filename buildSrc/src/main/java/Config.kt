@@ -7,7 +7,7 @@ object Config {
 
     const val applicationId = "com.krakert.tracker"
     const val versionName = "Clean"
-    const val versionCode = 8
+    const val versionCode = 10
 
 
 }
