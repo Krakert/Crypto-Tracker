@@ -17,7 +17,7 @@ class DetailCoinDisplayMapper @Inject constructor(
             symbol = details.symbol,
             marketData = marketDataDisplayMapper.map(
                 marketData = details.marketData,
-                symbol = Currency.values()
+                symbol = Currency.entries
                     .find {
                         it.name == details.currency.capitalize()
                     }?.symbol

@@ -13,12 +13,14 @@ class OverviewItemMapper @Inject constructor(
         id: String?,
         currentPrice: Double?,
         marketChart: MarketChartEntity?,
+        currency: String,
     ): CoinOverviewItem {
         return CoinOverviewItem(
             name = name.requireNotNull(),
             id = id.requireNotNull(),
             currentPrice = currentPrice.requireNotNull(),
-            marketChart = marketChartMapper.map(marketChart.requireNotNull())
+            marketChart = marketChartMapper.map(marketChart.requireNotNull()),
+            currency = currency
         )
     }
 }
