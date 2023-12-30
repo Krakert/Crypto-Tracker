@@ -35,6 +35,7 @@ import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
+import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.rememberActiveFocusRequester
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
@@ -147,40 +148,38 @@ fun ShowStatsCoins(
         autoCentering = AutoCenteringParams(itemIndex = 0),
         state = scrollState
     ) {
-        result.result.forEach {
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(
-                            onClick = {
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    key = "Coin",
-                                    value = it.id
-                                )
-                                navController.navigate(Screen.Details.route)
+        items(result.result) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        onClick = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                key = "Coin",
+                                value = it.id
+                            )
+                            navController.navigate(Screen.Details.route)
+                        }
+                    )
+            ) {
+                CenterElement {
+                    Text(
+                        text = buildAnnotatedString {
+                            append(it.name)
+                            if (result.tileCoin == it.id) {
+                                appendInlineContent("inlineContent", "[icon]")
                             }
-                        )
-                ) {
-                    CenterElement {
-                        Text(
-                            text = buildAnnotatedString {
-                                append(it.name)
-                                if (result.tileCoin == it.id) {
-                                    appendInlineContent("inlineContent", "[icon]")
-                                }
-                            },
-                            modifier = Modifier.padding(bottom = 8.dp),
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.primary,
-                            fontSize = 20.sp,
-                            inlineContent = if (result.tileCoin == it.id) addIconFavorite() else emptyMap()
-                        )
+                        },
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colors.primary,
+                        fontSize = 20.sp,
+                        inlineContent = if (result.tileCoin == it.id) addIconFavorite() else emptyMap()
+                    )
 
-                        OverviewMarketChart(marketChart = it.marketChart)
-                        Text(text = it.currentPrice)
-                        Divider()
-                    }
+                    OverviewMarketChart(marketChart = it.marketChart)
+                    Text(text = it.currentPrice)
+                    Divider()
                 }
             }
         }
