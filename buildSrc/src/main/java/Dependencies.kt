@@ -105,6 +105,7 @@ object Deps {
     const val espresso = "androidx.test.espresso:espresso-core:3.5.1"
     const val junit = "junit:junit:4.13.2"
     const val androidTestJunit = "androidx.test.ext:junit:1.1.5"
+    const val junitJupiter = "org.junit.jupiter:junit-jupiter:5.8.1"
     const val composeUiTools = "androidx.compose.ui:ui-tooling"
     const val composeUiTest = "androidx.compose.ui:ui-test-junit4"
     const val composeTestManifest = "androidx.compose.ui:ui-test-manifest"

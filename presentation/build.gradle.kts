@@ -70,5 +70,6 @@ dependencies {
 
     //Testing
     testImplementation(Deps.junit)
+    testImplementation(Deps.junitJupiter)
     androidTestImplementation(Deps.androidTestJunit)
 }
