@@ -39,13 +39,13 @@ class TrackerRepositoryImpl @Inject constructor(
                         emit(Result.success(listCoins))
                     }
                     .onFailure {
-                        if (!::coinOverview.isInitialized) {
+                        if (!::listCoins.isInitialized) {
                             cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
                         }
                         emit(Result.failure(it))
                     }
             } else {
-                if (!::coinOverview.isInitialized) {
+                if (!::listCoins.isInitialized) {
                     cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
                     emit(Result.failure(Throwable()))
                 } else {
@@ -104,7 +104,7 @@ class TrackerRepositoryImpl @Inject constructor(
                             emit(Result.failure(it))
                         }
                 } else {
-                    if (!::coinOverview.isInitialized) {
+                    if (!::coinDetails.isInitialized) {
                         cacheRateLimiter.removeForKey(CACHE_KEY_OVERVIEW)
                         emit(Result.failure(Throwable()))
                     } else {
