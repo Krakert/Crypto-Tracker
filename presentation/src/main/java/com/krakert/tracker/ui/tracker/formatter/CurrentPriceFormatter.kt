@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class CurrentPriceFormatter @Inject constructor() {
 
-    fun map(price: Double): String {
+    fun format(price: Double): String {
         return when {
             price < 1f -> {
                 format(price, 5, ",", ".")

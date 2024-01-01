@@ -20,10 +20,10 @@ class OverviewCoinItemDisplayMapper @Inject constructor(
             id = item.id,
             name = item.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
             currentPrice = application.getString(
-                R.string.txt_price_formatted,
+                R.string.txt_value_formatted,
                 Currency.entries.find { it.name == item.currency.capitalize() }?.symbol
                     ?: item.currency,
-                currentPriceFormatter.map(item.currentPrice)
+                currentPriceFormatter.format(item.currentPrice)
             ),
             marketChart = marketChartDisplayMapper.map(item.marketChart)
         )
