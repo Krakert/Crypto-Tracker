@@ -22,6 +22,7 @@ class OverviewMapper @Inject constructor(
                     id = coin.id,
                     currentPrice = pricesCoinsEntity[coin.id]?.get(currency),
                     marketChart = listMarketChartEntity[favoriteCoins.indexOf(coin)],
+                    currency = currency
                 )
             },
             tileCoin = tileCoin

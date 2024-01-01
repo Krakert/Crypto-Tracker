@@ -47,8 +47,7 @@ import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 fun CenterElement(content: @Composable () -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 8.dp, end = 8.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     )

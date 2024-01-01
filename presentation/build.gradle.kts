@@ -51,7 +51,7 @@ dependencies {
     implementation(Deps.daggerHilt)
     implementation(Deps.timber)
 
-    // Compose
+    //Compose
     implementation(Deps.composeRuntime)
     implementation(Deps.composeActivity)
     implementation(Deps.composeMaterial)
@@ -67,4 +67,9 @@ dependencies {
     implementation(Deps.palette)
 
     implementation(Deps.androidSplash)
+
+    //Testing
+    testImplementation(Deps.junit)
+    testImplementation(Deps.junitJupiter)
+    androidTestImplementation(Deps.androidTestJunit)
 }
