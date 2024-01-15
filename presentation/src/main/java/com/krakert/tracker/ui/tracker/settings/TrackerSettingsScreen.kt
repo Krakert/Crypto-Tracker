@@ -37,6 +37,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.wear.compose.foundation.ExperimentalWearFoundationApi
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.ScalingLazyListState
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.rememberActiveFocusRequester
@@ -44,6 +45,8 @@ import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.InlineSlider
 import androidx.wear.compose.material.InlineSliderDefaults
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.ToggleChip
 import androidx.wear.compose.material.ToggleChipDefaults
@@ -97,193 +100,198 @@ fun TrackerSettingsScreen(
 
             val focusRequester = rememberActiveFocusRequester()
             val coroutineScope = rememberCoroutineScope()
-
-            androidx.wear.compose.foundation.lazy.ScalingLazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onRotaryScrollEvent {
-                        coroutineScope.launch {
-                            scrollState.scrollBy(it.verticalScrollPixels)
-                            scrollState.animateScrollBy(0f)
+            Scaffold(positionIndicator = {
+                PositionIndicator(
+                    scalingLazyListState = scrollState
+                )
+            }) {
+                ScalingLazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .onRotaryScrollEvent {
+                            coroutineScope.launch {
+                                scrollState.scrollBy(it.verticalScrollPixels)
+                                scrollState.animateScrollBy(0f)
+                            }
+                            true
                         }
-                        true
+                        .focusRequester(focusRequester)
+                        .focusable(),
+                    contentPadding = PaddingValues(
+                        top = 8.dp,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 32.dp
+                    ),
+                    verticalArrangement = Arrangement.Center,
+                    autoCentering = AutoCenteringParams(itemIndex = 0),
+                    state = scrollState
+                ) {
+                    item {
+                        CenterElement {
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp,
+                                    top = 16.dp
+                                ),
+                                text = stringResource(R.string.txt_settings_chart_length),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            InlineSlider(
+                                value = amountDaysTracking,
+                                onValueChange = {
+                                    amountDaysTracking = if (it == 0) {
+                                        1
+                                    } else {
+                                        it
+                                    }
+                                    viewModel.setAmountOfDays(amountDaysTracking)
+                                },
+                                valueProgression = 0..14,
+                                increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
+                                decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease") },
+                            )
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp
+                                ),
+                                text = "Day(s): $amountDaysTracking",
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                    .focusRequester(focusRequester)
-                    .focusable(),
-                contentPadding = PaddingValues(
-                    top = 8.dp,
-                    start = 8.dp,
-                    end = 8.dp,
-                    bottom = 32.dp
-                ),
-                verticalArrangement = Arrangement.Center,
-                autoCentering = AutoCenteringParams(itemIndex = 0),
-                state = scrollState
-            ) {
-                item {
-                    CenterElement {
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp,
-                                top = 16.dp
-                            ),
-                            text = stringResource(R.string.txt_settings_chart_length),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        InlineSlider(
-                            value = amountDaysTracking,
-                            onValueChange = {
-                                amountDaysTracking = if (it == 0) {
-                                    1
-                                } else {
-                                    it
-                                }
-                                viewModel.setAmountOfDays(amountDaysTracking)
-                            },
-                            valueProgression = 0..14,
-                            increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
-                            decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease") },
-                        )
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp
-                            ),
-                            text = "Day(s): $amountDaysTracking",
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center
-                        )
+                    item { Divider() }
+                    item {
+                        CenterElement {
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp,
+                                    top = 8.dp
+                                ),
+                                text = stringResource(R.string.txt_settings_minutes_cache),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            InlineSlider(
+                                value = minutesCache,
+                                onValueChange = {
+                                    minutesCache = if (it == 1) {
+                                        2
+                                    } else {
+                                        it
+                                    }
+                                    viewModel.setCacheRate(minutesCache)
+                                },
+                                valueProgression = 1..10,
+                                increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
+                                decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease") },
+                            )
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp
+                                ),
+                                text = "Minutes: $minutesCache",
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                }
-                item { Divider() }
-                item {
-                    CenterElement {
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp,
-                                top = 8.dp
-                            ),
-                            text = stringResource(R.string.txt_settings_minutes_cache),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                        InlineSlider(
-                            value = minutesCache,
-                            onValueChange = {
-                                minutesCache = if (it == 1) {
-                                    2
-                                } else {
-                                    it
-                                }
-                                viewModel.setCacheRate(minutesCache)
-                            },
-                            valueProgression = 1..10,
-                            increaseIcon = { Icon(InlineSliderDefaults.Increase, "Increase") },
-                            decreaseIcon = { Icon(InlineSliderDefaults.Decrease, "Decrease") },
-                        )
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp
-                            ),
-                            text = "Minutes: $minutesCache",
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center
-                        )
+                    item { Divider() }
+                    item {
+                        CenterElement {
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 8.dp
+                                ),
+                                text = stringResource(R.string.txt_settings_set_currency),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
-                }
-                item { Divider() }
-                item {
-                    CenterElement {
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                bottom = 8.dp
-                            ),
-                            text = stringResource(R.string.txt_settings_set_currency),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-                items(enumValues<Currency>()) { index ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    ) {
-                        ToggleChip(
-                            modifier = Modifier.fillMaxWidth(),
-                            checked = checked == index,
-                            toggleControl = {
-                                Icon(
-                                    imageVector = ToggleChipDefaults.radioIcon(checked == index),
-                                    contentDescription = if (checked == index) "On" else "Off"
-                                )
-                            },
-                            onCheckedChange = {
-                                checked = index
-                                viewModel.setCurrency(index)
+                    items(enumValues<Currency>()) { index ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        ) {
+                            ToggleChip(
+                                modifier = Modifier.fillMaxWidth(),
+                                checked = checked == index,
+                                toggleControl = {
+                                    Icon(
+                                        imageVector = ToggleChipDefaults.radioIcon(checked == index),
+                                        contentDescription = if (checked == index) "On" else "Off"
+                                    )
+                                },
+                                onCheckedChange = {
+                                    checked = index
+                                    viewModel.setCurrency(index)
 //                                sharedPreference.Currency = checked
-                            },
-                            label = {
-                                Text(
-                                    text = index.name.uppercase(),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        )
+                                },
+                                label = {
+                                    Text(
+                                        text = index.name.uppercase(),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            )
 
+                        }
                     }
-                }
-                item { Divider() }
-                item {
-                    CenterElement {
+                    item { Divider() }
+                    item {
+                        CenterElement {
+                            Text(
+                                text = stringResource(R.string.txt_settings_reset),
+                                modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
+                                textAlign = TextAlign.Center,
+                            )
+                            IconButton(
+                                modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
+                                imageVector = Icons.Rounded.RestartAlt,
+                                contentDescription = stringResource(
+                                    R.string.button_with_icon,
+                                    Icons.Rounded.RestartAlt.name
+                                ),
+                                onClick = {
+                                    viewModel.resetSettings()
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.txt_toast_reset),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
+                    }
+                    item {
                         Text(
-                            text = stringResource(R.string.txt_settings_reset),
-                            modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
-                            textAlign = TextAlign.Center,
-                        )
-                        IconButton(
-                            modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
-                            imageVector = Icons.Rounded.RestartAlt,
-                            contentDescription = stringResource(
-                                R.string.button_with_icon,
-                                Icons.Rounded.RestartAlt.name
+                            text = stringResource(
+                                id = R.string.txt_build_string,
+                                BuildConfig.VERSION_NAME,
+                                BuildConfig.BUILD_TYPE,
+                                BuildConfig.BUILD_TIME,
+                                BuildConfig.VERSION_CODE
                             ),
-                            onClick = {
-                                viewModel.resetSettings()
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.txt_toast_reset),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            textAlign = TextAlign.Center,
+                            fontSize = 10.sp,
+                            modifier = Modifier.padding(top = 16.dp)
                         )
                     }
-                }
-                item {
-                    Text(
-                        text = stringResource(
-                            id = R.string.txt_build_string,
-                            BuildConfig.VERSION_NAME,
-                            BuildConfig.BUILD_TYPE,
-                            BuildConfig.BUILD_TIME,
-                            BuildConfig.VERSION_CODE
-                        ),
-                        textAlign = TextAlign.Center,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
                 }
             }
         }
