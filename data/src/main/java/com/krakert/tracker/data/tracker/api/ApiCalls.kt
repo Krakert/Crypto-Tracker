@@ -12,7 +12,7 @@ object ApiCalls {
     fun getListCoins(
         currency: String = "usd",
         order: String = "market_cap_desc",
-        perPage: Int = 100,
+        perPage: Int = 250,
         page: Int = 1,
     ) = ApiRequest<List<ListCoinsItemEntity?>>(
         method = ApiMethod.GET,
