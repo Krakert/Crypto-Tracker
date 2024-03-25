@@ -36,7 +36,9 @@ import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.components.ShowProblem
 import com.krakert.tracker.ui.tracker.add.component.ChipCoin
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
-import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.END_RESULT
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.NO_RESULT
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SSL
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,7 +78,7 @@ fun TrackerAddCoinScreen(
     ) {
         when (val state = viewModel.addViewState.collectAsState().value) {
             is OnError -> {
-                ShowProblem(state.errorDisplay) {
+                ShowMessageWithIcon(state.errorDisplay) {
                     when (state.errorDisplay) {
                         SSL -> viewModel.openSettings()
                         else -> viewModel.getListCoins()

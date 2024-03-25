@@ -16,12 +16,12 @@ import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.tracker.add.mapper.ListCoinsDisplayMapper
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsDisplay
 import com.krakert.tracker.ui.tracker.add.model.ListCoinsItemDisplay
-import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.model.ProblemState.API_LIMIT
-import com.krakert.tracker.ui.tracker.model.ProblemState.NO_CONNECTION
-import com.krakert.tracker.ui.tracker.model.ProblemState.SERVER
-import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
-import com.krakert.tracker.ui.tracker.model.ProblemState.UNKNOWN
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.API_LIMIT
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.NO_CONNECTION
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.NO_RESULT
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SERVER
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SSL
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.UNKNOWN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,21 +30,13 @@ import java.net.ConnectException
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
-
-sealed class ViewStateAddCoin {
-    // Represents different states for the add coin screen
-    object Loading : ViewStateAddCoin()
-    data class Success(val coins: ListCoinsDisplay) : ViewStateAddCoin()
-    data class Problem(val exception: ProblemState) : ViewStateAddCoin()
-}
-
 @HiltViewModel
 class AddCoinViewModel @Inject constructor(
-    private val application: Application,
-    private val getListCoinsToAdd: GetListCoinsToAdd,
-    private val addFavouriteCoin: AddFavouriteCoin,
-    private val removeFavouriteCoin: RemoveFavouriteCoin,
-    private val listCoinsDisplayMapper: ListCoinsDisplayMapper,
+        private val application: Application,
+        private val getListCoinsToAdd: GetListCoinsToAdd,
+        private val addFavouriteCoin: AddFavouriteCoin,
+        private val removeFavouriteCoin: RemoveFavouriteCoin,
+        private val listCoinsDisplayMapper: ListCoinsDisplayMapper,
 ) : ViewModel() {
     private val mutableStateAdd = MutableStateFlow<ContentState<ListCoinsDisplay>>(OnLoading)
     val addViewState = mutableStateAdd.asStateFlow()

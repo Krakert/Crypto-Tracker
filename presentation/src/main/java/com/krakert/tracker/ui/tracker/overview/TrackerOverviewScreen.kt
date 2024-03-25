@@ -52,9 +52,9 @@ import com.krakert.tracker.ui.components.OnDisplay
 import com.krakert.tracker.ui.components.OnError
 import com.krakert.tracker.ui.components.OnLoading
 import com.krakert.tracker.ui.components.Screen
-import com.krakert.tracker.ui.components.ShowProblem
-import com.krakert.tracker.ui.tracker.model.ProblemState.EMPTY
-import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
+import com.krakert.tracker.ui.components.ShowMessageWithIcon
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.EMPTY
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SSL
 import com.krakert.tracker.ui.tracker.overview.components.OverviewBottomBar
 import com.krakert.tracker.ui.tracker.overview.components.OverviewMarketChart
 import com.krakert.tracker.ui.tracker.overview.model.OverviewCoinDisplay
@@ -98,7 +98,7 @@ fun TrackerOverviewScreen(
         when (val response = viewModel.overviewViewState.collectAsState().value) {
             is OnLoading -> Loading()
             is OnError -> {
-                ShowProblem(response.errorDisplay) {
+                ShowMessageWithIcon(response.errorDisplay) {
                     when (response.errorDisplay) {
                         SSL -> viewModel.openSettings()
                         EMPTY -> navController.navigate(Screen.Add.route)

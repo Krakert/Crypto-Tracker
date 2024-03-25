@@ -59,13 +59,13 @@ import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
 import com.krakert.tracker.ui.components.IconButton
 import com.krakert.tracker.ui.components.Loading
-import com.krakert.tracker.ui.components.ShowProblem
+import com.krakert.tracker.ui.components.ShowMessageWithIcon
 import com.krakert.tracker.ui.theme.themeValues
 import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Loading
 import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Problem
 import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Success
 import com.krakert.tracker.ui.tracker.detail.model.DetailCoinDisplay
-import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon
 import com.skydoves.landscapist.ImageOptions
 import com.skydoves.landscapist.coil.CoilImage
 import kotlinx.coroutines.launch
@@ -95,9 +95,9 @@ fun TrackerDetailScreen(
     when (val response = viewModel.detailsCoin.collectAsState().value) {
         is Loading -> Loading()
         is Problem -> {
-            ShowProblem(response.exception) {
+            ShowMessageWithIcon(response.exception) {
                 when (response.exception) {
-                    ProblemState.SSL -> viewModel.openSettings()
+                    MessageWithIcon.SSL -> viewModel.openSettings()
                     else -> viewModel.getDetailsByCoinId(coinId = coinId)
                 }
             }
