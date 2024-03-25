@@ -56,11 +56,11 @@ import com.krakert.tracker.ui.components.CenterElement
 import com.krakert.tracker.ui.components.Divider
 import com.krakert.tracker.ui.components.IconButton
 import com.krakert.tracker.ui.components.Loading
-import com.krakert.tracker.ui.components.ShowProblem
+import com.krakert.tracker.ui.components.OnDisplay
+import com.krakert.tracker.ui.components.OnError
+import com.krakert.tracker.ui.components.OnLoading
+import com.krakert.tracker.ui.components.ShowMessageWithIcon
 import com.krakert.tracker.ui.tracker.model.Currency
-import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Loading
-import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Problem
-import com.krakert.tracker.ui.tracker.settings.ViewStateSettings.Success
 import kotlinx.coroutines.launch
 
 
@@ -70,7 +70,6 @@ fun TrackerSettingsScreen(
     viewModel: TrackerSettingsViewModel,
     lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
-
 
     DisposableEffect(lifeCycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -90,13 +89,13 @@ fun TrackerSettingsScreen(
     val scrollState = ScalingLazyListState()
 
     when (val response = viewModel.settingViewState.collectAsState().value) {
-        is Loading -> Loading()
-        is Problem -> ShowProblem(response.exception) { viewModel.getSettings() }
-        is Success -> {
+        is OnLoading -> Loading()
+        is OnError -> ShowMessageWithIcon(response.errorDisplay) { viewModel.getSettings() }
+        is OnDisplay -> {
 
-            var amountDaysTracking by remember { mutableIntStateOf(response.data.daysOfTracking) }
-            var minutesCache by remember { mutableIntStateOf(response.data.minutesOfCache) }
-            var checked by remember { mutableStateOf(response.data.currency) }
+            var amountDaysTracking by remember { mutableIntStateOf(response.display.daysOfTracking) }
+            var minutesCache by remember { mutableIntStateOf(response.display.minutesOfCache) }
+            var checked by remember { mutableStateOf(response.display.currency) }
 
             val focusRequester = rememberActiveFocusRequester()
             val coroutineScope = rememberCoroutineScope()

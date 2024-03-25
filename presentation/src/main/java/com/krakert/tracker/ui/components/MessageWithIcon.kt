@@ -14,7 +14,8 @@ import androidx.compose.ui.unit.sp
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
 import com.krakert.tracker.presentation.R
-import com.krakert.tracker.ui.tracker.model.ProblemState
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.*
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_API_LEVEL
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_BACKGROUND_COLOR_BLACK
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_DEVICE_HEIGHT_DP
@@ -23,34 +24,35 @@ import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_SHOW_BACKGROUND
 import com.krakert.tracker.ui.tracker.model.WEAR_PREVIEW_UI_MODE
 
 @Composable
-fun ShowProblem(problemState: ProblemState, onClick: () -> Unit) {
+fun ShowMessageWithIcon(content: MessageWithIcon, onClick: () -> Unit) {
     CenterElement {
         IconButton(
             modifier = Modifier.size(ButtonDefaults.LargeButtonSize),
-            imageVector = problemState.icon,
+            imageVector = content.icon,
             contentDescription = stringResource(
                 R.string.button_with_icon,
-                problemState.icon.name
+                content.icon.name
             ),
             onClick = { onClick() }
         )
         Text(
             modifier = Modifier.padding(all = 8.dp),
-            text = stringResource(problemState.txt),
+            text = stringResource(content.txt),
             fontSize = 16.sp,
             textAlign = TextAlign.Center
         )
     }
 }
 
-class ProblemsPreviewParameterProvider : PreviewParameterProvider<ProblemState> {
+class ProblemsPreviewParameterProvider : PreviewParameterProvider<MessageWithIcon> {
     override val values = sequenceOf(
-        ProblemState.UNKNOWN,
-        ProblemState.SSL,
-        ProblemState.EMPTY,
-        ProblemState.API_LIMIT,
-        ProblemState.COULD_NOT_LOAD,
-        ProblemState.NO_CONNECTION
+        UNKNOWN,
+        SSL,
+        EMPTY,
+        API_LIMIT,
+        COULD_NOT_LOAD,
+        NO_CONNECTION,
+        NO_RESULT
     )
 }
 
@@ -64,8 +66,8 @@ class ProblemsPreviewParameterProvider : PreviewParameterProvider<ProblemState> 
     showBackground = WEAR_PREVIEW_SHOW_BACKGROUND
 )
 @Composable
-fun PreviewShowProblem(
-    @PreviewParameter(ProblemsPreviewParameterProvider::class) problem: ProblemState
+fun PreviewShowMessageWithIcon(
+    @PreviewParameter(ProblemsPreviewParameterProvider::class) problem: MessageWithIcon
 ) {
-    ShowProblem(problem) { }
+    ShowMessageWithIcon(problem) { }
 }

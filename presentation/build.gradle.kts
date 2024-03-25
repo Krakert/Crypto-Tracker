@@ -68,6 +68,8 @@ dependencies {
 
     implementation(Deps.androidSplash)
 
+    implementation(Deps.wearInput)
+
     //Testing
     testImplementation(Deps.junit)
     testImplementation(Deps.junitJupiter)

@@ -1,6 +1,7 @@
 package com.krakert.tracker.data.components.net.model
 
 import com.krakert.tracker.data.components.DataConfig.COIN_GECKO_API_BASE_URL
+import com.krakert.tracker.data.components.DataConfig.MOCK_API_BASE_URL
 
 
 data class ApiRequest<T>(

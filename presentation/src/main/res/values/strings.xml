@@ -30,5 +30,8 @@
     <string name="txt_build_string">Version name: %1$s.%2$s \nBuild date: %3$s \nVersion ID: %4$s"</string>
     <string name="button_with_icon">%1$s icon</string>
     <string name="txt_value_formatted">%1$s %2$s</string>
+    <string name="txt_search">Search for a Coin</string>
+    <string name="txt_no_result">Unable to find a coin, please try something else</string>
+    <string name="txt_end_result">Clear the result</string>
 
 </resources>

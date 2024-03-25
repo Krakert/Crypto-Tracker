@@ -13,12 +13,12 @@ import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Problem
 import com.krakert.tracker.ui.tracker.detail.ViewStateDetails.Success
 import com.krakert.tracker.ui.tracker.detail.mapper.DetailCoinDisplayMapper
 import com.krakert.tracker.ui.tracker.detail.model.DetailCoinDisplay
-import com.krakert.tracker.ui.tracker.model.ProblemState
-import com.krakert.tracker.ui.tracker.model.ProblemState.API_LIMIT
-import com.krakert.tracker.ui.tracker.model.ProblemState.NO_CONNECTION
-import com.krakert.tracker.ui.tracker.model.ProblemState.SERVER
-import com.krakert.tracker.ui.tracker.model.ProblemState.SSL
-import com.krakert.tracker.ui.tracker.model.ProblemState.UNKNOWN
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.API_LIMIT
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.NO_CONNECTION
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SERVER
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.SSL
+import com.krakert.tracker.ui.tracker.model.MessageWithIcon.UNKNOWN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +30,7 @@ import javax.net.ssl.SSLHandshakeException
 sealed class ViewStateDetails {
     object Loading : ViewStateDetails()
     data class Success(val details: DetailCoinDisplay) : ViewStateDetails()
-    data class Problem(val exception: ProblemState) : ViewStateDetails()
+    data class Problem(val exception: MessageWithIcon) : ViewStateDetails()
 }
 
 @HiltViewModel
