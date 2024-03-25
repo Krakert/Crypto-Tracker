@@ -4,6 +4,8 @@
     <application
         android:name=".application.AppClass"
         android:icon="@mipmap/ic_launcher">
+<!-- Enable is line to use the Mock API -->
+<!-- android:networkSecurityConfig="@xml/network_security_config"> -->
 
     <uses-library
         android:name="com.google.android.wearable"
