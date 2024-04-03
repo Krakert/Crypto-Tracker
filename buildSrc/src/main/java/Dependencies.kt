@@ -33,6 +33,7 @@ object Versions {
     const val firebaseAnalytics = "21.2.1"
     const val firebaseBom = "32.3.1"
     const val firebaseCrashlytics = "2.9.9"
+    const val fireBasePreformance = "1.4.2"
 
     const val ktor = "2.3.1"
     const val SLF4j = "1.7.36"
@@ -57,10 +58,11 @@ object Deps {
     const val ktorLogging = "io.ktor:ktor-client-logging:${Versions.ktor}"
     const val SLF4J = "org.slf4j:slf4j-android:${Versions.SLF4j}"
 
-    // Crashlytics
+    // Crashlytics / FireBase
     const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
     const val firebaseCrashlyitcs = "com.google.firebase:firebase-crashlytics-ktx"
     const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx"
+    const val firebasePreformance = "com.google.firebase:firebase-perf"
 
     // General Wear functionality
     const val wear = "androidx.wear:wear:1.2.0"

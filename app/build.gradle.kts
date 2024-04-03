@@ -9,6 +9,7 @@ plugins {
     kotlin("kapt")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
 }
 
 val prop = Properties().apply {
@@ -92,5 +93,6 @@ dependencies {
     implementation(Deps.firebaseBom)
     implementation(Deps.firebaseCrashlyitcs)
     implementation(Deps.firebaseAnalytics)
+    implementation(Deps.firebasePreformance)
 
 }
