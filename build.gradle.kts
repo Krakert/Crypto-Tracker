@@ -6,5 +6,5 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version Versions.serialization apply false
     id("com.google.gms.google-services") version Versions.googleService apply false
     id("com.google.firebase.crashlytics") version Versions.firebaseCrashlytics apply false
-    id("com.google.firebase.firebase-perf") version Versions.fireBasePreformance apply false
+    id("com.google.firebase.firebase-perf") version Versions.fireBasePerformance apply false
 }

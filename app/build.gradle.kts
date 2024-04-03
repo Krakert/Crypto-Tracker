@@ -93,6 +93,6 @@ dependencies {
     implementation(Deps.firebaseBom)
     implementation(Deps.firebaseCrashlyitcs)
     implementation(Deps.firebaseAnalytics)
-    implementation(Deps.firebasePreformance)
+    implementation(Deps.firebasePerformance)
 
 }
